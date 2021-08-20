@@ -2,5 +2,5 @@
 ^.gitignore*
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^README\.Rmd$
+^README.Rmd
 
