@@ -1,4 +1,5 @@
-^rrddharmony\.Rproj$
+^rddharmony\.Rproj$
+^.gitignore*
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README\.Rmd$
