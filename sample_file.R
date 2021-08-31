@@ -133,7 +133,7 @@ dd_extract <- rddharmony::DDextract_VitalCounts(locid,
           abr <- abr[abr$DataSourceYear == latest_source_year,]
         } else {
           # ... and latest series is not full, then keep the latest data source record for each age
-          abr <- abr  %>%  dd_latest_source_year
+          abr <- abr  %>%  rddharmony::dd_latest_source_year()
         }
       }
 
@@ -153,3 +153,97 @@ dd_extract <- rddharmony::DDextract_VitalCounts(locid,
                                DataValue = 0))
       }
 
+    ##7.9. For births, reconcile wide early age groups to abridged (e.g., 0-19, 0-14, 10-19 etc)
+      # if (type == "births") {
+
+        abr <- abr %>% rddharmony::dd_firstages_compute_births() %>%
+          select(-AgeSort)
+
+      # }
+
+      # reconcile first age groups 0-1, 0-4, 1-4
+      abr <- abr %>% rddharmony::dd_firstages_compute()
+
+    ##7.10.Check whether there are multiple open age groups (TRUE/FALSE Output)
+      oag_multi <- abr %>% rddharmony::dd_oag_multiple()
+
+    ##7.11. Compute closed age groups from multiple open age groups and add to data if missing**
+      if (oag_multi) {
+        add <- abr %>%
+          rddharmony::dd_oag2closed() %>%
+          dplyr::filter(!(AgeLabel %in% abr$AgeLabel[!is.na(abr$DataValue)]))
+
+        if (nrow(add > 0)) {
+          abr <- abr %>%
+            bind_rows(add) %>%
+            arrange(AgeStart)
+        }
+      }
+
+    ## 7.12. Identify the start age of the open age group needed to close the series
+      oag_start <- abr %>% rddharmony::dd_oag_agestart()
+
+      # flag whether this open age group exists in the series
+      oag_check <- paste0(oag_start,"+") %in% abr$AgeLabel
+
+    ## 7.13. Drop records for open age groups that do not close the series
+      if (!is_empty(oag_start)){
+        abr <- abr %>%
+          dplyr::filter(!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start))
+      }
+
+    ## 7.14. Check that there are no missing age groups on the abridged series
+      if (nrow(abr[abr$AgeStart >= 5,]) > 0) {
+        check_abr <- is_abridged(abr$AgeStart[abr$AgeStart >=5])
+      } else {
+        check_abr <- FALSE
+      }
+
+
+    ## 7.15. Compute all possible open age groups given available input ** //Start from here
+   if (check_abr==TRUE) {
+        abr_oag <- dd_oag_compute(abr, age_span = 5)
+
+    ## and append the oag that completes the abridged series
+        abr <- abr %>%
+          bind_rows(abr_oag[!(abr_oag$AgeLabel %in% abr$AgeLabel) &
+                              abr_oag$AgeStart == oag_start,]) %>%
+          arrange(AgeSort)
+
+      }
+
+    ## 7.16. Check again whether any open age group exists
+      oag_check <- paste0(oag_start,"+") %in% abr$AgeLabel
+
+    ## 7.17. If total is missing and series is otherwise complete, compute total
+      if (!("Total" %in% abr$AgeLabel) & "0-4" %in% abr$AgeLabel & oag_check == TRUE) {
+        abr <- abr %>%
+          bind_rows(data.frame(AgeStart = 0,
+                               AgeEnd = -1,
+                               AgeLabel = "Total",
+                               AgeSpan = -1,
+                               AgeSort = 184,
+                               DataSourceYear = NA,
+                               DataValue = sum(abr$DataValue[abr$AgeSpan == 5]) +
+                                 abr$DataValue[abr$AgeSpan == -1 & abr$AgeStart == oag_start] +
+                                 abr$DataValue[abr$AgeLabel == "Unknown"]))
+      }
+
+    ## 7.18. Write a note to alert about missing data
+      abr$note <- NA
+      if (check_abr == FALSE | oag_check == FALSE) {
+        abr$note <- "The abridged series is missing data for one or more age groups."
+      }
+      if (!("0" %in% abr$AgeLabel & "1-4" %in% abr$AgeLabel & "0-4" %in% abr$AgeLabel)) {
+        abr$note <- "The abridged series is missing data for one or more age groups."
+      }
+      abr$SexID <- sex
+
+    ##7.22. Add series field to data
+      if (!is.null(abr_sex)) {
+        abr_sex <- abr_sex %>%
+          mutate(abridged = TRUE,
+                 complete = FALSE,
+                 series = "abridged") %>%
+          dplyr::filter(AgeSpan %in% c(-2, -1, 1, 4, 5))
+      }

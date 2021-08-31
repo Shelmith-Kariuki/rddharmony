@@ -3,4 +3,5 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^README.Rmd
+sample_file.R
 

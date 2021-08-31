@@ -15,5 +15,5 @@ dd_oag_agestart(data, multiple5 = TRUE)
 A value that has to be a multiple of 5
 }
 \description{
-Identify the starting age needed for the open age group that closes the series. It must be a multiple of 5
+Identify the starting age needed for the open age group that closes the series. For abridged data, it must be a multiple of 5
 }

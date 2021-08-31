@@ -6,11 +6,7 @@
 #' @param multiple5 Whether the series contains 5 year age labels or not
 #'
 #' @return A value that has to be a multiple of 5
-#'
-#' @import DDSQLtools
-#' @import DemoTools
 #' @import tidyverse
-#' @import dplyr
 #' @export
 
 dd_oag_agestart <- function(data, multiple5 = TRUE){

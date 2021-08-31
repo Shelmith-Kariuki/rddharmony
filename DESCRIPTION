@@ -17,6 +17,7 @@ Imports:
     DemoTools,
     DDSQLtools,
     tidyverse,
-    dplyr
+    dplyr,
+    purrr
 Suggests: 
     testthat
