@@ -7,7 +7,7 @@
 initial()
 }
 \value{
-The message 'Welcome to the rrddharmony package'
+The message 'Welcome to the rddharmony package'
 }
 \description{
 Title initial
