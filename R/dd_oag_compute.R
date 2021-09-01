@@ -1,11 +1,16 @@
-#--------------------------------------------------------------------------------
-# compute data value for the open age group needed to close the series
-
-# ---------
-# Function
-# ---------
-
-# MAKE THIS COMPUTE FOR ALL POSSIBLE OPEN AGE GROUPS
+#' dd_oag_compute
+#'
+#' Compute data values for the open age group needed to close the series
+#'
+#' @param data The data to be harmonized
+#'
+#' @param age_span xxx
+#'
+#' @return A dataset with plausible closing age groups and their data values
+#'
+#' @import tidyverse
+#'
+#' @export
 
 dd_oag_compute  <- function(data, age_span = c(1, 5)){
   # require(tidyverse)
@@ -13,14 +18,16 @@ dd_oag_compute  <- function(data, age_span = c(1, 5)){
   # define standard abridged age groups
   std_ages <- std_age_function()
 
+  # subset the standard age groups data to only have abridged age groups (abridged == TRUE)
   age_std <- std_ages %>%
     dplyr::filter(abridged == TRUE) %>%
     select(-abridged, -complete)
 
-
+  # subset the data to remove any missing data values
   df <- data %>%
     dplyr::filter(!is.na(DataValue) & AgeSpan %in% c(age_span, -1, -2))
 
+  # identify the start age of the open age group needed to close the series
   oag_start <- data %>% dd_oag_agestart
 
   # list standard open age groups that can be computed from the complete series
@@ -40,20 +47,24 @@ dd_oag_compute  <- function(data, age_span = c(1, 5)){
       dplyr::filter(AgeLabel == paste0(oag_start,"+")) %>%
       select(AgeStart, AgeEnd, AgeSpan, AgeLabel, DataValue)
 
+    # if nrow(oag_indata) >0, it means the open age group exists
     oag_check <- nrow(oag_indata) > 0
 
+    # check if there is a "Total" age label in the data
     total_check <- "Total" %in% data$AgeLabel
 
+    # if the total age label exists, check if it is valid (is it an actual total or is it different from the summation of the
+    # rest of the data?)
     if (total_check) {
       total_value <- data$DataValue[data$AgeLabel=="Total"]
       total_value_valid <- total_value >= sum(df$DataValue[df$AgeSpan == age_span])
     } else { total_value_valid <- FALSE }
 
+    # check if there is an unknown that exists in the data, if it exists, extract its value, if it does not, the value is 0
     unknown_check <- "Unknown" %in% data$AgeLabel
     unknown_value <- ifelse(unknown_check, data$DataValue[data$AgeLabel=="Unknown"], 0)
 
-    # if there is an open age group record on complete, then use this to compute other open
-    # age groups
+    # if there is an open age group record on complete, then use this to compute other open age groups
     if (oag_check) {
 
       data.out <- NULL

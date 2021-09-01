@@ -4,6 +4,7 @@
 #' @param data The data to be harmonized
 #'
 #' @return A dataset with ages 0-1, 1-4 and 0-4 reconciled
+#' @import tidyverse
 #' @export
 dd_firstages_compute <- function(data){
 

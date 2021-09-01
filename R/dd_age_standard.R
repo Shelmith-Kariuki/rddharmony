@@ -1,21 +1,16 @@
-#------------------------------------------
-# Add standard age groups in the dataset
+#' dd_age_standard
+#'
+#' Add standard age groups in the dataset
+#'
+#' @param data The data to be harmonized
+#' @param abridged `TRUE/FALSE`
+#'
+#' @return The DemoData dataset with standard age groups appended to it.
+#'
+#' @import tidyverse
+#'
+#' @export
 
-# The function StdAge.fun adds in the dataset a variable with standard age groups.
-# This variable is important to check missing age groups.
-
-# The output of the function StdAge.fun is the dataset with standard age groups.
-
-# Note that the standard series of age group has different open age interval,
-# which goes from 60+ to 100+. The function covers all possible open age intervals across countries.
-# Later, I will select one open age group for each country/area.
-# SH modified this from MN's original function to accomodate any open age groups from
-# 40+ to 130+ and also to store this standard age info in a data frame that can be
-# modified, as needed, for future use.
-
-# ---------
-# Function
-# ---------
 dd_age_standard<- function(data, abridged = TRUE){
   # require(tidyverse)
 
@@ -32,7 +27,7 @@ dd_age_standard<- function(data, abridged = TRUE){
     select(-abridged, -complete)
 
 
-  #c)Join standard groups with the data from DemoData
+  # join standard groups with the data from DemoData
   data.out <- data %>%
     full_join(x=std_ages,
               by=c("AgeStart","AgeEnd","AgeLabel","AgeSpan")) %>%

@@ -1,3 +1,12 @@
+#' std_age_function
+#'
+#' Creates a data frame with all of the standard age groups we would expect for abridged and complete series (up to 130+ open age group)
+#'
+#' @return A dataset with standard age groups
+#'
+#' @import tidyverse
+#'
+#' @export
 
 std_age_function <- function() {
 
@@ -5,7 +14,7 @@ std_age_function <- function() {
 
   # create a data frame with all of the standard age groups we would expect for abridged
   # and complete series (up to 130+ open age group)
-  library(tidyverse)
+  # library(tidyverse)
 
   # abridged
   AgeStart = c(0,1,0,seq(5,125,5),seq(5,130,5),0,-2)
