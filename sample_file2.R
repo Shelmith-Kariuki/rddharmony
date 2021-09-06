@@ -18,7 +18,8 @@ locid = 752
 start_year = 1950
 end_year =2017
 process = c("census","vr")
-
+return_unique_ref_period <- TRUE
+retainKeys = FALSE
 dd_extract <- rddharmony::DDextract_VitalCounts(locid,
                                                 type = c("births"),
                                                 process = c("census","vr"),
@@ -303,8 +304,11 @@ if (nrow(vitals1_raw[vitals1_raw$AgeSpan == 1,]) > 0) {
   } # end of id loop
 vitals_std_all <- do.call(rbind, vitals_std_all)
 
+# x <- vitals_std_all %>%
+#   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
 x <- vitals_std_all %>%
-  dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
+  dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Eurostat Database - Year of occurrence - Direct - High quality")
+
 unique(x$series)
 
 ## Potential tests at the end of part one:------------------------------------------------------------------------
@@ -353,7 +357,7 @@ if (nrow(vitals_std_all) > 0) {
   }
 
 ## subset the data to only be left with data where the series is full
-## we are losing so much data **
+## we are losing so much data **. Something is wrong here
   vitals_std_full <- vitals_std_all %>%
     dplyr::filter(id_series %in% id_series_full) %>%
     mutate(id_sex = paste(id, SexID, sep = " - "))
@@ -411,5 +415,107 @@ if (nrow(vitals_std_full) > 0) {
     select(-id_sex, -id_series)
 
 } else { vitals_std_full <- vitals_std_full }
+
+
+################################## -------------------------------------------------------------------------------------------------------------------
+## PART 3: VALIDATE THE REMAINING SERIES, CHECKING FOR BOTH SEX TOTALS THAT MATCH BY SEX,
+# CORRECT FOR ANY INSTANCES WHERE DATA FOR SEX-AGE GROUP COMBINATIONS ARE MISSING, AND
+# CHECK WHETHER SUM OVER AGE MATCHES THE REPORTED TOTALS
+################################## -------------------------------------------------------------------------------------------------------------------
+
+if (nrow(vitals_std_full) > 0) {
+
+  ## identify the unique ids in the data
+  ids <- unique(vitals_std_full$id)
+
+  ## create a place holder for the final output which is ...
+  vitals_std_valid <- list()
+
+  for (i in 1:length(ids)) {
+
+    ## subset the data to only be left with data for one id
+    dd_one_id <- vitals_std_full %>%
+      dplyr::filter(id == ids[i])
+
+    ## reconcile reported and computed totals over age
+    dd_one_id <- dd_validate_totals_over_age(data = dd_one_id)
+
+    ## distribute unknowns by age
+    dd_one_id <- dd_distribute_unknowns(data = dd_one_id)
+
+    vitals_std_valid[[i]] <- dd_one_id
+
+  }
+
+  vitals_std_valid <- do.call(rbind, vitals_std_valid) %>%
+    mutate(five_year = abridged == TRUE & AgeSpan %in% c(-1,5),
+           abridged = abridged == TRUE & AgeLabel != "0-4")
+
+} else { vitals_std_valid <- vitals_std_full }
+
+## When there is more than one id for a given census year, select the most authoritative
+
+if (nrow(vitals_std_valid) > 0) {
+
+  if (return_unique_ref_period == TRUE) {
+
+    vitals_valid_id <- vitals_std_valid %>% dd_rank_id_vitals
+    ##  Cannot find `discard_these_dups` used in the dd_rank_id_vitals function
+
+  } else { vitals_valid_id <- vitals_std_valid }
+
+  ## arrange the data, with priority columns on the left and data loader keys on the right
+  first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart", "TimeMid", "SexID",
+                     "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
+                     "complete", "non_standard")
+  keep_columns <- names(vitals_std_all)
+  keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", first_columns))]
+
+  out_all <- vitals_valid_id %>%
+    mutate(non_standard = FALSE,
+           DataTypeName = "Direct (age standardized)",
+           note = NA) %>%
+    select(all_of(first_columns), all_of(keep_columns))
+
+} else { out_all <- NULL }
+
+## Look for years that are in raw data, but not in output. If there are series with non-standard age groups, then add these to output as well
+
+first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
+skipped <- dd_extract %>%
+  dplyr::filter(!(TimeLabel %in% out_all$TimeLabel)) %>%
+  select(all_of(first_columns), all_of(keep_columns)) %>%
+  mutate(five_year = FALSE,
+         abridged = FALSE,
+         complete = FALSE,
+         non_standard = TRUE,
+         note = "Not harmonized or validated due to non-standard age groups") %>%
+  arrange(id, SexID, AgeSort) %>%
+  distinct()
+
+out_all <- rbind(out_all, skipped) %>%
+  arrange(id, SexID, abridged, AgeSort) %>%
+  mutate(IndicatorName = NA,
+         IndicatorName = replace(IndicatorName, abridged == TRUE, "Births by age and sex - abridged"),
+         IndicatorName = replace(IndicatorName, five_year == TRUE, "Births by age and sex - abridged"),
+         IndicatorName = replace(IndicatorName, complete == TRUE, "Births by age and sex - complete"),
+         AgeUnit = "Year",
+         SexName = NA,
+         SexName = replace(SexName, SexID == 0, "Unknown"),
+         SexName = replace(SexName, SexID == 1, "Male"),
+         SexName = replace(SexName, SexID == 2, "Female"),
+         SexName = replace(SexName, SexID == 3, "Both sexes"))
+
+if (retainKeys == FALSE) {
+  out_all <- out_all %>%
+    select(id, LocID, LocName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
+           DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
+           AgeLabel, AgeSpan, AgeSort, DataValue, note)
+}
+
+# } else { # if no birth counts were extracted from DemoData
+#   print(paste0("There are no birth counts by age available for LocID = ",locid," and dataprocess = ", process," for the time period ", times[1], " to ", times[length(times)]))
+#   out_all <- NULL
+# }
 
 
