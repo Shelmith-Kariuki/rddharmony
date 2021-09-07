@@ -7,41 +7,54 @@ require(DemoTools)
 require(tidyverse)
 require(dplyr)
 require(rddharmony)
+require(googlesheets4)
+
+df <- read_sheet("https://docs.google.com/spreadsheets/d/1eeKAp6KtcEjd7d_q6IANsM1XoL_K8_VtuO5Sc8ul3fA/edit#gid=1034748505",
+                 sheet = "Sweden")
+locid <- df %>% filter(!is.na(LocID)) %>% distinct(LocID) %>% pull()
+times <- df %>% filter(!is.na(TimeMid)) %>% mutate(TimeLabel = TimeMid - 0.5) %>%  distinct(TimeLabel) %>% pull()
+process = c("census", "vr")
+return_unique_ref_period <- TRUE
+DataSourceShortName = NULL
+DataSourceYear = NULL
+retainKeys = FALSE
+server = "https://popdiv.dfs.un.org/DemoData/api/"
 
 ## -------------------------------------------------------------------------------------------------------------------
 ## PART 1: EXTRACT VITAL COUNTS (Census and VR) FROM DEMO DATA AND HARMONIZE TO STANDARD
 ## ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
 ## -------------------------------------------------------------------------------------------------------------------
 
-## 1. Extract all vital counts for a given country over the period specified in times
-locid = 752
-start_year = 1950
-end_year =2017
-process = c("census","vr")
-return_unique_ref_period <- TRUE
-retainKeys = FALSE
-dd_extract <- rddharmony::DDextract_VitalCounts(locid,
-                                                type = c("births"),
-                                                process = c("census","vr"),
-                                                start_year = start_year,
-                                                end_year = end_year,
-                                                DataSourceShortName = NULL,
-                                                DataSourceYear = NULL)
 
+## 1. Extract all vital counts for a given country over the period specified in times
+# locid = 752
+# start_year = 1950
+# end_year =2017
+# process = c("census","vr")
+# return_unique_ref_period <- TRUE
+# retainKeys = FALSE
+dd_extract <- DDextract_VitalCounts(locid = locid,
+                                    type = "births",
+                                    process = process,
+                                    start_year = times[1],
+                                    end_year = times[length(times)],
+                                    DataSourceShortName = DataSourceShortName,
+                                    DataSourceYear = DataSourceYear)
  # get data process id
   dpi <- ifelse(process == "census", 2, 36)
 
-  ## 2. Filter out sub-national censuses (data process "vr" does not work with get_datacatalog?)
+  ## 2. Drop sub-national censuses (data process "vr" does not work with get_datacatalog?)
   if (dpi == 2) {
 
+    # Gets all DataCatalog records
     DataCatalog <- get_datacatalog(locIds = locid, dataProcessTypeIds = 2, addDefault = "false")
     DataCatalog <- DataCatalog[DataCatalog$isSubnational==FALSE,]
   }
 
   if(nrow(DataCatalog) > 0) {
-    # Keep only those population series for which isSubnational is FALSE
+    # Drop sub national censuses (isSubnational== TRUE i.e if dd_extract$DataCatalogID `notin` DataCatalog$DataCatalogID)
     dd_extract <- dd_extract %>%
-      dplyr::filter(dpi == 36 |(dpi == 2 & DataCatalogID %in% DataCatalog$DataCatalogID))
+      dplyr::filter(DataProcessID == 36 |(DataProcessID == 2 & DataCatalogID %in% DataCatalog$DataCatalogID))
   }
 
 ## 3. Get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
@@ -66,7 +79,7 @@ dd_extract <- rddharmony::DDextract_VitalCounts(locid,
     mutate(id = paste(LocID, LocName, DataProcess, "Births", TimeLabel, DataProcessType, DataSourceName, StatisticalConceptName, DataTypeName, DataReliabilityName, sep = " - ")) %>%
     arrange(id)
 
-## 5. for births by age of mother, use only both sexes combined
+## 5. for births by age of mother, use only both sexes combined ** why?
   dd_extract <- dd_extract %>% dplyr::filter(SexID ==3)
 
   # list of series uniquely identified
@@ -87,7 +100,8 @@ dd_extract <- rddharmony::DDextract_VitalCounts(locid,
   ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
   # vitals_raw <- dd_extract %>%
   #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
-
+    # vitals_raw <- dd_extract %>%
+    #      dplyr::filter(id == "404 - Kenya - VR - Births - 2011 - Register - Demographic Yearbook - Year of occurrence - Direct - Low")
 
 ## 7. Isolate records that refer to five-year age data
   # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.
@@ -163,7 +177,7 @@ if (nrow(vitals1_raw[vitals1_raw$AgeSpan == 1,]) > 0) {
 
 
 
-  ## 12. fill in zeros for births at young ages, if missing //Start from here
+  ## 12. fill in zeros for births at young ages, if missing
   ## part a: abridged reconciled with complete
     vitals_abr_cpl1 <- vitals_abr_cpl %>%
       dplyr::filter(series == "abridged reconciled with complete")
@@ -306,10 +320,10 @@ vitals_std_all <- do.call(rbind, vitals_std_all)
 
 # x <- vitals_std_all %>%
 #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
-x <- vitals_std_all %>%
-  dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Eurostat Database - Year of occurrence - Direct - High quality")
-
-unique(x$series)
+# x <- vitals_std_all %>%
+#   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Eurostat Database - Year of occurrence - Direct - High quality")
+#
+# unique(x$series)
 
 ## Potential tests at the end of part one:------------------------------------------------------------------------
 ## 1. At the end of part one, if the data has both abridged and complete series, it should have 4 unique series:
@@ -319,7 +333,16 @@ unique(x$series)
 ## 3. Abridged age labels can only belong to two unique series (abridged, `abridged reconciled with complete`).
 ##    Complete age labels can only belong to two unique series (complete, `complete reconciled with abridged`)
 ## 4. Each group of records should have ages 0, 1-4, 0-4, 5-9 as start ages with values == 0, i.e if they do not exist already
-##
+## 5. Check the id_series (after removing the series) that are not in the original ids are either records
+## of indicator 159 (Total) or records without age labels. This will ensure that we are not dropping
+## any data.
+
+incl_ids <- vitals_std_all %>% distinct(id) %>% pull()
+excl_ids <- ids[!ids %in% incl_ids]
+
+print(paste0(length(excl_ids), " out of ", length(ids),
+             " ids have been dropped from the data at this point. We need to investigate the data further to ensure that we are not losing any data"))
+excl_ids
 
 ## -------------------------------------------------------------------------------------------------------------------
 ## PART 2: FILTER AVAILABLE SERIES, KEEPING ONLY THOSE THAT CONTAIN A FULL AGE DISTRIBUTION
@@ -364,6 +387,8 @@ if (nrow(vitals_std_all) > 0) {
 
 } else { vitals_std_full <- vitals_std_all }
 
+## At this point we are losing a lot of data, we need to check this
+print_dropped_ids( indata_before = vitals_std_all, indata_after = vitals_std_full)
 
 ## for each id-sex combo of full series, keep the reconciled series if it is available and discard the original abridged or complete
 
@@ -423,6 +448,9 @@ if (nrow(vitals_std_full) > 0) {
 # CHECK WHETHER SUM OVER AGE MATCHES THE REPORTED TOTALS
 ################################## -------------------------------------------------------------------------------------------------------------------
 
+## validate totals over age (if the reported and actual totals exist, if computed is greater than reported,
+## then replace reported with computed, if computed is less than reported, then add difference to "Unknown" age)
+## and distribute unknowns
 if (nrow(vitals_std_full) > 0) {
 
   ## identify the unique ids in the data
@@ -453,6 +481,12 @@ if (nrow(vitals_std_full) > 0) {
 
 } else { vitals_std_valid <- vitals_std_full }
 
+## At this point, the difference between vitals_std_full and vitals_std_valid should be qual to
+## length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"])
+
+assertthat::are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
+                      length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"]))
+
 ## When there is more than one id for a given census year, select the most authoritative
 
 if (nrow(vitals_std_valid) > 0) {
@@ -464,7 +498,7 @@ if (nrow(vitals_std_valid) > 0) {
 
   } else { vitals_valid_id <- vitals_std_valid }
 
-  ## arrange the data, with priority columns on the left and data loader keys on the right
+## arrange the data, with priority columns on the left and data loader keys on the right
   first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart", "TimeMid", "SexID",
                      "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
                      "complete", "non_standard")

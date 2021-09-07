@@ -9,7 +9,6 @@
 #' @param end_year The maximum year for the data available for each country
 #' @param DataSourceShortName NULL.
 #' @param DataSourceYear NULL.
-#'
 #' @return A dataset showing counts for each location, type of data, process, year, sex and age label.
 #' @import DDSQLtools
 #' @import DemoTools
