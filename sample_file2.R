@@ -20,10 +20,15 @@ DataSourceYear = NULL
 retainKeys = FALSE
 server = "https://popdiv.dfs.un.org/DemoData/api/"
 
+## State in the vignette explicitly that only 3 functions are of most importance
+## include examples for only these main functions
+## is there a way we can ensure that the main function appear at the top? Think of editing the function names
+##
 ## -------------------------------------------------------------------------------------------------------------------
 ## PART 1: EXTRACT VITAL COUNTS (Census and VR) FROM DEMO DATA AND HARMONIZE TO STANDARD
 ## ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
 ## -------------------------------------------------------------------------------------------------------------------
+
 
 
 ## 1. Extract all vital counts for a given country over the period specified in times
@@ -33,6 +38,17 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 # process = c("census","vr")
 # return_unique_ref_period <- TRUE
 # retainKeys = FALSE
+#
+
+# possible_ids <- function(){<code to find tghem>}
+# rlang::arg_match(locid, values = possible_ids())
+# check_id <- function(locid){
+#   if (!locid %in% possible_ids()) {
+#     stop("Not valid locid. See ?help-page to find them")
+#   }
+# }
+#
+
 dd_extract <- DDextract_VitalCounts(locid = locid,
                                     type = "births",
                                     process = process,
