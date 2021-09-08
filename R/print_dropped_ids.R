@@ -1,3 +1,12 @@
+#' Title
+#'
+#' @param indata_before vitals_std_all
+#' @param indata_after vitals_std_full
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print_dropped_ids<- function(indata_before, indata_after){
 
   dropped_id_series <- unique(indata_before$id_series[!indata_before$id_series  %in%  indata_after$id_series])

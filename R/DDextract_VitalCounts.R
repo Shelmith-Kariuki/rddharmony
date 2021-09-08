@@ -9,10 +9,7 @@
 #' @param end_year The maximum year for the data available for each country
 #' @param DataSourceShortName NULL.
 #' @param DataSourceYear NULL.
-#' @return A dataset showing counts for each location, type of data, process, year, sex and age label.
-#' @import DDSQLtools
-#' @import DemoTools
-#' @import tidyverse
+#' @return A dataset showing counts for each location, type of data (births or deaths), process, year, sex and age label.
 #' @export
 #'
 #' @examples
@@ -20,7 +17,7 @@
 #'                                    type = c("births"),
 #'                                    process = c("census","vr"),
 #'                                    1950,
-#'                                    2017,
+#'                                    2050,
 #'                                    DataSourceShortName = NULL,
 #'                                    DataSourceYear = NULL)
 
@@ -41,7 +38,7 @@ DDextract_VitalCounts <- function(locid,
   ## indicate the data process id. dpi == 2 if process is census and 36 if process is vr
   dpi <- ifelse(process == "census", 2, 36)
 
-  # Extract the data from the UNDP portal and return NULL if the data does not exist
+  ## Extract the data from the UNDP portal and return NULL if the data does not exist
   tryCatch({
     vital_counts <- get_recorddata(locIds = locid,
                                    dataProcessIds = dpi, # Census or register
@@ -52,7 +49,7 @@ DDextract_VitalCounts <- function(locid,
                                    subGroupIds = 2, # Total or all groups (as opposed to some population subgroup)
                                    dataSourceShortNames = DataSourceShortName,
                                    dataSourceYears = DataSourceYear)
-  }, error=function(e){cat("Error in file", conditionMessage(e), "\n")})
+  }, error=function(e){check_locid(locid)})
 
   if (exists('vital_counts')) {
 

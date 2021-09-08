@@ -11,45 +11,47 @@ require(googlesheets4)
 require(devtools)
 require(usethis)
 
-df <- read_sheet("https://docs.google.com/spreadsheets/d/1eeKAp6KtcEjd7d_q6IANsM1XoL_K8_VtuO5Sc8ul3fA/edit#gid=1034748505",
-                 sheet = "Sweden")
-locid <- df %>% filter(!is.na(LocID)) %>% distinct(LocID) %>% pull()
-times <- df %>% filter(!is.na(TimeMid)) %>% mutate(TimeLabel = TimeMid - 0.5) %>%  distinct(TimeLabel) %>% pull()
-process = c("census", "vr")
-return_unique_ref_period <- TRUE
-DataSourceShortName = NULL
-DataSourceYear = NULL
-retainKeys = FALSE
-server = "https://popdiv.dfs.un.org/DemoData/api/"
-
+## Call with Tim
 ## State in the vignette explicitly that only 3 functions are of most importance
 ## include examples for only these main functions
-## is there a way we can ensure that the main function appear at the top? Think of editing the function names
-##
+## is there a way we can ensure that the main functions appear at the top? Think of editing the function names
+
+DDharmonize_validate_BirthCounts <- function(locid,
+                                             times,
+                                             process = c("census", "vr"),
+                                             return_unique_ref_period = TRUE, # if true, then only most authoratative series will be returned for each reference period, per dd_rank_id_vitals()
+                                             DataSourceShortName = NULL,
+                                             DataSourceYear = NULL,
+                                             retainKeys = FALSE,
+                                             server = "https://popdiv.dfs.un.org/DemoData/api/") {
 ## -------------------------------------------------------------------------------------------------------------------
 ## PART 1: EXTRACT VITAL COUNTS (Census and VR) FROM DEMO DATA AND HARMONIZE TO STANDARD
 ## ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
 ## -------------------------------------------------------------------------------------------------------------------
 
 
-
 ## 1. Extract all vital counts for a given country over the period specified in times
-# locid = 752
-# start_year = 1950
-# end_year =2017
-# process = c("census","vr")
-# return_unique_ref_period <- TRUE
-# retainKeys = FALSE
-#
+locid <- 404
+times <- c(1950,2050)
+process = c("census", "vr")
+return_unique_ref_period <- TRUE # if true, then only most authoratative series will be returned for each reference period, per dd_rank_id_vitals()
+DataSourceShortName = NULL
+DataSourceYear = NULL
+retainKeys = FALSE
+server = "https://popdiv.dfs.un.org/DemoData/api/"
+
+
 
 dd_extract <- DDextract_VitalCounts(locid = locid,
                                     type = "births",
                                     process = process,
-                                    start_year = 1950,
-                                    end_year = 2021,
+                                    start_year = times[1],
+                                    end_year = times[length(times)],
                                     DataSourceShortName = DataSourceShortName,
                                     DataSourceYear = DataSourceYear)
- # get data process id
+if (!is.null(dd_extract)) {
+
+   # get data process id
   dpi <- ifelse(process == "census", 2, 36)
 
   ## 2. Drop sub-national censuses (data process "vr" does not work with get_datacatalog?)
@@ -389,7 +391,6 @@ if (nrow(vitals_std_all) > 0) {
   }
 
 ## subset the data to only be left with data where the series is full
-## we are losing so much data **. Something is wrong here
   vitals_std_full <- vitals_std_all %>%
     dplyr::filter(id_series %in% id_series_full) %>%
     mutate(id_sex = paste(id, SexID, sep = " - "))
@@ -556,9 +557,18 @@ if (retainKeys == FALSE) {
            AgeLabel, AgeSpan, AgeSort, DataValue, note)
 }
 
-# } else { # if no birth counts were extracted from DemoData
-#   print(paste0("There are no birth counts by age available for LocID = ",locid," and dataprocess = ", process," for the time period ", times[1], " to ", times[length(times)]))
-#   out_all <- NULL
-# }
+} else { # if no birth counts were extracted from DemoData
+  print(paste0("There are no birth counts by age available for LocID = ",locid," and dataprocess = ", process," for the time period ", times[1], " to ", times[length(times)]))
+  out_all <- NULL
+}
+}
 
 
+my_data <- DDharmonize_validate_BirthCounts(locid,
+                                             times,
+                                             process = c("census", "vr"),
+                                             return_unique_ref_period = TRUE, # if true, then only most authoratative series will be returned for each reference period, per dd_rank_id_vitals()
+                                             DataSourceShortName = NULL,
+                                             DataSourceYear = NULL,
+                                             retainKeys = FALSE,
+                                             server = "https://popdiv.dfs.un.org/DemoData/api/")
