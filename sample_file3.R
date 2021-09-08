@@ -31,7 +31,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
 
 ## 1. Extract all vital counts for a given country over the period specified in times
-locid <- 404
+# locid <- 404
 times <- c(1950,2050)
 process = c("census", "vr")
 return_unique_ref_period <- TRUE # if true, then only most authoratative series will be returned for each reference period, per dd_rank_id_vitals()
