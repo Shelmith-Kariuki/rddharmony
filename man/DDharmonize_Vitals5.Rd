@@ -12,8 +12,8 @@ DDharmonize_Vitals5(indata, type = c("births", "deaths"))
 \item{type}{births / deaths}
 }
 \value{
-A data frame that includes one series (abridged) that  contains data by five-year age groups up to the open age group
+A data frame that contains counts for five-year age groups and closed by an open age group
 }
 \description{
-This wrapper takes vital counts from census and registers from DemoData and Standardizes/harmonizes them.
+This wrapper takes five-year vital counts from census and registers from DemoData and standardizes/harmonizes them.
 }

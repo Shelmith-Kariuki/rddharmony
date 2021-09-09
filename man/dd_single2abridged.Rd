@@ -10,8 +10,11 @@ dd_single2abridged(data)
 \item{data}{dataset with age series by single years of age}
 }
 \value{
-dataset containing 5-year age groups generated from single years of age
+A dataset containing 5-year age groups generated from single years of age
 }
 \description{
-Creates 5-year age groups based on data by single years of age.
+Creates 5-year age groups based on single years of age data.
+}
+\examples{
+df <- dd_single2abridged(vitals_abr_cpl2)
 }

@@ -12,3 +12,6 @@ A dataset with standard age groups
 \description{
 Creates a data frame with all of the standard age groups we would expect for abridged and complete series (up to 130+ open age group)
 }
+\examples{
+std_ages <- std_age_function()
+}

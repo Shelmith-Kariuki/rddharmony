@@ -1,13 +1,16 @@
 #' DDharmonize_AbridgedAndComplete
 #'
-#' This wrapper takes output of harmonizations and reconciled abridged and complete series
+#' This wrapper takes the output of harmonization and reconciles abridged and complete series
 #'
 #' @param data_abr data containing abridged series age labels
 #' @param data_cpl_from_abr data containing complete series derived from abridged series
 #' @param data_cpl data containing complete series age labels
 #'
-#' @return
-#' @import tidyverse
+#' @import dplyr
+#' @importFrom magrittr %>%
+#'
+#' @return A dataset with reconciled abridged and complete series i.e. abridged reconciled with complete and complete reconciled with abridged
+#'
 #' @export
 
 DDharmonize_AbridgedAndComplete <- function (data_abr,data_cpl_from_abr, data_cpl) {

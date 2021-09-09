@@ -5,9 +5,16 @@
 #' @param data The dataset to be harmonized
 #' @param multiple5 Whether the series contains 5 year age labels or not
 #'
-#' @return A value that has to be a multiple of 5
-#' @import tidyverse
+#' @import dplyr
+#' @importFrom magrittr %>%
+#'
+#' @return A value that would close the series. It has to be a multiple of 5
+
 #' @export
+#'
+#' @examples
+#' df <- vitals5_df
+#' oag_start <- dd_oag_agestart(df, multiple5 = TRUE)
 
 dd_oag_agestart <- function(data, multiple5 = TRUE){
 

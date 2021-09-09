@@ -2,8 +2,7 @@
 % Please edit documentation in R/dd_latest_source_year.R
 \name{dd_latest_source_year}
 \alias{dd_latest_source_year}
-\title{dd_latest_source_year
-Select the latest data source year. For some periods of reference, there are multiple values in the \strong{DataSourceYear} variable. For these cases, the criteria is to choose the latest \strong{DataSourceYear}}
+\title{dd_latest_source_year}
 \usage{
 dd_latest_source_year(data)
 }
@@ -14,6 +13,9 @@ dd_latest_source_year(data)
 A dataset with a unique \strong{DataSourceYear}
 }
 \description{
-dd_latest_source_year
 Select the latest data source year. For some periods of reference, there are multiple values in the \strong{DataSourceYear} variable. For these cases, the criteria is to choose the latest \strong{DataSourceYear}
+}
+\examples{
+df <- vitals5_df
+df <- dd_latest_source_year(df)
 }

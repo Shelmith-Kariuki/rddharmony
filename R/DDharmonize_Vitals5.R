@@ -1,17 +1,17 @@
 #' DDharmonize_Vitals5
 #'
-#' This wrapper takes vital counts from census and registers from DemoData and Standardizes/harmonizes them.
+#' This wrapper takes five-year vital counts from census and registers from DemoData and standardizes/harmonizes them.
 #'
 #' @param indata The data to be harmonised
-#'
 #' @param type births / deaths
 #'
-#' @return  A data frame that includes one series (abridged) that  contains data by five-year age groups up to the open age group
+#' @import dplyr
+#' @importFrom magrittr %>%
 #'
-#' @import tidyverse
-#'
+#' @return  A data frame that contains counts for five-year age groups and closed by an open age group
+
 #' @export
-#'
+
 DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
 
   # Initialize sex specific outputs
@@ -22,7 +22,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
   for (sex in sexes) { # loop through sex ids, 1=males, 2=females, 3= both
 
     ##0. Print the SexID whose data we are dealing with
-    print(paste("SexID = ", sex))
+    # print(paste("SexID = ", sex))
 
     ##1. Filter the data to only be left with data for this specific SexID
     abr <- indata %>%
@@ -44,6 +44,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
 
       # for each unique series,
       abr_out <- NULL
+
       for (i in 1:n_series) {
 
         ##4. Filter the data for a specific SeriesID

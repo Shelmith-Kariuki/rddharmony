@@ -4,9 +4,13 @@
 #'
 #' @param indata The data to be harmonised
 #'
+#' @import dplyr
+#' @importFrom magrittr %>%
+#'
 #' @return A data frame that includes one series (complete) that contains data by single year of age up to the open age group
 #'
 #' @export
+#'
 DDharmonize_Vitals1 <- function (indata) {
 
   # Initialize sex specific outputs
@@ -18,7 +22,7 @@ DDharmonize_Vitals1 <- function (indata) {
   for (sex in sexes) { # loop through sex ids, 1=males, 2=females, 3= both
 
     ##0. Print the SexID whose data we are dealing with
-    print(paste("SexID = ", sex))
+    # print(paste("SexID = ", sex))
 
     ##1. Filter the data to only be left with data for this specific SexID
     df <- indata %>%

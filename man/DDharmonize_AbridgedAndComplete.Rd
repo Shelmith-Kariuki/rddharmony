@@ -14,8 +14,8 @@ DDharmonize_AbridgedAndComplete(data_abr, data_cpl_from_abr, data_cpl)
 \item{data_cpl}{data containing complete series age labels}
 }
 \value{
-
+A dataset with reconciled abridged and complete series i.e. abridged reconciled with complete and complete reconciled with abridged
 }
 \description{
-This wrapper takes output of harmonizations and reconciled abridged and complete series
+This wrapper takes the output of harmonization and reconciles abridged and complete series
 }

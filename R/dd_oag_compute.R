@@ -3,17 +3,20 @@
 #' Compute data values for the open age group needed to close the series
 #'
 #' @param data The data to be harmonized
+#' @param age_span The range of the age label e.g the age span of the age label 10-14 is 5
 #'
-#' @param age_span xxx
+#' @import dplyr
+#' @importFrom magrittr %>%
 #'
 #' @return A dataset with plausible closing age groups and their data values
 #'
-#' @import tidyverse
-#'
 #' @export
+#'
+#' @examples
+#' df <- vitals5_wags_rec
+#' df <- dd_oag_compute(vitals5_wags_rec)
 
 dd_oag_compute  <- function(data, age_span = c(1, 5)){
-  # require(tidyverse)
 
   # define standard abridged age groups
   std_ages <- std_age_function()
@@ -57,7 +60,7 @@ dd_oag_compute  <- function(data, age_span = c(1, 5)){
     # rest of the data?)
     if (total_check) {
       total_value <- data$DataValue[data$AgeLabel=="Total"]
-      total_value_valid <- total_value >= sum(df$DataValue[df$AgeSpan == age_span])
+      total_value_valid <- total_value >= suppressWarnings(sum(df$DataValue[df$AgeSpan == age_span]))
     } else { total_value_valid <- FALSE }
 
     # check if there is an unknown that exists in the data, if it exists, extract its value, if it does not, the value is 0

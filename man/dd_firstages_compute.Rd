@@ -2,8 +2,7 @@
 % Please edit documentation in R/dd_firstages_compute.R
 \name{dd_firstages_compute}
 \alias{dd_firstages_compute}
-\title{dd_firstages_compute
-Reconcile ages 0-1, 1-4 and 0-4}
+\title{dd_firstages_compute}
 \usage{
 dd_firstages_compute(data)
 }
@@ -14,6 +13,9 @@ dd_firstages_compute(data)
 A dataset with ages 0-1, 1-4 and 0-4 reconciled
 }
 \description{
-dd_firstages_compute
 Reconcile ages 0-1, 1-4 and 0-4
+}
+\examples{
+df <- vitals5_wags
+df <- dd_firstages_compute_births(df)
 }

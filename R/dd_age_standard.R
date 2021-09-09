@@ -7,12 +7,16 @@
 #'
 #' @return The DemoData dataset with standard age groups appended to it.
 #'
-#' @import tidyverse
+#' @import dplyr
+#' @importFrom magrittr %>%
 #'
 #' @export
+#'
+#' @examples
+#' df <- vitals5_wags_rec %>% select(-AgeSort)
+#' df <- dd_age_standard(df)
 
 dd_age_standard<- function(data, abridged = TRUE){
-  # require(tidyverse)
 
   # get stanadard age groups
   std_ages <- std_age_function()

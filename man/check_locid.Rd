@@ -10,11 +10,13 @@ check_locid(locid)
 \item{locid}{location id}
 }
 \value{
-The message: \code{locid} is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the \code{PK_LocID} variable
+The message: "\code{locid} is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the \code{PK_LocID} variable" in the case
+where the user has inserted an invalid location id, and in cases where the location id is valid, the following message is returned: "\code{locid} is a valid location id. The location name is \verb{location name}"
 }
 \description{
-Produces an error message if a location id is not part of the possible location ids in the UNDP database
+Throws an error message if a location id is not part of the location ids in the UNDP database, and a confirmation message showing the location name if the location id is valid.
 }
 \examples{
-check_locid(12345)
+check_locid(12345) ## invalid location id
+check_locid(404) ## valid location id
 }

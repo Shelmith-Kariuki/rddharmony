@@ -1,11 +1,20 @@
 #' dd_firstages_compute
+#'
 #' Reconcile ages 0-1, 1-4 and 0-4
 #'
 #' @param data The data to be harmonized
 #'
+#' @import dplyr
+#' @importFrom magrittr %>%
+#'
 #' @return A dataset with ages 0-1, 1-4 and 0-4 reconciled
-#' @import tidyverse
+#'
 #' @export
+#'
+#' @examples
+#' df <- vitals5_wags
+#' df <- dd_firstages_compute_births(df)
+
 dd_firstages_compute <- function(data){
 
   # require(tidyverse)

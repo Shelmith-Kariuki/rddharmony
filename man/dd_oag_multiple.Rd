@@ -7,11 +7,15 @@
 dd_oag_multiple(data)
 }
 \arguments{
-\item{data}{The data to be harmonised}
+\item{data}{The data to be harmonized}
 }
 \value{
 \code{TRUE/FALSE}
 }
 \description{
 Check whether the series has more than one open age group
+}
+\examples{
+dd_oag_multiple(vitals5_wags_rec)
+
 }

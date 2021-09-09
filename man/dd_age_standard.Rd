@@ -17,3 +17,7 @@ The DemoData dataset with standard age groups appended to it.
 \description{
 Add standard age groups in the dataset
 }
+\examples{
+df <- vitals5_wags_rec \%>\% select(-AgeSort)
+df <- dd_age_standard(df)
+}

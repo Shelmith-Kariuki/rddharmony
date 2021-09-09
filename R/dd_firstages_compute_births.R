@@ -2,18 +2,23 @@
 #'
 #' Reconcile early age groups for births
 #'
-#' @param data The data to be reconciled
+#' @param data The data to be harmonized
 #'
-#' @return A dataset with early age groups reconciled
+#' @import dplyr
+#' @importFrom magrittr %>%
 #' @importFrom purrr is_empty
-#' @import tidyverse
+#'
+#' @return A dataset with early age groups reconciled e.g 0-14 becomes 10-14
+#'
 #' @export
 #'
+#' @examples
+#' df <- vitals5_wags
+#' df <- dd_firstages_compute_births(vitals5_wags)
+
 dd_firstages_compute_births <- function(data){
 
-  # require(tidyverse)
-
-  df <- dd_age_standard(data, abridged = TRUE)
+df <- dd_age_standard(data, abridged = TRUE)
 
   # if 0-4 is missing and 0-1 and 1-4 are present, then sum to 0-4
   dv01 <- df$DataValue[df$AgeLabel == "0"]

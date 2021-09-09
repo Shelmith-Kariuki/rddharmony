@@ -9,11 +9,15 @@ dd_oag_compute(data, age_span = c(1, 5))
 \arguments{
 \item{data}{The data to be harmonized}
 
-\item{age_span}{xxx}
+\item{age_span}{The range of the age label e.g the age span of the age label 10-14 is 5}
 }
 \value{
 A dataset with plausible closing age groups and their data values
 }
 \description{
 Compute data values for the open age group needed to close the series
+}
+\examples{
+df <- vitals5_wags_rec
+df <- dd_oag_compute(vitals5_wags_rec)
 }

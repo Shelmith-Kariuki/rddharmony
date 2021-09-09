@@ -10,7 +10,7 @@ dd_oag2closed(data)
 \item{data}{The data to be harmonized}
 }
 \value{
-xxx
+A dataset with closed age groups derived from multiple open age groups.
 }
 \description{
 Compute associated closed age group values from multiple open-age groups

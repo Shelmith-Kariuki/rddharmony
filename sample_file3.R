@@ -29,7 +29,6 @@ DDharmonize_validate_BirthCounts <- function(locid,
 ## ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
 ## -------------------------------------------------------------------------------------------------------------------
 
-
 ## 1. Extract all vital counts for a given country over the period specified in times
 # locid <- 404
 times <- c(1950,2050)
@@ -51,7 +50,7 @@ dd_extract <- DDextract_VitalCounts(locid = locid,
                                     DataSourceYear = DataSourceYear)
 if (!is.null(dd_extract)) {
 
-   # get data process id
+  # get data process id
   dpi <- ifelse(process == "census", 2, 36)
 
   ## 2. Drop sub-national censuses (data process "vr" does not work with get_datacatalog?)
@@ -99,30 +98,29 @@ if (!is.null(dd_extract)) {
   vitals_std_all <- list()
 
   for (i in 1:length(ids)) {
+
     print(ids[i])
 
     ## 6. for each series:
-    vitals_raw <- dd_extract %>%
-      dplyr::filter(id == ids[i])
+    # vitals_raw <- dd_extract %>%
+    #   dplyr::filter(id == ids[i])
 
 ## 6. Testing the code with a use case where we have both complete and five-year age labels for the same:
   ## LocID: 752
   ## Loc: Sweden
   ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
-  # vitals_raw <- dd_extract %>%
-  #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
-    # vitals_raw <- dd_extract %>%
-    #      dplyr::filter(id == "404 - Kenya - VR - Births - 2011 - Register - Demographic Yearbook - Year of occurrence - Direct - Low")
+  vitals_raw <- dd_extract %>%
+    dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
 
 ## 7. Isolate records that refer to five-year age data
   # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.
   vitals5_raw <- vitals_raw %>%
     dplyr::filter(AgeSpan %in% c(-2, -1) | AgeSpan >=5)
 
-  #  hamonize the vital5 data into standard age groups
+  #  harmonize the vital5 data into standard age groups
   if (nrow(vitals5_raw[vitals5_raw$AgeSpan == 5,]) > 0) {
 
-    print("harmonizing vital counts by 5-year age group")
+    # print("harmonizing vital counts by 5-year age group")
     vitals5_std <- DDharmonize_Vitals5(indata = vitals5_raw, type = "births")
 
   } else { vitals5_std <- NULL }
@@ -133,7 +131,7 @@ if (!is.null(dd_extract)) {
 
 # harmonize the pop1 data into standard age groups
 if (nrow(vitals1_raw[vitals1_raw$AgeSpan == 1,]) > 0) {
-  print("harmonizing vital counts by 1-year age group")
+  # print("harmonizing vital counts by 1-year age group")
   vitals1_std <- DDharmonize_Vitals1(indata = vitals1_raw)
 
 } else { vitals1_std <- NULL }
@@ -216,8 +214,8 @@ if (nrow(vitals1_raw[vitals1_raw$AgeSpan == 1,]) > 0) {
    ## append both vitals_abr_cpl1 and vitals_abr_cpl2
     vitals_abr_cpl <- rbind(vitals_abr_cpl1, vitals_abr_cpl2)
     rm(vitals_abr_cpl1, vitals_abr_cpl2)
-    } ##end #11 i.e a case where we have both abridged and complete series
-    else { vitals_abr_cpl <- NULL }
+    } else ##end # i.e a case where we have both abridged and complete series
+    { vitals_abr_cpl <- NULL }
 
 
   ## 13. If we only have complete series and not abridged, ...
@@ -557,6 +555,10 @@ if (retainKeys == FALSE) {
            AgeLabel, AgeSpan, AgeSort, DataValue, note)
 }
 
+## Print a text message showing the locid and the locname of the data extracted
+cat("Location ID: ", unique(out_all$LocID),"\n",
+    "Location Name: ", unique(out_all$LocName))
+
 } else { # if no birth counts were extracted from DemoData
   print(paste0("There are no birth counts by age available for LocID = ",locid," and dataprocess = ", process," for the time period ", times[1], " to ", times[length(times)]))
   out_all <- NULL
@@ -567,7 +569,7 @@ if (retainKeys == FALSE) {
 my_data <- DDharmonize_validate_BirthCounts(locid,
                                              times,
                                              process = c("census", "vr"),
-                                             return_unique_ref_period = TRUE, # if true, then only most authoratative series will be returned for each reference period, per dd_rank_id_vitals()
+                                             return_unique_ref_period = TRUE, # if true, then only most authoritative series will be returned for each reference period, per dd_rank_id_vitals()
                                              DataSourceShortName = NULL,
                                              DataSourceYear = NULL,
                                              retainKeys = FALSE,

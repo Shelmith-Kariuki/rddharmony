@@ -6,12 +6,16 @@
 #' @param data The dataset to be harmonized
 #' @param abridged Whether the data is abridged or not. If the data contains 5-year age labels, `abridged == TRUE`
 #'
-#' @return `TRUE/FALSE`. TRUE if the series is full and FALSE otherwise
-#' @import DDSQLtools
-#' @import DemoTools
-#' @import tidyverse
 #' @import dplyr
+#' @importFrom magrittr %>%
+#'
+#' @return `TRUE/FALSE`. TRUE if the series is full and FALSE otherwise
+
 #' @export
+#'
+#' @examples
+#' df <- vitals5_df
+#' dd_series_isfull(df, abridged = TRUE)
 
 dd_series_isfull <- function(data, abridged = TRUE){
 

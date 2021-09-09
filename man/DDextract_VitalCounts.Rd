@@ -30,17 +30,17 @@ DDextract_VitalCounts(
 \item{DataSourceYear}{NULL.}
 }
 \value{
-A dataset showing counts for each location, type of data, process, year, sex and age label.
+A dataset showing counts for each location, type of data (births or deaths), process, year, sex and age label.
 }
 \description{
 Extracts births and/or deaths data for a given country and time period from the UNDP portal.
 }
 \examples{
-Sweden_df <- DDextract_VitalCounts(752,
+dd_extract <- DDextract_VitalCounts(404, #Kenya
                                    type = c("births"),
                                    process = c("census","vr"),
                                    1950,
-                                   2017,
+                                   2050,
                                    DataSourceShortName = NULL,
                                    DataSourceYear = NULL)
 }

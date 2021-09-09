@@ -4,13 +4,14 @@
 #'
 #' @param data The data to be harmonized
 #'
-#' @return xxx
-#' @import tidyverse
+#' @import dplyr
+#' @importFrom magrittr %>%
+#'
+#' @return A dataset with closed age groups derived from multiple open age groups.
+#'
 #' @export
 #'
 dd_oag2closed <- function(data){
-
-  # require(tidyverse)
   df_oag <- data %>%
     dplyr::filter(AgeSpan == -1 & AgeStart > 0) %>%
     arrange(AgeStart)

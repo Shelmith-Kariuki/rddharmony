@@ -12,8 +12,12 @@ dd_oag_agestart(data, multiple5 = TRUE)
 \item{multiple5}{Whether the series contains 5 year age labels or not}
 }
 \value{
-A value that has to be a multiple of 5
+A value that would close the series. It has to be a multiple of 5
 }
 \description{
 Identify the starting age needed for the open age group that closes the series. For abridged data, it must be a multiple of 5
+}
+\examples{
+df <- vitals5_df
+oag_start <- dd_oag_agestart(df, multiple5 = TRUE)
 }
