@@ -44,3 +44,22 @@
 # ## dd_rank_id_vitals
 # vitals_std_valid_sample2 <- vitals_std_valid
 # use_data(vitals_std_valid_sample2)
+#
+# # firstages_compute_births_df <- dd_firstages_compute_births_df
+# use_data(firstages_compute_births_df, overwrite = TRUE)
+#
+# firstages_compute_df <- dd_firstages_compute_df
+# use_data(firstages_compute_df, overwrite = TRUE)
+#
+# latest_source_year_df <- dd_latest_source_year_df
+# use_data(latest_source_year_df, overwrite = TRUE)
+#
+#
+# oag_compute_df <- dd_oag_compute_df
+# use_data(oag_compute_df, overwrite = TRUE)
+#
+# oag_multiple_df <- dd_oag_multiple_df
+# use_data(oag_multiple_df, overwrite = TRUE)
+#
+# series_isfull_df <- dd_series_isfull_df
+# use_data(series_isfull_df, overwrite = TRUE)

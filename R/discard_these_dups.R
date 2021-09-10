@@ -2,8 +2,7 @@
 #'
 #' @return xxx
 #' @export
-#'
-#' @examples
+
 discard_these_dups<- function(){
   ## temporary file to identify specific duplicate sources in DemoData for deletion
   ## we are not able to filter these out through the existing ranking criteria

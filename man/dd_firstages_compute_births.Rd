@@ -15,3 +15,7 @@ A dataset with early age groups reconciled e.g 0-14 becomes 10-14
 \description{
 Reconcile early age groups for births
 }
+\examples{
+df <- firstages_compute_births_df
+df <- dd_firstages_compute_births(df)
+}
