@@ -7,11 +7,15 @@
 dd_validate_totals_over_age(data)
 }
 \arguments{
-\item{data}{}
+\item{data}{The data to be harmonized}
 }
 \value{
-
+A dataset with reconciled \code{Totals} i.e. reported totals == computed totals
 }
 \description{
-Check if Totals are equal or different from previous values, after having standardized age series
+Reconcile \code{Totals}, in cases where reported values are different from calculated values, after having standardized age series
+}
+\examples{
+df <- vitals_std_full_sample
+df <- dd_validate_totals_over_age(df)
 }

@@ -10,11 +10,10 @@
 #' @importFrom magrittr %>%
 #'
 #' @return `TRUE/FALSE`. TRUE if the series is full and FALSE otherwise
-
 #' @export
 #'
 #' @examples
-#' df <- vitals5_df
+#' df <- series_isfull_df
 #' dd_series_isfull(df, abridged = TRUE)
 
 dd_series_isfull <- function(data, abridged = TRUE){

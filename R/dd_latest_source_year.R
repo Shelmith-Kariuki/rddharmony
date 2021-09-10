@@ -11,7 +11,7 @@
 #'
 #' @export
 #' @examples
-#' df <- vitals5_df
+#' df <- latest_source_year_df
 #' df <- dd_latest_source_year(df)
 
 dd_latest_source_year <- function(data){

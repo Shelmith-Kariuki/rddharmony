@@ -19,7 +19,7 @@
 check_locid <- function(locid){
 
   ## Create a list of plausible location ids
-  possible_ids <- get_locations() %>% distinct(PK_LocID, Name)
+  possible_ids <- DDSQLtools::get_locations() %>% distinct(PK_LocID, Name)
 
   if (!locid %in% possible_ids$PK_LocID) {
 

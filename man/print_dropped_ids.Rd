@@ -2,7 +2,7 @@
 % Please edit documentation in R/print_dropped_ids.R
 \name{print_dropped_ids}
 \alias{print_dropped_ids}
-\title{Title}
+\title{print_dropped_ids}
 \usage{
 print_dropped_ids(indata_before, indata_after)
 }
@@ -12,8 +12,8 @@ print_dropped_ids(indata_before, indata_after)
 \item{indata_after}{vitals_std_full}
 }
 \value{
-
+ids that have been dropped because they result in data that is not full
 }
 \description{
-Title
+Print ids that have been dropped, i.e those that are not full series
 }

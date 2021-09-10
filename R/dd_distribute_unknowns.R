@@ -1,19 +1,21 @@
-
 #' dd_distribute_unknowns
 #'
 #' Distribute Unknowns over age
 #'
-#' @param data
+#' @param data The data to be harmonised
 #'
-#' @return
+#' @import dplyr
+#' @importFrom magrittr %>%
 #'
-#' @import tidyverse
+#' @return A dataset without unknowns
 #'
 #' @export
 #'
+#' @examples
+#' df <- vitals_std_valid_sample
+#' df <- dd_distribute_unknowns(df)
+#'
 dd_distribute_unknowns <- function(data){
-
-  # require(tidyverse)
 
   out.data <- NULL
 

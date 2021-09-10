@@ -18,6 +18,6 @@ A dataset with zeros filled in for ages younger than 15 if there is no data repo
 Fill in zeros for mother ages younger than 15 if there is no data reported
 }
 \examples{
-df_abr <- dd_fillzeros_births(data = vitals_abr_cpl1 \%>\% select(-AgeSort), abridged = TRUE)
-df_cpl <- dd_fillzeros_births(data = vitals_abr_cpl2 \%>\% select(-AgeSort), abridged = FALSE)
+df_abr <- dd_fillzeros_births(data = vitals_abr_cpl1_f0, abridged = TRUE)
+df_cpl <- dd_fillzeros_births(data = vitals_abr_cpl2_f0, abridged = FALSE)
 }

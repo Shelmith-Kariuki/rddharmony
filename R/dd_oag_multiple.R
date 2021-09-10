@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' dd_oag_multiple(vitals5_wags_rec)
+#' dd_oag_multiple(oag_multiple_df)
 #'
 dd_oag_multiple <- function(data){
 

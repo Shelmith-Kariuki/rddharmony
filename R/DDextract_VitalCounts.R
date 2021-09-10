@@ -39,7 +39,7 @@ DDextract_VitalCounts <- function(locid,
 
   ## Extract the data from the UNDP portal and return NULL if the data does not exist
   tryCatch({
-    vital_counts <- get_recorddata(locIds = locid,
+    vital_counts <- DDSQLtools::get_recorddata(locIds = locid,
                                    dataProcessIds = dpi, # Census or register
                                    indicatorIds = indicator_ids,
                                    startYear = start_year,

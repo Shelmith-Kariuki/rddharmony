@@ -13,8 +13,8 @@
 #' @export
 #'
 #' @examples
-#' df <- vitals5_wags_rec
-#' df <- dd_oag_compute(vitals5_wags_rec)
+#' df <- oag_compute_df
+#' df <- dd_oag_compute(df)
 
 dd_oag_compute  <- function(data, age_span = c(1, 5)){
 

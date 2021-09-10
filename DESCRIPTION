@@ -16,8 +16,8 @@ BugReports: https://github.com/Shelmith-Kariuki/rddharmony/issues
 Imports: 
     DemoTools,
     DDSQLtools,
-    tidyverse,
     dplyr,
+    magrittr,
     purrr
 Suggests: 
     testthat

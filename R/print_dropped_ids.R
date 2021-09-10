@@ -1,12 +1,12 @@
-#' Title
+#' print_dropped_ids
 #'
+#' Print ids that have been dropped, i.e those that are not full series
+
 #' @param indata_before vitals_std_all
 #' @param indata_after vitals_std_full
 #'
-#' @return
+#' @return ids that have been dropped because they result in data that is not full
 #' @export
-#'
-#' @examples
 print_dropped_ids<- function(indata_before, indata_after){
 
   dropped_id_series <- unique(indata_before$id_series[!indata_before$id_series  %in%  indata_after$id_series])

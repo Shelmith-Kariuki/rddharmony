@@ -2,15 +2,19 @@
 #'
 #' Ranking id; For each country- year, we rank the available ids for counts of vital events
 #'
-#' @param indata
-#'
-#' @return
+#' @param indata The data to be harmonised
 #'
 #' @import dplyr
+#' @importFrom magrittr %>%
+#'
+#' @return A dataset with only one id per country and year
 #'
 #' @export
 #'
 #' @examples
+#' df <- vitals_std_valid_sample2
+#' df <- dd_rank_id_vitals(df)
+
 dd_rank_id_vitals <- function(indata){
 
   # Check id duplication for each country-year
@@ -61,7 +65,7 @@ dd_rank_id_vitals <- function(indata){
       ungroup() %>%
 
       # Finally discard a couple of duplicate series (if in sample) that have been hardcoded here bc they are not eliminated by above criteria
-      dplyr::filter(!(id %in% discard_these_dups)) %>%
+      dplyr::filter(!(id %in% discard_these_dups())) %>%
 
       select(-num.serie, -maxage, -has_dyb, -keep_dyb)
 

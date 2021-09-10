@@ -17,3 +17,7 @@ A data frame that contains counts for five-year age groups and closed by an open
 \description{
 This wrapper takes five-year vital counts from census and registers from DemoData and standardizes/harmonizes them.
 }
+\examples{
+df <- vitals5_df
+df <- DDharmonize_Vitals5(df, type = "births")
+}

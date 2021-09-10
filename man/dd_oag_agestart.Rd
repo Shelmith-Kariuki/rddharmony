@@ -18,6 +18,6 @@ A value that would close the series. It has to be a multiple of 5
 Identify the starting age needed for the open age group that closes the series. For abridged data, it must be a multiple of 5
 }
 \examples{
-df <- vitals5_df
+df <- series_isfull_df
 oag_start <- dd_oag_agestart(df, multiple5 = TRUE)
 }

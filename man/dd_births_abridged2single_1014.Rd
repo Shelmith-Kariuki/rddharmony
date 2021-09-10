@@ -17,3 +17,7 @@ A dataset with ages 10-14 distributed across single ages
 \description{
 Distribute births to ages 10-14 across single ages. Arbitrary distribution of births across ages 10-14 for now. Need to update with Kirill's regression
 }
+\examples{
+df <- abridged2single_1014_df
+df <- dd_births_abridged2single_1014(abridged2single_1014_df, 4)
+}

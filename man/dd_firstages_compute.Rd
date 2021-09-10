@@ -16,6 +16,6 @@ A dataset with ages 0-1, 1-4 and 0-4 reconciled
 Reconcile ages 0-1, 1-4 and 0-4
 }
 \examples{
-df <- vitals5_wags
+df <- firstages_compute_df
 df <- dd_firstages_compute_births(df)
 }

@@ -16,6 +16,6 @@ A dataset with a unique \strong{DataSourceYear}
 Select the latest data source year. For some periods of reference, there are multiple values in the \strong{DataSourceYear} variable. For these cases, the criteria is to choose the latest \strong{DataSourceYear}
 }
 \examples{
-df <- vitals5_df
+df <- latest_source_year_df
 df <- dd_latest_source_year(df)
 }

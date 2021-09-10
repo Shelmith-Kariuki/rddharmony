@@ -18,6 +18,6 @@ A dataset with plausible closing age groups and their data values
 Compute data values for the open age group needed to close the series
 }
 \examples{
-df <- vitals5_wags_rec
-df <- dd_oag_compute(vitals5_wags_rec)
+df <- oag_compute_df
+df <- dd_oag_compute(df)
 }

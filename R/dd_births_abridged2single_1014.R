@@ -11,7 +11,9 @@
 #' @return A dataset with ages 10-14 distributed across single ages
 #'
 #' @export
-
+#' @examples
+#' df <- abridged2single_1014_df
+#' df <- dd_births_abridged2single_1014(abridged2single_1014_df, 4)
 dd_births_abridged2single_1014 <- function(indata, births10_14) {
 
   df <- indata

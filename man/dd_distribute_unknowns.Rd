@@ -7,11 +7,16 @@
 dd_distribute_unknowns(data)
 }
 \arguments{
-\item{data}{}
+\item{data}{The data to be harmonised}
 }
 \value{
-
+A dataset without unknowns
 }
 \description{
 Distribute Unknowns over age
+}
+\examples{
+df <- vitals_std_valid_sample
+df <- dd_distribute_unknowns(df)
+
 }

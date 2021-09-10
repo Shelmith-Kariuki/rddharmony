@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples
-#' df <- vitals5_wags_rec %>% select(-AgeSort)
+#' df <- firstages_compute_births_df
 #' df <- dd_age_standard(df)
 
 dd_age_standard<- function(data, abridged = TRUE){

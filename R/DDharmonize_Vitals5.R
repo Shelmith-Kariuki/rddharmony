@@ -11,6 +11,10 @@
 #' @return  A data frame that contains counts for five-year age groups and closed by an open age group
 
 #' @export
+#'
+#' @examples
+#' df <- vitals5_df
+#' df <- DDharmonize_Vitals5(df, type = "births")
 
 DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
 
@@ -137,7 +141,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
 
       ## 14. Check that there are no missing age groups on the abridged series
       if (nrow(abr[abr$AgeStart >= 5,]) > 0) {
-        check_abr <- is_abridged(abr$AgeStart[abr$AgeStart >=5])
+        check_abr <- DemoTools::is_abridged(abr$AgeStart[abr$AgeStart >=5])
       } else {
         check_abr <- FALSE
       }

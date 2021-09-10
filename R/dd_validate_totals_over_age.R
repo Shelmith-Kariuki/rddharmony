@@ -1,15 +1,23 @@
 #' dd_validate_totals_over_age
 #'
-#' Check if Totals are equal or different from previous values, after having standardized age series
+#' Reconcile `Totals`, in cases where reported values are different from calculated values, after having standardized age series
 #'
-#' @param data
+#' @param data The data to be harmonized
 #'
-#' @return
+#' @import dplyr
+#' @importFrom magrittr %>%
+#'
+#' @return A dataset with reconciled `Totals` i.e. reported totals == computed totals
 #'
 #' @export
 #'
 #' @examples
+#' df <- vitals_std_full_sample
+#' df <- dd_validate_totals_over_age(df)
+
 dd_validate_totals_over_age <- function(data){
+
+  options(scipen = 999)
 
   out.data <- NULL
 
@@ -58,7 +66,6 @@ dd_validate_totals_over_age <- function(data){
         df_cpl$DataValue[df_cpl$AgeLabel == "Unknown"] <- df_cpl$DataValue[df_cpl$AgeLabel == "Unknown"] +
           (total_reported_cpl-total_computed_cpl)
       }
-
 
     }
 

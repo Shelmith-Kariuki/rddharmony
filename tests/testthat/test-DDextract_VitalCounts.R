@@ -1,6 +1,6 @@
 context("Testing that DDextract_VitalCounts() returns the correct class and structure of output")
 
-possible_ids <- get_locations() %>% distinct(PK_LocID) %>% pull()
+possible_ids <- DDSQLtools::get_locations() %>% distinct(PK_LocID) %>% pull()
 times <- c(1950,2050)
 process = c("census", "vr")
 return_unique_ref_period <- TRUE # if true, then only most authoritative series will be returned for each reference period, per dd_rank_id_vitals()

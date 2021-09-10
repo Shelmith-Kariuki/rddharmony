@@ -16,6 +16,6 @@ dd_oag_multiple(data)
 Check whether the series has more than one open age group
 }
 \examples{
-dd_oag_multiple(vitals5_wags_rec)
+dd_oag_multiple(oag_multiple_df)
 
 }

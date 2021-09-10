@@ -13,7 +13,7 @@
 #' @export
 #'
 #' @examples
-#' df <- vitals5_df
+#' df <- series_isfull_df
 #' oag_start <- dd_oag_agestart(df, multiple5 = TRUE)
 
 dd_oag_agestart <- function(data, multiple5 = TRUE){

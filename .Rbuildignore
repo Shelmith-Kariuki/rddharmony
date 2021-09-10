@@ -4,4 +4,6 @@
 ^LICENSE\.md$
 ^README.Rmd
 ^sample_file
-
+test_catalogue.R
+example_dfs.R
+example_dfs2.R

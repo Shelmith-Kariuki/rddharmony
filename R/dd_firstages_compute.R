@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' df <- vitals5_wags
+#' df <- firstages_compute_df
 #' df <- dd_firstages_compute_births(df)
 
 dd_firstages_compute <- function(data){

@@ -7,11 +7,15 @@
 dd_rank_id_vitals(indata)
 }
 \arguments{
-\item{indata}{}
+\item{indata}{The data to be harmonised}
 }
 \value{
-
+A dataset with only one id per country and year
 }
 \description{
 Ranking id; For each country- year, we rank the available ids for counts of vital events
+}
+\examples{
+df <- vitals_std_valid_sample2
+df <- dd_rank_id_vitals(df)
 }
