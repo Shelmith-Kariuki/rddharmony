@@ -1,8 +1,8 @@
 #' DDharmonize_validate_BirthCounts
 #'
-#' THIS SCRIPT IMPLEMENTS A WORKFLOW FOR Births COUNTS from vr or census EXTRACTING FROM DEMODATA, HARMONIZING AGE GROUPS, IDENTIFYING FULL SERIES, SELECTING PREFERRED SERIES, VALIDATING TOTALS AND BY SEX AND, EVENTUALLY, use retainKeys = TRUE to include these key fields in the function output.
+#' This script implements a workflow for births counts from vr or census extracting data from Demodata, harmonizing age groups, identifying full series, selecting preferred series, validating totals by age and by sex and, eventually, using `retainkeys = TRUE` to include these key fields in the function output.
 #'
-#' @param locid Location id
+#' @param locid location id
 #' @param times 1950, 2050
 #' @param process census or vr
 #' @param return_unique_ref_period TRUE

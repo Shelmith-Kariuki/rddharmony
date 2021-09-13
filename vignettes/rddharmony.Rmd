@@ -1,0 +1,21 @@
+---
+title: "rddharmony"
+output: rmarkdown::html_vignette
+description: >
+  This package contains functions that implement a workflow for births, deaths and population data extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location and each data type (births, deaths or population counts).
+vignette: >
+  %\VignetteIndexEntry{rddharmony}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rddharmony)
+```

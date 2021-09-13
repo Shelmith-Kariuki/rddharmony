@@ -3,8 +3,7 @@ Title: Package
 Version: 0.0.1
 Date: 2021-08-20
 Authors@R: 
-    c(person(given = "Shelmith",family = "Kariuki",role = c("aut", "cre"),email = "kariukishelmith@gmail.com", comment = c(ORCID = "xxx")),
-      person(given = "First",family = "Last",role = c("aut"),email = "first.last@example.com", comment = c(ORCID = "YOUR-ORCID-ID")))
+    person(given = "Shelmith",family = "Kariuki",role = c("aut", "cre"),email = "kariukishelmith@gmail.com", comment = c(ORCID = "xxx"))
 Description: This package contains functions that implement a workflow for births, deaths and population data extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location and each data type (births, deaths or population).
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -20,6 +19,9 @@ Imports:
     magrittr,
     purrr
 Suggests: 
+    rmarkdown,
+    knitr,
     testthat
 Depends: 
     R (>= 2.10)
+VignetteBuilder: knitr

@@ -7,3 +7,6 @@
 test_catalogue.R
 example_dfs.R
 example_dfs2.R
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
