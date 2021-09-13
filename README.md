@@ -34,3 +34,9 @@ This is a basic example which shows you how to solve a common problem:
 library(rddharmony)
 ## To insert example later
 ```
+
+<!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/Shelmith-Kariuki/rddharmony/branch/master/graph/badge.svg)](https://codecov.io/gh/Shelmith-Kariuki/rddharmony?branch=master)
+<!-- badges: end -->

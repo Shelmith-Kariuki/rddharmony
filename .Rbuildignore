@@ -11,3 +11,4 @@ discard_these_dups.R
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^codecov\.yml$

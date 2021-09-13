@@ -22,11 +22,12 @@ Imports:
 Suggests: 
     rmarkdown,
     knitr,
-    testthat
+    testthat,
+    covr
 Depends: 
     R (>= 3.3)
 VignetteBuilder: knitr
 Remotes: 
-    github::timriffe/DemoTools
+    github::timriffe/DemoTools,
     github::timriffe/DDSQLtools
 Language: en-US
