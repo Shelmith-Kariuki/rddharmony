@@ -7,6 +7,7 @@
 test_catalogue.R
 example_dfs.R
 example_dfs2.R
+discard_these_dups.R
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$

@@ -17,11 +17,16 @@ Imports:
     DDSQLtools,
     dplyr,
     magrittr,
-    purrr
+    purrr,
+    assertthat
 Suggests: 
     rmarkdown,
     knitr,
     testthat
 Depends: 
-    R (>= 2.10)
+    R (>= 3.3)
 VignetteBuilder: knitr
+Remotes: 
+    github::timriffe/DemoTools
+    github::timriffe/DDSQLtools
+Language: en-US

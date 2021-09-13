@@ -1,6 +1,8 @@
 #' DDharmonize_validate_BirthCounts
 #'
-#' This script implements a workflow for births counts from vr or census extracting data from Demodata, harmonizing age groups, identifying full series, selecting preferred series, validating totals by age and by sex and, eventually, using `retainkeys = TRUE` to include these key fields in the function output.
+#' This script implements a workflow for births counts from vr or census extracting data from Demodata, harmonizing age groups,
+#' identifying full series, selecting preferred series, validating totals by age and by sex and, eventually,
+#' including key fields in the function output.
 #'
 #' @param locid location id
 #' @param times 1950, 2050
@@ -12,6 +14,7 @@
 #' @param server "https://popdiv.dfs.un.org/DemoData/api/"
 #'
 #' @import dplyr
+#' @import assertthat
 #' @import DDSQLtools
 #' @import DemoTools
 #' @importFrom magrittr %>%
@@ -25,7 +28,7 @@
 #' sweden_df <- DDharmonize_validate_BirthCounts(752,
 #'                                               c(1950,2020),
 #'                                               process = c("census", "vr"),
-#'                                               return_unique_ref_period = TRUE, # if true, then only most authoratative series will be returned for each reference period, per dd_rank_id_vitals()
+#'                                               return_unique_ref_period = TRUE,
 #'                                               DataSourceShortName = NULL,
 #'                                               DataSourceYear = NULL,
 #'                                               retainKeys = FALSE,
@@ -507,7 +510,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
     ## At this point, the difference between vitals_std_full and vitals_std_valid should be qual to
     ## length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"])
 
-    assertthat::are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
+    are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
                           length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"]))
 
     ## When there is more than one id for a given census year, select the most authoritative

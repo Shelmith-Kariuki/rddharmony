@@ -11,5 +11,11 @@ utils::globalVariables(c("AgeSpan", "AgeStart",#dd_oag_agestart
                          "TimeLabel", "num.id", "StatisticalConceptSort", "DataStatusSort",
                          "DataProcessSort", "DataProcessTypeSort", "DataReliabilitySort",
                          "num.serie", "maxage", "DataSourceName", "has_dyb", "keep_dyb","DataProcessType", #dd_rank_id_vitals
-                         "id_series" #print_dropped_ids
+                         "id_series", #print_dropped_ids
+                         "dups", #dd_rank_id_vitals
+                         "DataProcessID", "DataCatalogID", "LocID", "PK_DataSourceID",
+                         "DataSourceTypeName", "DataSourceStatusName", "DataTypeName",
+                         "LocName", "DataProcess", "StatisticalConceptName", "DataReliabilityName",
+                         "series", "id_sex", "IndicatorName", "five_year", "SexName", "TimeMid",
+                         "TimeEnd", "non_standard" #DDharmonize_validate_BirthCounts
                          ))
