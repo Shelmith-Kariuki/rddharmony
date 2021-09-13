@@ -12,6 +12,10 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!-- badges: start -->
+  [![Codecov test coverage](https://codecov.io/gh/Shelmith-Kariuki/rddharmony/branch/master/graph/badge.svg)](https://codecov.io/gh/Shelmith-Kariuki/rddharmony?branch=master)
+<!-- badges: end -->
+
 # rddharmony
 
 The goal of rddharmony is to implement a workflow for births, deaths and population data extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location and each data type (births, deaths or population).
@@ -41,6 +45,4 @@ library(rddharmony)
 ## To insert example later
 ```
 
-<!-- badges: start -->
-  [![Codecov test coverage](https://codecov.io/gh/Shelmith-Kariuki/rddharmony/branch/master/graph/badge.svg)](https://codecov.io/gh/Shelmith-Kariuki/rddharmony?branch=master)
-<!-- badges: end -->
+
