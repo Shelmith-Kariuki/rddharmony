@@ -38,12 +38,10 @@ devtools::install_github("Shelmith-Kariuki/rddharmony")
 ```
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
 ```{r example}
 library(rddharmony)
 kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
-                                              c(1950,2020),
+                                              c(1950,2022),
                                               process = c("census", "vr"),
                                               return_unique_ref_period = TRUE, 
                                               DataSourceShortName = NULL,
@@ -54,4 +52,17 @@ kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
 dim(kenya_df)
 ```
 
+A simple case where the user inserts an invalid location id
 
+```{r}
+df <- DDharmonize_validate_BirthCounts(locid = 12345678,
+                                              c(1950,2022),
+                                              process = c("census", "vr"),
+                                              return_unique_ref_period = TRUE, 
+                                              DataSourceShortName = NULL,
+                                              DataSourceYear = NULL,
+                                              retainKeys = FALSE,
+                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
+
+dim(df)
+```
