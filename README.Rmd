@@ -42,7 +42,16 @@ This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
 library(rddharmony)
-## To insert example later
+kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
+                                              c(1950,2020),
+                                              process = c("census", "vr"),
+                                              return_unique_ref_period = TRUE, 
+                                              DataSourceShortName = NULL,
+                                              DataSourceYear = NULL,
+                                              retainKeys = FALSE,
+                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
+
+dim(kenya_df)
 ```
 
 

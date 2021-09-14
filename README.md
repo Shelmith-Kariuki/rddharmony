@@ -38,5 +38,30 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(rddharmony)
-## To insert example later
+kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
+                                              c(1950,2020),
+                                              process = c("census", "vr"),
+                                              return_unique_ref_period = TRUE, 
+                                              DataSourceShortName = NULL,
+                                              DataSourceYear = NULL,
+                                              retainKeys = FALSE,
+                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
+#> 
+#>  https://popdiv.dfs.un.org/DemoData/api/structureddatarecords?dataProcessIds=2,36&startYear=1950&endYear=2020&indicatorIds=159,170&locIds=404&locAreaTypeIds=2&subGroupIds=2 
+#> 
+#>  https://popdiv.dfs.un.org/DemoData/api/datacatalogs?dataProcessTypeIds=2&locIds=404&addDefault=false 
+#> 
+#>  https://popdiv.dfs.un.org/DemoData/api/locations?addDefault=false&includeDependencies=false&includeFormerCountries=false 
+#> 
+#>  https://popdiv.dfs.un.org/DemoData/api/dataprocesses?addDefault=false 
+#> 
+#>  https://popdiv.dfs.un.org/DemoData/api/dataprocesstypes?addDefault=false 
+#> 
+#>  https://popdiv.dfs.un.org/DemoData/api/datasources?dataProcessTypeIds=2,36&locIds=404&addDefault=false 
+#> 
+#>  Location ID:  404 
+#>  Location Name:  Kenya
+
+dim(kenya_df)
+#> [1] 189  23
 ```

@@ -12,3 +12,4 @@ discard_these_dups.R
 ^docs$
 ^pkgdown$
 ^codecov\.yml$
+artifacts
