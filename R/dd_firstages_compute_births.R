@@ -41,7 +41,7 @@ df <- dd_age_standard(data, abridged = TRUE)
   }
 
   if (!is_empty(dv0_14)) {
-    if(is.na(dv10_14 & !is.na(dv0_14))) {
+    if(is.na(dv10_14) & !is.na(dv0_14)) {
       df$DataValue[df$AgeLabel == "10-14"] <- dv0_14
     }
   }

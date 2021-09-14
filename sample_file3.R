@@ -98,8 +98,8 @@ if (!is.null(dd_extract)) {
   ## LocID: 752
   ## Loc: Sweden
   ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
-  # vitals_raw <- dd_extract %>%
-  #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
+  vitals_raw <- dd_extract %>%
+    dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
 
 ## 7. Isolate records that refer to five-year age data
   # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.
@@ -566,7 +566,7 @@ if (retainKeys == FALSE) {
 }
 
 ## Test the function with one location id
-locid <- 404
+locid <- 752
 times <- c(1950,2050)
 process = c("census", "vr")
 return_unique_ref_period = TRUE

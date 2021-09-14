@@ -17,5 +17,4 @@ Check whether the series has more than one open age group
 }
 \examples{
 dd_oag_multiple(oag_multiple_df)
-
 }
