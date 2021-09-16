@@ -13,3 +13,4 @@ discard_these_dups.R
 ^pkgdown$
 ^codecov\.yml$
 artifacts
+^\.github$
