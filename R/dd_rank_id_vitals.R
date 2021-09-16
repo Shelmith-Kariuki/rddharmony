@@ -65,6 +65,7 @@ dd_rank_id_vitals <- function(indata){
       ungroup() %>%
 
       # Finally discard a couple of duplicate series (if in sample) that have been hardcoded here bc they are not eliminated by above criteria
+      # Shel stored them in a dataset called dups which is part of the package, since devtools::check() was throwing a warning.
       dplyr::filter(!(id %in% dups$dups)) %>%
 
       select(-num.serie, -maxage, -has_dyb, -keep_dyb)
