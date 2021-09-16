@@ -22,11 +22,16 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-
           - {os: windows-latest, r: 'release'}
-          # Use 3.6 to trigger usage of RTools35
-          - {os: windows-latest, r: '3.6'}
+          - {os: macOS-latest, r: 'release'}
+          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+
+        # config:
+        #   - {os: macOS-latest,   r: 'release'}
+        #
+        #   - {os: windows-latest, r: 'release'}
+        #   # Use 3.6 to trigger usage of RTools35
+        #   - {os: windows-latest, r: '3.6'}
 
           # Use older ubuntu to maximise backward compatibility
           # - {os: ubuntu-18.04,   r: 'devel', http-user-agent: 'release'}
@@ -36,19 +41,19 @@ jobs:
           # - {os: ubuntu-18.04,   r: 'oldrel-3'}
           # - {os: ubuntu-18.04,   r: 'oldrel-4'}
           # https://github.com/greta-dev/greta/blob/09d5f5ee48b76384743d64fc2f9949cb79c79028/.github/workflows/R-CMD-check.yaml
-          - {os: ubuntu-20.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest", http-user-agent: "R/4.0.0 (ubuntu-20.04) R (4.0.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
-          - {os: ubuntu-20.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   r: '3.5', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   r: '3.4', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   r: '3.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-
-          - {os: ubuntu-18.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest", http-user-agent: "R/4.0.0 (ubuntu-18.04) R (4.0.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
-          - {os: ubuntu-18.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-18.04,   r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-18.04,   r: '3.5', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-18.04,   r: '3.4', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-18.04,   r: '3.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-20.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest", http-user-agent: "R/4.0.0 (ubuntu-20.04) R (4.0.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
+          # - {os: ubuntu-20.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-20.04,   r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-20.04,   r: '3.5', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-20.04,   r: '3.4', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-20.04,   r: '3.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          #
+          # - {os: ubuntu-18.04,   r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest", http-user-agent: "R/4.0.0 (ubuntu-18.04) R (4.0.0 x86_64-pc-linux-gnu x86_64 linux-gnu) on GitHub Actions" }
+          # - {os: ubuntu-18.04,   r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-18.04,   r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-18.04,   r: '3.5', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-18.04,   r: '3.4', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-18.04,   r: '3.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
