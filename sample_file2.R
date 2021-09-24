@@ -11,10 +11,12 @@ require(googlesheets4)
 require(devtools)
 require(usethis)
 
-df <- read_sheet("https://docs.google.com/spreadsheets/d/1eeKAp6KtcEjd7d_q6IANsM1XoL_K8_VtuO5Sc8ul3fA/edit#gid=1034748505",
-                 sheet = "Sweden")
-locid <- df %>% filter(!is.na(LocID)) %>% distinct(LocID) %>% pull()
-times <- df %>% filter(!is.na(TimeMid)) %>% mutate(TimeLabel = TimeMid - 0.5) %>%  distinct(TimeLabel) %>% pull()
+# df <- read_sheet("https://docs.google.com/spreadsheets/d/1eeKAp6KtcEjd7d_q6IANsM1XoL_K8_VtuO5Sc8ul3fA/edit#gid=1034748505",
+#                  sheet = "Sweden")
+# locid <- df %>% filter(!is.na(LocID)) %>% distinct(LocID) %>% pull()
+# times <- df %>% filter(!is.na(TimeMid)) %>% mutate(TimeLabel = TimeMid - 0.5) %>%  distinct(TimeLabel) %>% pull()
+locid <- 404
+times <- c(1950, 2020)
 process = c("census", "vr")
 return_unique_ref_period <- TRUE
 DataSourceShortName = NULL
@@ -109,8 +111,8 @@ dd_extract <- DDextract_VitalCounts(locid = locid,
   ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
   # vitals_raw <- dd_extract %>%
   #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
-    # vitals_raw <- dd_extract %>%
-    #      dplyr::filter(id == "404 - Kenya - VR - Births - 2011 - Register - Demographic Yearbook - Year of occurrence - Direct - Low")
+    vitals_raw <- dd_extract %>%
+         dplyr::filter(TimeMid == 2000.5)
 
 ## 7. Isolate records that refer to five-year age data
   # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.

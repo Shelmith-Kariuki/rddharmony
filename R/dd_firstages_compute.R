@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' df <- firstages_compute_df
-#' df <- dd_firstages_compute_births(df)
+#' df <- dd_firstages_compute(df)
 
 dd_firstages_compute <- function(data){
 

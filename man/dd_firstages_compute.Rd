@@ -17,5 +17,5 @@ Reconcile ages 0-1, 1-4 and 0-4
 }
 \examples{
 df <- firstages_compute_df
-df <- dd_firstages_compute_births(df)
+df <- dd_firstages_compute(df)
 }

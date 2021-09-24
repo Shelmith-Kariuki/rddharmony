@@ -54,6 +54,12 @@ DDharmonize_validate_BirthCounts <- function(locid,
                                       end_year = times[length(times)],
                                       DataSourceShortName = DataSourceShortName,
                                       DataSourceYear = DataSourceYear)
+  ## Shel added this so that it can be easy to compare the raw data with the clean and harmonized data.
+  dd_extract <- dd_extract %>%
+                  relocate(DataValue, .after = "agesort")
+
+  assign("raw_df", dd_extract, .GlobalEnv)
+
   if (!is.null(dd_extract)) {
 
     # get data process id
@@ -98,8 +104,12 @@ DDharmonize_validate_BirthCounts <- function(locid,
     ## 5. for births by age of mother, use only both sexes combined ** why?
     dd_extract <- dd_extract %>% dplyr::filter(SexID ==3)
 
+    ## Shel added this to separate indicator 159 with 170
+    dd_extract_159 <- dd_extract %>% filter(IndicatorID == 159)
+    dd_extract_170 <- dd_extract %>% filter(IndicatorID == 170)
+
     # list of series uniquely identified
-    ids <- unique(dd_extract$id)
+    ids <- unique(dd_extract_170$id)
 
     vitals_std_all <- list()
 
@@ -108,15 +118,15 @@ DDharmonize_validate_BirthCounts <- function(locid,
       # print(ids[i])
 
       ## 6. for each series:
-      vitals_raw <- dd_extract %>%
+      vitals_raw <- dd_extract_170 %>%
         dplyr::filter(id == ids[i])
 
       ## 6. Testing the code with a use case where we have both complete and five-year age labels for the same:
       ## LocID: 752
       ## Loc: Sweden
       ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
-      # vitals_raw <- dd_extract %>%
-      #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
+      # vitals_raw <- dd_extract_170 %>%
+      #   filter(TimeMid == 2000.5 & IndicatorID == 170)
 
       ## 7. Isolate records that refer to five-year age data
       # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.
@@ -511,7 +521,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
     ## length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"])
 
     are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
-                          length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"]))
+              length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"]))
 
     ## When there is more than one id for a given census year, select the most authoritative
 
@@ -538,10 +548,10 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     } else { out_all <- NULL }
 
-    ## Look for years that are in raw data, but not in output. If there are series with non-standard age groups, then add these to output as well
 
+    ## Look for years that are in raw data, but not in output. If there are series with non-standard age groups, then add these to output as well
     first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
-    skipped <- dd_extract %>%
+    skipped <- dd_extract_170 %>%
       dplyr::filter(!(TimeLabel %in% out_all$TimeLabel)) %>%
       select(all_of(first_columns), all_of(keep_columns)) %>%
       mutate(five_year = FALSE,
@@ -565,9 +575,54 @@ DDharmonize_validate_BirthCounts <- function(locid,
              SexName = replace(SexName, SexID == 2, "Female"),
              SexName = replace(SexName, SexID == 3, "Both sexes"))
 
+    ## Shel added this after noticing that alot of indicator 159 data was being dropped
+    out_all <- out_all %>%
+      mutate(IndicatorID = 170,
+             IndicatorName = "Births by age of mother (and sex of child)") %>%
+      select(IndicatorName, IndicatorID, everything())
+
+    ## Process indicator 159 data (make sure we have the latest datasource year per id)
+    dd_extract_159_processed <- dd_extract_159 %>%
+      dplyr::group_by(id) %>%
+      slice(which.max(DataSourceYear)) %>%
+      ungroup()
+
+    ## Also make sure we have one record per id
+    dd_extract_159_processed <- dd_extract_159_processed %>%
+                                  mutate(abridged = FALSE) %>%
+                                 dd_rank_id_vitals()
+
+    ## Shel added this.
+    ## Merge back the indicator 159 data and drop it if the total value does not match that of indicator 170
+
+    out_all <- out_all %>%
+      bind_rows(dd_extract_159_processed %>% select(any_of(names(out_all)))) %>%
+      group_by(id, SexName) %>%
+      mutate(total_159 = ifelse(any(IndicatorID == 159 & AgeLabel == "Total"),
+                                DataValue[IndicatorID == 159 & AgeLabel == "Total"],0 ),
+             total_170 = ifelse(any(IndicatorID == 170 & AgeLabel == "Total"),
+                                DataValue[IndicatorID == 170 & AgeLabel == "Total"],0 ),
+             diff = abs(total_170 - total_159)) %>%
+      mutate(todrop = ifelse(IndicatorID == 159 & diff != 0, "drop", "")) %>%
+      filter(todrop != "drop") %>%
+      select(-total_159, -total_170, -diff, -todrop) %>%
+      ungroup()
+
+
+    ## Shel added this
+    ## Drop indicator159 if Indicator170 does not exist for the same id
+
+    out_all <- out_all %>%
+      group_by(id, SexName) %>%
+      mutate(todrop = ifelse(IndicatorID == 159 & !any(IndicatorID == 170), "drop", "")) %>%
+      filter(todrop != "drop") %>%
+      select(-todrop, -SexName) %>%
+      arrange(id)
+
+
     if (retainKeys == FALSE) {
       out_all <- out_all %>%
-        select(id, LocID, LocName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
+        select(id, LocID, LocName,IndicatorName, IndicatorID,  TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
                DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
                AgeLabel, AgeSpan, AgeSort, DataValue, note)
     }

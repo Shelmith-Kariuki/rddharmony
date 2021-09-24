@@ -71,6 +71,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
       rm(abr_out)
 
       ##6. Keep the latest datasource year
+      ## Should this be per series? because we are ending up dropping 159 at this point
 
       # if there is more than one series ...
       if (n_series > 1) {
@@ -86,6 +87,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
       }
 
       ##7. Tidy up the data frame
+
       abr <- abr %>%
         select(DataSourceYear, AgeStart, AgeEnd, AgeLabel, AgeSpan, DataValue) %>%
         distinct()

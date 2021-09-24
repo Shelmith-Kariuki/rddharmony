@@ -13,7 +13,8 @@ dd_validate_totals_over_age(data)
 A dataset with reconciled \code{Totals} i.e. reported totals == computed totals
 }
 \description{
-Reconcile \code{Totals}, in cases where reported values are different from calculated values, after having standardized age series
+Reconcile \code{Totals}, in cases where reported values are different from calculated values, after having standardized age series.
+If the computed total is greater than reported total, then replace reported with computed. If computed is less than reported, then add difference to "Unknown" age
 }
 \examples{
 df <- vitals_std_full_sample
