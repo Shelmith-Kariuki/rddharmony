@@ -108,6 +108,9 @@ DDharmonize_validate_BirthCounts <- function(locid,
     dd_extract_159 <- dd_extract %>% filter(IndicatorID == 159)
     dd_extract_170 <- dd_extract %>% filter(IndicatorID == 170)
 
+
+    if(nrow(dd_extract_170) > 0){
+
     # list of series uniquely identified
     ids <- unique(dd_extract_170$id)
 
@@ -605,8 +608,9 @@ DDharmonize_validate_BirthCounts <- function(locid,
              diff = abs(total_170 - total_159)) %>%
       mutate(todrop = ifelse(IndicatorID == 159 & diff != 0, "drop", "")) %>%
       filter(todrop != "drop") %>%
-      select(-total_159, -total_170, -diff, -todrop) %>%
-      ungroup()
+      ungroup() %>%
+      select(-total_159, -total_170, -diff, -todrop)
+
 
 
     ## Shel added this
@@ -616,6 +620,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
       group_by(id, SexName) %>%
       mutate(todrop = ifelse(IndicatorID == 159 & !any(IndicatorID == 170), "drop", "")) %>%
       filter(todrop != "drop") %>%
+      ungroup() %>%
       select(-todrop, -SexName) %>%
       arrange(id)
 
@@ -631,8 +636,13 @@ DDharmonize_validate_BirthCounts <- function(locid,
     cat("\n","Location ID: ", unique(out_all$LocID),"\n",
         "Location Name: ", unique(out_all$LocName))
 
+    }else{
+      print(paste0("Births by age of mother (and sex of child) data does not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+      out_all <- NULL
+    }
+
   } else { # if no birth counts were extracted from DemoData
-    print(paste0("There are no birth counts by age available for LocID = ",locid," and dataprocess = ", process," for the time period ", times[1], " to ", times[length(times)]))
+    print(paste0("There are no birth counts by age available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
     out_all <- NULL
   }
 
