@@ -54,13 +54,14 @@ DDharmonize_validate_BirthCounts <- function(locid,
                                       end_year = times[length(times)],
                                       DataSourceShortName = DataSourceShortName,
                                       DataSourceYear = DataSourceYear)
-  ## Shel added this so that it can be easy to compare the raw data with the clean and harmonized data.
-  dd_extract <- dd_extract %>%
-                  relocate(DataValue, .after = "agesort")
-
-  assign("raw_df", dd_extract, .GlobalEnv)
 
   if (!is.null(dd_extract)) {
+
+    ## Shel added this so that it can be easy to compare the raw data with the clean and harmonized data.
+    dd_extract <- dd_extract %>%
+      relocate(DataValue, .after = "agesort")
+
+    assign("raw_df", dd_extract, .GlobalEnv)
 
     # get data process id
     dpi <- ifelse(process == "census", 2, 36)
@@ -81,7 +82,10 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     ## 3. Get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
 
-    if (!("DataSourceTypeName" %in% names(dd_extract))) {
+    ## Added by Shel because locid == 832 exists in get_locations() but not in get_datasources().
+    ## To confirm with Sara
+    possible_ids <- get_datasources()$LocID
+    if (!("DataSourceTypeName" %in% names(dd_extract)) & locid %in% possible_ids) {
 
       DataSources <- get_datasources(locIds = locid, dataProcessTypeIds = dpi, addDefault = "false") %>%
         dplyr::select(LocID, PK_DataSourceID, DataSourceTypeName, DataSourceStatusName) %>%
