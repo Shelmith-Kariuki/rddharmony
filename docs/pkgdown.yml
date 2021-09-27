@@ -2,6 +2,8 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  rddharmony: rddharmony.html
-last_built: 2021-09-27T22:03Z
+  DDextract_PopCounts: DDextract_PopCounts.html
+  DDharmonize_validate_BirthCounts: DDharmonize_validate_BirthCounts.html
+  DDharmonize_validate_DeathCounts: DDharmonize_validate_DeathCounts.html
+last_built: 2021-09-27T23:06Z
 

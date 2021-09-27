@@ -1,0 +1,21 @@
+---
+title: "DDharmonize_validate_DeathCounts"
+output: rmarkdown::html_vignette
+description: >
+  This package contains functions that implement a workflow for death records extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location. 
+vignette: >
+  %\VignetteIndexEntry{DDharmonize_validate_DeathCounts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rddharmony)
+```

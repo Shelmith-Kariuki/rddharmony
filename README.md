@@ -29,8 +29,8 @@ rddharmony contains three major functions:
   - `DDharmonize_validate_DeathCounts()`: Extracts, processes and
     produces clean death counts data
 
-  - `DDharmonize_validate_DeathCounts`: Extracts, processes and produces
-    clean population counts data
+  - `DDextract_PopCounts()`: Extracts, processes and produces clean
+    population counts data
 
 ## Installation
 
@@ -50,16 +50,15 @@ And the development version from [GitHub](https://github.com/) with:
 devtools::install_github("Shelmith-Kariuki/rddharmony")
 ```
 
-## Usage
+## Example
 
-### `DDharmonize_validate_BirthCounts()`
+`DDharmonize_validate_BirthCounts()` contains several arguments, the key
+one being `locid` which is the location id. Each country has a unique
+location id. The list of location ids can be viewed by running
+`View(get_locations())`. The location id is indicated in the `PK_LocID`
+variable.
 
-This function contains several arguments, the key one being `locid`
-which is the location id. Each country has a unique location id. The
-list of location ids can be viewed by running `View(get_locations())`.
-The location id is indicated in the `PK_LocID` variable.
-
-The example below extracts Kenyan data, whose locid == 404. The output
+The example below extracts Kenyan data, whose `locid == 404`. The output
 of the function is a dataset with 25 variables.
 
 ``` r

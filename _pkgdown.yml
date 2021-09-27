@@ -28,7 +28,14 @@ navbar:
     - icon: fa-home
       href: index.html
     - text: "Vignettes"
-      href: articles/rddharmony.html
+      menu:
+      - text: DDharmonize_validate_BirthCounts
+        href: articles/DDharmonize_validate_BirthCounts.html
+      - text: DDharmonize_validate_DeathCounts
+        href: articles/DDharmonize_validate_DeathCounts.html
+      - text: DDextract_PopCounts
+        href: articles/DDextract_PopCounts.html
+
     - text: "Functions"
       href: reference/index.html
   right:
