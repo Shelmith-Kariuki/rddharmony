@@ -1,4 +1,6 @@
 
+# rddharmony <a href='https://github.com/Shelmith-Kariuki/rddharmony'><img src='man/figures/logo.png' align="right" height="139" /></a>
+
 <!-- badges: start -->
 
 [![Codecov test
@@ -6,14 +8,28 @@ coverage](https://codecov.io/gh/Shelmith-Kariuki/rddharmony/branch/master/graph/
 [![R-CMD-check](https://github.com/Shelmith-Kariuki/rddharmony/workflows/R-CMD-check/badge.svg)](https://github.com/Shelmith-Kariuki/rddharmony/actions)
 <!-- badges: end -->
 
-# rddharmony
+## Overview
 
-The goal of rddharmony is to implement a workflow for births, deaths and
-population data extracted from vital registration databases and census.
-This workflow includes extracting data from DemoData, harmonizing age
-groups, identifying full series, validating totals and by sex,
-eventually producing clean and harmonised datasets for each location and
-each data type (births, deaths or population).
+The goal of [rddharmony](https://github.com/Shelmith-Kariuki/rddharmony)
+is to implement a workflow for births, deaths and population data
+downloaded from the UNPD portal. This data is extracted from vital
+registration databases and census’ of different countries. This workflow
+includes extracting data from from the UNPD portal using the
+[DDSQLtools](https://github.com/timriffe/DDSQLtools) package,
+harmonizing age groups, identifying full series, validating totals and
+by sex, eventually producing clean and harmonised datasets for each
+location and each data type (births, deaths or population).
+
+rddharmony contains three major functions:
+
+  - `DDharmonize_validate_BirthCounts()`: Extracts, processes and
+    produces clean birth counts data
+
+  - `DDharmonize_validate_DeathCounts()`: Extracts, processes and
+    produces clean death counts data
+
+  - `DDharmonize_validate_DeathCounts`: Extracts, processes and produces
+    clean population counts data
 
 ## Installation
 
@@ -33,7 +49,11 @@ And the development version from [GitHub](https://github.com/) with:
 devtools::install_github("Shelmith-Kariuki/rddharmony")
 ```
 
-## Example
+## Usage
+
+  - `DDharmonize_validate_BirthCounts()`
+
+<!-- end list -->
 
 ``` r
 library(rddharmony)
@@ -56,16 +76,18 @@ kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
 #> 
 #>  https://popdiv.dfs.un.org/DemoData/api/dataprocesstypes?addDefault=false 
 #> 
+#>  https://popdiv.dfs.un.org/DemoData/api/datasources? 
+#> 
 #>  https://popdiv.dfs.un.org/DemoData/api/datasources?dataProcessTypeIds=2,36&locIds=404&addDefault=false 
 #> 
 #>  Location ID:  404 
 #>  Location Name:  Kenya
 
 dim(kenya_df)
-#> [1] 189  23
+#> [1] 161  25
 ```
 
-A simple case where the user inserts an invalid location id
+A case where the user inserts an invalid location id
 
 ``` r
 df <- DDharmonize_validate_BirthCounts(locid = 12345678,
@@ -81,9 +103,5 @@ df <- DDharmonize_validate_BirthCounts(locid = 12345678,
 #> 
 #>  https://popdiv.dfs.un.org/DemoData/api/locations? 
 #> [1] "12345678 is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the `PK_LocID` variable"
-#> [1] "There are no birth counts by age available for LocID = 12345678 and dataprocess = census for the time period 1950 to 2022"
-#> [2] "There are no birth counts by age available for LocID = 12345678 and dataprocess = vr for the time period 1950 to 2022"
-
-dim(df)
-#> NULL
+#> [1] "There are no birth counts by age available for LocID = 12345678 for the time period 1950 to 2022"
 ```

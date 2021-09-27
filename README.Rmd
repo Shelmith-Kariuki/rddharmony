@@ -12,15 +12,24 @@ knitr::opts_chunk$set(
 )
 ```
 
+# rddharmony <a href='https://github.com/Shelmith-Kariuki/rddharmony'><img src='man/figures/logo.png' align="right" height="139" /></a> 
+
 <!-- badges: start -->
   [![Codecov test coverage](https://codecov.io/gh/Shelmith-Kariuki/rddharmony/branch/master/graph/badge.svg)](https://codecov.io/gh/Shelmith-Kariuki/rddharmony?branch=master)
 [![R-CMD-check](https://github.com/Shelmith-Kariuki/rddharmony/workflows/R-CMD-check/badge.svg)](https://github.com/Shelmith-Kariuki/rddharmony/actions)
 <!-- badges: end -->
 
-# rddharmony
+## Overview
 
-The goal of rddharmony is to implement a workflow for births, deaths and population data extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location and each data type (births, deaths or population).
+The goal of [rddharmony](https://github.com/Shelmith-Kariuki/rddharmony) is to implement a workflow for births, deaths and population data downloaded from the UNPD portal. This data is extracted from vital registration databases and census' of different countries. This workflow includes extracting data from from the UNPD portal using the [DDSQLtools](https://github.com/timriffe/DDSQLtools) package, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location and each data type (births, deaths or population).
 
+rddharmony contains three major functions:
+
+* `DDharmonize_validate_BirthCounts()`: Extracts, processes and produces clean birth counts data
+
+* `DDharmonize_validate_DeathCounts()`: Extracts, processes and produces clean death counts data
+
+* `DDharmonize_validate_DeathCounts`: Extracts, processes and produces clean population counts data
 
 ## Installation
 
@@ -37,7 +46,9 @@ And the development version from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("Shelmith-Kariuki/rddharmony")
 ```
-## Example
+## Usage
+
+* `DDharmonize_validate_BirthCounts()`
 
 ```{r example}
 library(rddharmony)
@@ -53,7 +64,7 @@ kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
 dim(kenya_df)
 ```
 
-A simple case where the user inserts an invalid location id
+A case where the user inserts an invalid location id
 
 ```{r}
 df <- DDharmonize_validate_BirthCounts(locid = 12345678,
@@ -65,5 +76,4 @@ df <- DDharmonize_validate_BirthCounts(locid = 12345678,
                                               retainKeys = FALSE,
                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
 
-dim(df)
 ```
