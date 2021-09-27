@@ -55,6 +55,7 @@ This function contains several arguments, the key one being `locid` which is the
 
 The example below extracts Kenyan data, whose locid == 404. The output of the function is a dataset with 25 variables.
 
+
 ```{r example}
 library(rddharmony)
 kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
