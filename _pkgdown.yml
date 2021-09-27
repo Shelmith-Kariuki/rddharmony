@@ -2,3 +2,36 @@ destination: docs
 template:
   params:
     bootswatch: cerulean
+
+home:
+  strip_header: true
+
+reference:
+  - title: "Main Functions"
+    desc:
+    contents:
+          - starts_with("DDharmonize_validate_")
+  - title: "Helper Functions"
+    desc:
+    contents:
+          - '`check_locid`'
+          - starts_with("dd_")
+          - starts_with("DDextract_Vital")
+          - "`std_age_function`"
+
+navbar:
+  type: reverse
+  title: "rddharmony"
+  left:
+    - icon: fa-home
+      href: index.html
+    - text: "Vignettes"
+      href: articles/rddharmony.html
+    - text: "Functions"
+      href: reference/index.html
+  right:
+    - icon: fa-twitter
+      href: https://twitter.com/Shel_Kariuki
+    - icon: fa-github fa-lg
+      text: "github"
+      href: https://github.com/Shelmith-Kariuki/rddharmony/
