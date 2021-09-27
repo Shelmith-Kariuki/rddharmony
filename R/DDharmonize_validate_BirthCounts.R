@@ -428,7 +428,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
     } else { vitals_std_full <- vitals_std_all }
 
     ## Print ids that have been dropped, i.e those that are not full
-    print_dropped_ids( indata_before = vitals_std_all, indata_after = vitals_std_full)
+    # print_dropped_ids( indata_before = vitals_std_all, indata_after = vitals_std_full)
 
     ## For each id-sex combo of full series, keep the reconciled series if it is available and discard the original abridged or complete
 
@@ -638,7 +638,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     ## Print a text message showing the locid and the locname of the data extracted
     cat("\n","Location ID: ", unique(out_all$LocID),"\n",
-        "Location Name: ", unique(out_all$LocName))
+        "Location Name: ", unique(out_all$LocName),"\n")
 
     }else{
       print(paste0("Births by age of mother (and sex of child) data does not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))

@@ -1,6 +1,7 @@
 library(tidyverse)
 library(DemoTools)
 library(DDSQLtools)
+library(rddharmony)
 clean_df <- DDharmonize_validate_BirthCounts(locid = sample(get_locations()$PK_LocID, 1),
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
@@ -10,7 +11,11 @@ clean_df <- DDharmonize_validate_BirthCounts(locid = sample(get_locations()$PK_L
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
-# dd_extract <- DDextract_VitalCounts(732,
+
+range(clean_df$DataValue)
+any(clean_df$DataValue == "Unknown")
+
+# dd_extract <- DDextract_VitalCounts(474,
 #                                    type = c("births"),
 #                                    process = c("census","vr"),
 #                                    1950,
@@ -39,9 +44,10 @@ clean_df <- DDharmonize_validate_BirthCounts(locid = sample(get_locations()$PK_L
 ##  Use "470 - Malta - VR - Births - 2019 - Register - Eurostat Database - Year of occurrence - Direct - High quality"
 ## 16. We should not have missing age groups.
 ## 17. Newzealand 2020 has unknowns == 0 so remove them
+## Unknowns in "784 - United Arab Emirates - VR - Births - 1991 - Register - Births and Deaths 1991 - Year of occurrence - Direct - Fair"
 ## 18. Check the warnings in 474: Martinique, 304: Greenland, 412: Kosovo
 ## 19. Check that in cases where indicator 170 data does not exist, a message is returned
-## 20. Check the warning in 807 (North Macedonia), 690 (Seychelles)
+## 20. Check the warning in 807 (North Macedonia), 690 (Seychelles), 20 (Andorra) : 498 (Republic of Moldova)
 ## 21. Locid == 686 (Senegal) has a lot of data values dropped. Investigate this.
 ## 22. If 2 totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).
 ## Use "492 - Monaco - VR - Births - 1950 - Register - Demographic Yearbook - Year of occurrence - Direct - Low" to test this
