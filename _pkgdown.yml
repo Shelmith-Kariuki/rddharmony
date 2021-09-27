@@ -1,10 +1,13 @@
 destination: docs
 template:
   params:
-    bootswatch: cerulean
+    bootswatch: yeti
 
 home:
-  strip_header: true
+  title: rddharmony
+  links:
+  - text: United Nations Population Division
+    href: https://www.un.org/development/desa/pd/
 
 reference:
   - title: "Main Functions"
@@ -18,7 +21,6 @@ reference:
           - starts_with("dd_")
           - starts_with("DDextract_Vital")
           - "`std_age_function`"
-
 navbar:
   type: reverse
   title: "rddharmony"
