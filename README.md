@@ -3,9 +3,10 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/Shelmith-Kariuki/rddharmony/workflows/R-CMD-check/badge.svg)](https://github.com/Shelmith-Kariuki/rddharmony/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/Shelmith-Kariuki/rddharmony/branch/master/graph/badge.svg)](https://codecov.io/gh/Shelmith-Kariuki/rddharmony?branch=master)
-[![R-CMD-check](https://github.com/Shelmith-Kariuki/rddharmony/workflows/R-CMD-check/badge.svg)](https://github.com/Shelmith-Kariuki/rddharmony/actions)
+
 <!-- badges: end -->
 
 ## Overview
