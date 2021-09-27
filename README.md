@@ -14,7 +14,7 @@ The goal of [rddharmony](https://github.com/Shelmith-Kariuki/rddharmony)
 is to implement a workflow for births, deaths and population data
 downloaded from the UNPD portal. This data is extracted from vital
 registration databases and census’ of different countries. This workflow
-includes extracting data from from the UNPD portal using the
+includes extracting data from from the portal using the
 [DDSQLtools](https://github.com/timriffe/DDSQLtools) package,
 harmonizing age groups, identifying full series, validating totals and
 by sex, eventually producing clean and harmonised datasets for each
@@ -51,9 +51,15 @@ devtools::install_github("Shelmith-Kariuki/rddharmony")
 
 ## Usage
 
-  - `DDharmonize_validate_BirthCounts()`
+### `DDharmonize_validate_BirthCounts()`
 
-<!-- end list -->
+This function contains several arguments, the key one being `locid`
+which is the location id. Each country has a unique location id. The
+list of location ids can be viewed by running `View(get_locations())`.
+The location id is indicated in the `PK_LocID` variable.
+
+The example below extracts Kenyan data, whose locid == 404. The output
+of the function is a dataset with 25 variables.
 
 ``` r
 library(rddharmony)
@@ -82,12 +88,10 @@ kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
 #> 
 #>  Location ID:  404 
 #>  Location Name:  Kenya
-
-dim(kenya_df)
-#> [1] 161  25
 ```
 
-A case where the user inserts an invalid location id
+For a case where the user inserts an invalid location id, an informative
+error message is displayed.
 
 ``` r
 df <- DDharmonize_validate_BirthCounts(locid = 12345678,
@@ -103,5 +107,6 @@ df <- DDharmonize_validate_BirthCounts(locid = 12345678,
 #> 
 #>  https://popdiv.dfs.un.org/DemoData/api/locations? 
 #> [1] "12345678 is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the `PK_LocID` variable"
-#> [1] "There are no birth counts by age available for LocID = 12345678 for the time period 1950 to 2022"
+#> 
+#>  https://popdiv.dfs.un.org/DemoData/api/locations?
 ```

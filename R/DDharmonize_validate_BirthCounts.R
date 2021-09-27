@@ -645,8 +645,13 @@ DDharmonize_validate_BirthCounts <- function(locid,
       out_all <- NULL
     }
 
-  } else { # if no birth counts were extracted from DemoData
+  } else{
+
+  # if no birth counts were extracted from DemoData
+    if(locid %in% get_locations()$LocID){
     print(paste0("There are no birth counts by age available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+    out_all <- NULL
+    }
     out_all <- NULL
   }
 
