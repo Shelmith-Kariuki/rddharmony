@@ -43,18 +43,20 @@ any(clean_df$DataValue == "Unknown")
 ##  Use "276 - Germany - VR - Births - 2007 - Register - Eurostat Database - Year of occurrence - Direct - High quality" to test this.
 ##  Use "470 - Malta - VR - Births - 2019 - Register - Eurostat Database - Year of occurrence - Direct - High quality"
 ## 16. We should not have missing age groups.
+## 17. If 2 totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).
+## Use "492 - Monaco - VR - Births - 1950 - Register - Demographic Yearbook - Year of occurrence - Direct - Low" to test this
+## 18. Check for locations that are in get_locations() and not in get_datasources(). ASk Sara why this is so.
+
+## Issues to be dealt with ----------------------------------------------------
 ## 17. Newzealand 2020 has unknowns == 0 so remove them
 ## Unknowns in "784 - United Arab Emirates - VR - Births - 1991 - Register - Births and Deaths 1991 - Year of occurrence - Direct - Fair"
 ## 18. Check the warnings in 474: Martinique, 304: Greenland, 412: Kosovo
 ## 19. Check that in cases where indicator 170 data does not exist, a message is returned
 ## 20. Check the warning in 807 (North Macedonia), 690 (Seychelles), 20 (Andorra) : 498 (Republic of Moldova)
 ## 21. Locid == 686 (Senegal) has a lot of data values dropped. Investigate this.
-## 22. If 2 totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).
-## Use "492 - Monaco - VR - Births - 1950 - Register - Demographic Yearbook - Year of occurrence - Direct - Low" to test this
 ## 23. Check warnings for locid = 484 , locname = Mexico, locid = 234, locname = Faeroe Islands.
 ## 24. Find out why "484 - Mexico - VR - Births - 2012 - Register - Estadísticas de Natalidad - Year of occurrence - Direct - Fair" is not harmonised due to non-standard age groups.
-## 25. Check for locations that are in get_locations() and not in get_datasources(). ASk Sara why this is so.
 ## 26. 504 - Morocco - VR - Births - 2018 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair seems to have totals that are not equal. What happened?
 ## 27. Check 674 (San Marino) warnings
 ## 28. 226. Why is the raw data not being published when indicator 170 data does not exist?
-## 29.
+
