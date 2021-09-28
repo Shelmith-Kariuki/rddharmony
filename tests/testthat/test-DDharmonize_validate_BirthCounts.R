@@ -1,4 +1,4 @@
-clean_df <- DDharmonize_validate_BirthCounts(locid = sample(get_locations()$PK_LocID, 1),
+clean_df <- DDharmonize_validate_BirthCounts(locid = 404,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
                                              return_unique_ref_period = TRUE,
@@ -7,6 +7,11 @@ clean_df <- DDharmonize_validate_BirthCounts(locid = sample(get_locations()$PK_L
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
+non_harmonized_ids <- clean_df %>% filter(!is.na(note)) %>% pull(id) %>% unique()
+
+if(length(non_harmonized_ids) >0 ){
+clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
+}
 
 test_that("The data has a unique locid", {
   expect_length(unique(clean_df$LocID), 1)
@@ -48,7 +53,7 @@ test_that("In cases where indicatorid == 159 'Total' age label exists, it should
 test_that("An age label cannot be complete and abridged at the same time", {
   tab <- clean_df %>%
           mutate(checker = ifelse(abridged != complete | AgeLabel == "0-4" |
-                                    IndicatorID == 159 |!is.na(note), TRUE, FALSE))
+                                    IndicatorID == 159, TRUE, FALSE))
   expect_true(all(tab$checker == TRUE))
 })
 
@@ -73,8 +78,7 @@ test_that("Complete cases do not contain wide age groups", {
 test_that("Every id has a closing age group",{
   tab <- clean_df %>%
           group_by(id) %>%
-          mutate(oag_present = ifelse(!is.na(note)|
-                                  is.na(note) & any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE)),
+          mutate(oag_present = ifelse(any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE)),
                                       TRUE, FALSE))
   expect_true(all(tab$oag_present == TRUE))
 
@@ -82,42 +86,112 @@ test_that("Every id has a closing age group",{
 
 
 test_that("All Data values add up to the Total, for each id", {
+  tab <- clean_df %>%
+          group_by(id, complete) %>%
+          mutate(rec_tot = ifelse(any(AgeLabel == "Total"), DataValue[AgeLabel == "Total"], NA),
+                 calc_tot = ifelse(IndicatorID == 159, rec_tot,sum(DataValue[AgeLabel != "Total"], na.rm = TRUE)) ,
+                 diff = floor(abs(rec_tot - calc_tot)))
+  expect_true(all(tab$diff == 0))
 
 })
 
 test_that("There isn't any unknown in the data", {
+  unknown_df <- clean_df %>%
+                filter(AgeLabel == "Unknown")
+
+expect_true(nrow(unknown_df)==0)
 
 })
 
 
 test_that("There aren't any negative data values", {
+  negs <- clean_df %>%
+    filter(DataValue < 0)
+
+  expect_true(nrow(negs)==0)
 
 })
 
-test_that("The age labels begin with a 0, whether abridged or complete", {
+test_that("The complete age labels begin with a 0", {
+  tab <- clean_df %>%
+          group_by(id, complete) %>%
+          filter(IndicatorID != 159) %>%
+          mutate(min_agesort = min(AgeSort, na.rm = TRUE)) %>%
+          mutate(min_agelabel = ifelse(AgeSort == min_agesort, AgeLabel, NA)) %>%
+          mutate(min_agelabel = ifelse(is.na(min_agelabel), min_agelabel[!is.na(min_agelabel)], min_agelabel))
+
+expect_true(unique(tab$min_agelabel)=="0")
 
 })
 
 test_that("Abridged series start with the following values: 0, 0-4, 1-4, 5-9, 10-14", {
+  abr_agelabs <- clean_df %>%
+                  filter(complete == FALSE) %>%
+                  pull(AgeLabel) %>%
+                  unique()
+  expected_labs <- c("0", "0-4", "1-4", "5-9", "10-14")
 
+  expect_true(all(expected_labs %in% abr_agelabs))
 })
 
-test_that("Each age label is unique per id:", {
+test_that("Each age label is unique per id", {
+  tab <- clean_df %>%
+          group_by(id, complete, AgeLabel) %>%
+          summarise(counter = n())
 
+  expect_true(unique(tab$counter)==1)
 })
+
 
 test_that("There is only one unique id per time label",{
+  tab <- clean_df %>%
+            group_by(TimeLabel) %>%
+            summarise(counter = length(unique(id)))
+
+  expect_true(unique(tab$counter)==1)
 
 })
 
-test_that("if the data has both complete and abridged series, they should be equal",{
+test_that("If the data has both complete and abridged series, the totals should be equal or differ by less than 5 maybe",{
+
+  tab <- clean_df %>%
+    select(id, IndicatorID, complete, AgeLabel, DataValue) %>%
+    filter(AgeLabel == "Total" & IndicatorID != 159) %>%
+    group_by(id) %>%
+    mutate(diff = ifelse(length(id) == 2, abs(DataValue[complete == TRUE] - DataValue[complete == FALSE]),0))
+
+  expect_true(max(tab$diff) < 5)
 
 })
 
 test_that("There are no missing age groups",{
 
+  min_agestart <- min(clean_df$AgeStart[clean_df$AgeSpan >0], na.rm = TRUE)
+  max_ageend <- max(clean_df$AgeEnd[clean_df$AgeSpan >0], na.rm = TRUE)
+  std_sub <- std_age_function() %>%
+    filter(AgeStart >= min_agestart & AgeEnd <= max_ageend & complete == FALSE) %>%
+    distinct(AgeLabel) %>%
+    pull()
+
+  expect_true(all(std_sub %in% clean_df$AgeLabel))
 })
 
 test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).",{
+
+  agesorts <- clean_df %>%
+          select(id, IndicatorID, complete, AgeLabel, AgeSort) %>%
+          filter(AgeLabel == "Total") %>%
+          group_by(id) %>%
+          mutate(complete = zoo::na.locf0(complete)) %>%
+          ungroup() %>%
+          group_by(id, complete) %>%
+          mutate(counter = length(unique(AgeSort)),
+                 list_agesort = paste(AgeSort, collapse = "_")) %>%
+          ungroup() %>%
+          filter(counter == 2) %>%
+          pull(list_agesort) %>%
+          unique()
+
+  expect_identical(agesorts, "184_999")
 
 })

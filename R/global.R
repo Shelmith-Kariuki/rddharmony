@@ -17,5 +17,5 @@ utils::globalVariables(c("AgeSpan", "AgeStart",#dd_oag_agestart
                          "DataSourceTypeName", "DataSourceStatusName", "DataTypeName",
                          "LocName", "DataProcess", "StatisticalConceptName", "DataReliabilityName",
                          "series", "id_sex", "IndicatorName", "five_year", "SexName", "TimeMid",
-                         "TimeEnd", "non_standard" #DDharmonize_validate_BirthCounts
+                         "TimeEnd", "non_standard","IndicatorID", "todrop", "total_159", "total_170" #DDharmonize_validate_BirthCounts
                          ))
