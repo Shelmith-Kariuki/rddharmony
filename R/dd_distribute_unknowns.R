@@ -57,6 +57,13 @@ dd_distribute_unknowns <- function(data){
     }
 
     out.data <- rbind(out.data, df_abr, df_cpl)
+
+    ## Added by Shel. Drop Unknowns that are equal to 0, in cases where Totals are not reported
+    ## "60 - Bermuda - VR - Births - 2006 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair"
+    out.data <- out.data %>%
+                 mutate(todrop = ifelse(AgeLabel == "Unknown" & DataValue == 0, "drop", "")) %>%
+                  filter(todrop != "drop") %>%
+                  select(-todrop)
   }
 
   return(out.data)

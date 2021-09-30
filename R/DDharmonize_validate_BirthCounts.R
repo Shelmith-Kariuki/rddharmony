@@ -110,7 +110,14 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     ## Shel added this to separate indicator 159 with 170
     dd_extract_159 <- dd_extract %>% filter(IndicatorID == 159)
-    dd_extract_170 <- dd_extract %>% filter(IndicatorID == 170)
+
+    dd_extract_170 <- dd_extract %>% filter(IndicatorID == 170 | AgeLabel == "Total")
+    dd_extract_170 <- dd_extract_170 %>%
+                        group_by(id) %>%
+                        mutate(IndicatorID = ifelse(AgeLabel == "Total" & IndicatorID == 159 &
+                                                      !any(IndicatorID == 170 & AgeLabel == "Total"), 170, IndicatorID),
+                               IndicatorName = "Births by age of mother (and sex of child)") %>%
+                        ungroup()
 
 
     if(nrow(dd_extract_170) > 0){
@@ -133,7 +140,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
       ## Loc: Sweden
       ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
       # vitals_raw <- dd_extract_170 %>%
-      #   filter(TimeMid == 2000.5 & IndicatorID == 170)
+      #   filter(TimeMid == 2018.5)
 
       ## 7. Isolate records that refer to five-year age data
       # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.
@@ -148,6 +155,11 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
       } else { vitals5_std <- NULL }
 
+
+      # ## add a variable that shows whether an oag has been added
+      # vitals5_std <- vitals5_std %>%
+      # mutate(early_ages_added = ifelse(!(AgeLabel %in% df_abr$AgeLabel), "added", ""))
+
       ## 8. isolate records that refer to single year age data
       vitals1_raw <- vitals_raw %>%
         dplyr::filter(AgeSpan %in% c(-2, -1, 1))
@@ -158,6 +170,8 @@ DDharmonize_validate_BirthCounts <- function(locid,
         vitals1_std <- DDharmonize_Vitals1(indata = vitals1_raw)
 
       } else { vitals1_std <- NULL }
+
+
 
       # continue standardizing if there are any age-specific records
       if (!is.null(vitals1_std) | !is.null(vitals5_std)) {
@@ -197,8 +211,19 @@ DDharmonize_validate_BirthCounts <- function(locid,
           vitals_cpl <- NULL
         }
 
+        # if(!is.null(vitals_abr)) {
+        #
+        # vitals_abr <- vitals_abr %>%
+        #               mutate(added_oag = ifelse(!AgeLabel %in% vitals5_raw$AgeLabel, "added_aog", ""))
+        # }
+        #
+        # if(!is.null(vitals_cpl)) {
+        # vitals_cpl <- vitals_cpl %>%
+        #   mutate(added_oag = ifelse(!AgeLabel %in% vitals1_raw$AgeLabel, "added_aog", ""))
+        # }
 
         ## 11. reconcile abridged and complete series, as necessary
+
 
         if (!is.null(vitals_abr) & !is.null(vitals_cpl)) {
 
@@ -207,7 +232,43 @@ DDharmonize_validate_BirthCounts <- function(locid,
                                                             data_cpl = vitals_cpl) %>%
             dplyr::filter(series %in% c("abridged reconciled with complete", "complete reconciled with abridged"))
 
-
+          # if(nrow(vitals_abr_cpl) >0 ){
+          #
+          # oag_added_abr = vitals_abr$AgeLabel[which(!vitals_abr$AgeLabel %in% vitals5_raw$AgeLabel)]
+          # oag_added_cpl = vitals_cpl$AgeLabel[which(!vitals_cpl$AgeLabel %in% vitals_cpl$AgeLabel)]
+          #
+          # appended_abr_cpl <- bind_rows(vitals_abr, vitals_cpl)
+          # early_ages_added0 = vitals_abr_cpl$AgeLabel[which(!vitals_abr_cpl$AgeLabel %in% appended_abr_cpl$AgeLabel)]
+          #
+          # if(length(early_ages_added0) >0){
+          #   vitals_abr_cpl <- vitals_abr_cpl %>%
+          #     mutate(early_ages_added = ifelse(AgeLabel %in% early_ages_added0, "added", ""))
+          # }else{
+          #   vitals_abr_cpl$early_ages_added = ""
+          # }
+          #
+          # if(length(c(oag_added_abr, oag_added_abr)) >0){
+          #   vitals_abr_cpl <- vitals_abr_cpl %>%
+          #     mutate(oag_added = ifelse(AgeLabel %in% c(oag_added_abr, oag_added_abr), "added",""))
+          # }else{
+          #   vitals_abr_cpl$oag_added = ""
+          # }
+          #
+          # vitals_abr_cpl <- vitals_abr_cpl %>%
+          #   group_by(complete) %>%
+          #   mutate(tot_without_oag = sum(DataValue[oag_added != "added" & AgeLabel != "Total"],na.rm = TRUE),
+          #          tot_recorded = ifelse(any(AgeLabel == "Total"), DataValue[AgeLabel == "Total"], 0),
+          #          early_ages_value = sum(DataValue[early_ages_added == "added"])) %>%
+          #   mutate(DataValue = ifelse(is.na(oag_added), DataValue,
+          #                         ifelse(oag_added == "added" & abs(tot_recorded - tot_without_oag) == 0,
+          #                             0, DataValue))) %>%
+          #   select(-tot_without_oag, -tot_recorded, -oag_added,-early_ages_added, -early_ages_value)
+          #
+          #
+          # rm(oag_added_abr, oag_added_cpl, appended_abr_cpl, early_ages_added0)
+          # }else{
+          #   vitals_abr_cpl <- vitals_abr_cpl
+          # }
 
           ## 12. fill in zeros for births at young ages, if missing
           ## part a: abridged reconciled with complete
@@ -350,7 +411,17 @@ DDharmonize_validate_BirthCounts <- function(locid,
         rm(vitals_abr)
       }
     } # end of id loop
-    vitals_std_all <- do.call(rbind, vitals_std_all)
+    vitals_std_all <- do.call(bind_rows, vitals_std_all)
+
+    ## Added by Shel
+    ## If the total reported matched the total calculated before the oag was added, set it to 0
+    vitals_std_all <- vitals_std_all %>%
+      group_by(id, series, complete) %>%
+      mutate(oag = ifelse(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE, ignore.case = TRUE), TRUE, FALSE)) %>%
+      mutate(tot_without_oag = ifelse(any(AgeLabel=="Total"),  sum(DataValue[AgeLabel!="Total" & oag!=TRUE], na.rm = TRUE),0),
+             tot_reported = ifelse(any(AgeLabel=="Total"), DataValue[AgeLabel == "Total"],0)) %>%
+      mutate(DataValue = ifelse(oag == TRUE & (floor(tot_without_oag) == floor(tot_reported)) & tot_reported!=0, 0, DataValue)) %>%
+      select(-oag, -tot_without_oag, -tot_reported)
 
     # x <- vitals_std_all %>%
     #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
@@ -654,6 +725,17 @@ DDharmonize_validate_BirthCounts <- function(locid,
     }
     out_all <- NULL
   }
+
+  ## To be removed later
+  ## The only time labels that should be present in the raw dataset but absent in the clean dataset should be indicator 159 records.
+  missing_timelabs<- dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all$TimeLabel)]
+  assign("missing_timelabs", missing_timelabs, .GlobalEnv)
+
+  if(length(missing_timelabs) >0){
+  missing_data <- dd_extract %>% filter(TimeLabel %in% missing_timelabs)
+  assign("missing_data", missing_data, .GlobalEnv)
+  }
+
 
   return(out_all)
 }

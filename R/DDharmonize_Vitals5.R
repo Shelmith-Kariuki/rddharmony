@@ -164,6 +164,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
       ## 17. Check again whether any open age group exists
       oag_check <- paste0(oag_start,"+") %in% abr$AgeLabel
 
+
       ## 18. If total is missing and series is otherwise complete, compute total
       if (!("Total" %in% abr$AgeLabel) & "0-4" %in% abr$AgeLabel & oag_check == TRUE) {
         abr <- abr %>%
@@ -199,7 +200,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
         select(DataSourceYear, AgeStart, AgeEnd, AgeLabel, AgeSpan, DataValue)
       abr <- dd_age_standard(abr, abridged = TRUE) %>%
         dplyr::filter(!is.na(DataValue)) %>%
-        select(DataSourceYear, AgeStart, AgeEnd, AgeLabel, AgeSpan, AgeSort, DataValue) %>%
+        select(DataSourceYear, AgeStart, AgeEnd, AgeLabel, AgeSpan, AgeSort,DataValue) %>%
         mutate(note = "The abridged series is missing data for one or more age groups.",
                SexID = sex)
 

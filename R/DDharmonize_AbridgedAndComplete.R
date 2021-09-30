@@ -184,6 +184,7 @@ DDharmonize_AbridgedAndComplete <- function (data_abr,data_cpl_from_abr, data_cp
       if (!is.null(df_cpl)) {
         df_cpl$note <- "Different totals on abridged and complete preclude reconciliation"
         df_cpl$SexID <- sex
+
       }
 
     }

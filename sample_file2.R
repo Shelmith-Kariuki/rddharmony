@@ -15,7 +15,7 @@ require(usethis)
 #                  sheet = "Sweden")
 # locid <- df %>% filter(!is.na(LocID)) %>% distinct(LocID) %>% pull()
 # times <- df %>% filter(!is.na(TimeMid)) %>% mutate(TimeLabel = TimeMid - 0.5) %>%  distinct(TimeLabel) %>% pull()
-locid <- 404
+locid <- 504
 times <- c(1950, 2020)
 process = c("census", "vr")
 return_unique_ref_period <- TRUE
@@ -55,12 +55,12 @@ dd_extract <- DDextract_VitalCounts(locid = locid,
   dpi <- ifelse(process == "census", 2, 36)
 
   ## 2. Drop sub-national censuses (data process "vr" does not work with get_datacatalog?)
-  if (dpi == 2) {
-
-    # Gets all DataCatalog records
+  # if (dpi == 2) {
+  #
+  #   # Gets all DataCatalog records
     DataCatalog <- get_datacatalog(locIds = locid, dataProcessTypeIds = 2, addDefault = "false")
     DataCatalog <- DataCatalog[DataCatalog$isSubnational==FALSE,]
-  }
+  # }
 
   if(nrow(DataCatalog) > 0) {
     # Drop sub national censuses (isSubnational== TRUE i.e if dd_extract$DataCatalogID `notin` DataCatalog$DataCatalogID)
@@ -111,8 +111,8 @@ dd_extract <- DDextract_VitalCounts(locid = locid,
   ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
   # vitals_raw <- dd_extract %>%
   #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
-    vitals_raw <- dd_extract %>%
-         dplyr::filter(TimeMid == 2000.5)
+    # vitals_raw <- dd_extract %>%
+    #      dplyr::filter(TimeMid == 2000.5)
 
 ## 7. Isolate records that refer to five-year age data
   # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.

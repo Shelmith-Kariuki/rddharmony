@@ -1,4 +1,4 @@
-clean_df <- DDharmonize_validate_BirthCounts(locid = 404,
+clean_df <- DDharmonize_validate_BirthCounts(locid = 834,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
                                              return_unique_ref_period = TRUE,
@@ -12,6 +12,8 @@ non_harmonized_ids <- clean_df %>% filter(!is.na(note)) %>% pull(id) %>% unique(
 if(length(non_harmonized_ids) >0 ){
 clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
 }
+
+## These tests will only work in situations where indicator 170 data exists
 
 test_that("The data has a unique locid", {
   expect_length(unique(clean_df$LocID), 1)
@@ -90,14 +92,17 @@ test_that("All Data values add up to the Total, for each id", {
           group_by(id, complete) %>%
           mutate(rec_tot = ifelse(any(AgeLabel == "Total"), DataValue[AgeLabel == "Total"], NA),
                  calc_tot = ifelse(IndicatorID == 159, rec_tot,sum(DataValue[AgeLabel != "Total"], na.rm = TRUE)) ,
-                 diff = floor(abs(rec_tot - calc_tot)))
+                 diff = floor(abs(rec_tot - calc_tot))) %>%
+    filter(!is.na(rec_tot))
   expect_true(all(tab$diff == 0))
 
 })
 
-test_that("There isn't any unknown in the data", {
+test_that("There isn't any unknown in the data, and if it exists, then the total value is not reported", {
   unknown_df <- clean_df %>%
-                filter(AgeLabel == "Unknown")
+                group_by(id) %>%
+                mutate(checker = ifelse(any(AgeLabel == "Total" & IndicatorID == 170) & AgeLabel == "Unknown", "flag", "okay")) %>%
+                filter(checker == "flag" )
 
 expect_true(nrow(unknown_df)==0)
 
@@ -160,7 +165,7 @@ test_that("If the data has both complete and abridged series, the totals should 
     group_by(id) %>%
     mutate(diff = ifelse(length(id) == 2, abs(DataValue[complete == TRUE] - DataValue[complete == FALSE]),0))
 
-  expect_true(max(tab$diff) < 5)
+  expect_true(max(tab$diff) <= 5)
 
 })
 
