@@ -1,9 +1,9 @@
-pandoc: 2.7.3
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   DDextract_PopCounts: DDextract_PopCounts.html
   DDharmonize_validate_BirthCounts: DDharmonize_validate_BirthCounts.html
   DDharmonize_validate_DeathCounts: DDharmonize_validate_DeathCounts.html
-last_built: 2021-09-28T14:06Z
+last_built: 2021-10-03T17:51Z
 
