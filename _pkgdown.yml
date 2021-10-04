@@ -39,8 +39,6 @@ navbar:
     - text: "Functions"
       href: reference/index.html
   right:
-    - icon: fa-blog
-      href: https://shelkariuki.netlify.app/
     - icon: fa-github fa-lg
       text: "github"
       href: https://github.com/Shelmith-Kariuki/rddharmony/

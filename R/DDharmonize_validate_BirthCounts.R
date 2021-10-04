@@ -108,16 +108,20 @@ DDharmonize_validate_BirthCounts <- function(locid,
     ## 5. for births by age of mother, use only both sexes combined ** why?
     dd_extract <- dd_extract %>% dplyr::filter(SexID ==3)
 
-    ## Shel added this to separate indicator 159 with 170
+    ## Shel added this to separate indicator 159 with 170 because indicator 159 data is being dropped in the DDharmonize_Vitals1() and DDharmonize_Vitals5() functions
     dd_extract_159 <- dd_extract %>% filter(IndicatorID == 159)
 
+    # | AgeLabel == "Total" was added because of the instances where indicator 170 has no total age record,
+    # so we borrow it from indicator 159
     dd_extract_170 <- dd_extract %>% filter(IndicatorID == 170 | AgeLabel == "Total")
     dd_extract_170 <- dd_extract_170 %>%
                         group_by(id) %>%
                         mutate(IndicatorID = ifelse(AgeLabel == "Total" & IndicatorID == 159 &
                                                       !any(IndicatorID == 170 & AgeLabel == "Total"), 170, IndicatorID),
                                IndicatorName = "Births by age of mother (and sex of child)") %>%
-                        ungroup()
+                        ungroup() %>%
+                        filter(IndicatorID != 159)
+
 
 
     if(nrow(dd_extract_170) > 0){
@@ -653,7 +657,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
              SexName = replace(SexName, SexID == 2, "Female"),
              SexName = replace(SexName, SexID == 3, "Both sexes"))
 
-    ## Shel added this after noticing that alot of indicator 159 data was being dropped
+    ## Shel added this after noticing that a lot of indicator 159 data was being dropped
     out_all <- out_all %>%
       mutate(IndicatorID = 170,
              IndicatorName = "Births by age of mother (and sex of child)") %>%

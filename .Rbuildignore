@@ -14,3 +14,4 @@ discard_these_dups.R
 ^codecov\.yml$
 artifacts
 ^\.github$
+_archive
