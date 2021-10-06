@@ -221,7 +221,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
       mutate(abridged = TRUE,
              complete = FALSE,
              series = "abridged") %>%
-      dplyr::filter(AgeSpan %in% c(-2, -1, 1, 4, 5))
+      dplyr::filter(AgeSpan %in% c(-2, -1, 1, 4, 5)) # this is the point where the wide age groups are being dropped.
   }
 
   outdata <- rbind(abr_sex)

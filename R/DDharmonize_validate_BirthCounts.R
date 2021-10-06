@@ -323,7 +323,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
             rm(vitals_abr_cpl_sex)
           }
-          ## Fill in the younger ages with 0s if the data does not exist
+          ## Fill in the younger ages with 0s if the data values are NA
 
           vitals_abr_cpl <- dd_fillzeros_births(vitals_abr_cpl %>% select(-AgeSort), abridged = TRUE)
 
