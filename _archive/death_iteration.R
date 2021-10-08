@@ -17,8 +17,6 @@ x2 <- dd_extract_188 %>%
   filter(id ==  selected_id ) %>%
   select(id, IndicatorID, IndicatorName, SexName, DataSourceYear, TimeMid, TimeLabel, AgeStart, AgeSpan, AgeLabel, DataValue)
 
-
-
 x3 <- vitals_std_all %>%
        filter(id == selected_id)
 

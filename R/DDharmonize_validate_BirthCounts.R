@@ -543,7 +543,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
           }
         }
 
-        ## the reconciled series will be our final series. append the two
+        ## Append the reconciled series together to form one dataset
         vitals_privilege_recon <- vitals_privilege_recon %>%
           bind_rows(abr) %>%
           bind_rows(cpl)
@@ -563,9 +563,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
     # CHECK WHETHER SUM OVER AGE MATCHES THE REPORTED TOTALS
     ################################## -------------------------------------------------------------------------------------------------------------------
 
-    ## validate totals over age (if the reported and actual totals exist, if computed is greater than reported,
-    ## then replace reported with computed, if computed is less than reported, then add difference to "Unknown" age)
-    ## and distribute unknowns
+
     if (nrow(vitals_std_full) > 0) {
 
       ## identify the unique ids in the data
@@ -580,7 +578,10 @@ DDharmonize_validate_BirthCounts <- function(locid,
         dd_one_id <- vitals_std_full %>%
           dplyr::filter(id == ids[i])
 
-        ## reconcile reported and computed totals over age
+        ## validate totals over age (if the reported and actual totals exist, if computed is greater than reported,
+        ## then replace reported with computed, if computed is less than reported, then add difference to "Unknown" age)
+        ## and distribute unknowns
+
         dd_one_id <- dd_validate_totals_over_age(data = dd_one_id)
         ## At this point, reported totals should be equal to calculated totals
         # diff_tots <- abs(dd_one_id$DataValue[dd_one_id$AgeLabel == "Total"] - sum(dd_one_id$DataValue[dd_one_id$AgeLabel != "Total"], na.rm = TRUE))

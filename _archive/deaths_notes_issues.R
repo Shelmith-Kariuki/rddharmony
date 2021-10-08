@@ -55,4 +55,9 @@
 # After Part 2:
 # The complete series should have been dropped: "694 - Sierra Leone - Census - Deaths - 2004 - Census - Demographic Yearbook - De-facto - Household deaths - Unknown"
 # Same case with "694 - Sierra Leone - Census - Deaths - 2014-2015 - Census - UN-IGME Country Consultation - Unknown - Household deaths - Fair"
-#
+# Cayman Islands does not have DataSourceTypeName
+# "136 - Cayman Islands - VR - Deaths - 2009 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair" total 188 different from total 194 and total 195
+
+# After Part 3
+# Warning messages:
+# 1: In df_abr$AgeLabel[df_abr$SexID == 1] == df_abr$AgeLabel[df_abr$SexID ==  :

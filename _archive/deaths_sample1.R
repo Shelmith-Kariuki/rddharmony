@@ -9,6 +9,11 @@
 ## Valencia: "https://popdiv.dfs.un.org/DemoData/api/" is default
 ## Paperspace: "http://74.82.31.177/DemoData/api/"
 
+require(DDSQLtools)
+require(DemoTools)
+require(tidyverse)
+require(rddharmony)
+
 # locid <- 96
 locid <- sample(get_locations()$PK_LocID, 1)
 times <- c(1950, 2020)
@@ -19,10 +24,7 @@ DataSourceYear = NULL
 retainKeys = FALSE
 server = "https://popdiv.dfs.un.org/DemoData/api/"
 
-  require(DDSQLtools)
-  require(DemoTools)
-  require(tidyverse)
-  require(rddharmony)
+
 
   options(dplyr.summarise.inform=F)
   ################################
@@ -200,6 +202,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
       ## drop it and append all the case id records back to the data using the `skipped` object at the bottom of this script
       ## Without this edit, the complete series will have additional start values and at the end, we will have dropped the wide
       ## age groups labels.
+      ## Edit... might remove this since these records are likely to br dropped in part 2 where we are checking whether the series is full
       if (is.null(vitals_abr) & !is.null(vitals_cpl) & all(unique(vitals_cpl$AgeLabel) %in% c("0","Total","Unknown"))) {
         vitals_cpl <- NULL
       }
@@ -287,8 +290,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
     } # end of id loop
     vitals_std_all <- do.call(rbind, vitals_std_all)
 
-    ##***********************************************************************************************************
-}
+
     ## -------------------------------------------------------------------------------------------------------------------
     ## PART 2: FILTER AVAILABLE SERIES, KEEPING ONLY THOSE THAT CONTAIN A FULL AGE DISTRIBUTION
     ## AND THE POST-RECONCILIATION ABRIDGED AND COMPLETE SERIES, WHERE APPLICABLE
@@ -296,17 +298,23 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
     if (nrow(vitals_std_all) > 0) {
 
-      # 7. dplyr::filter through id_series and keep only those that are full
-      # (all age groups present)
+      ## list the unique id series that exist in the data
       id_sers <- unique(vitals_std_all$id_series)
 
+      ## create a placeholder for the object that will hold the final output (in this case all series that are full)
       id_series_full <- NULL
+
+      ## for each id series
       for (i in 1:length(id_sers)) {
+
+      ## subset the data to only have data for a particular id series
         pop_one_series <- vitals_std_all %>%
           dplyr::filter(id_series == id_sers[i])
 
+      ## check if the series has an abridged aspect or not
         abridged <- substr(pop_one_series$series[1],1,1) == "a"
 
+        ## check if each of the gender datasets are full series or not
         check_full_m <- dd_series_isfull(pop_one_series %>%
                                            dplyr::filter(SexID == 1),
                                          abridged = abridged)
@@ -318,6 +326,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
                                          abridged = abridged)
         check_full <- c(check_full_m, check_full_f, check_full_b)
 
+        ## Check how many series are full out of the three
         n_full <- length(check_full[check_full == TRUE])
 
         # if at least two are full, then identify the series as full
@@ -326,22 +335,34 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
         }
       }
 
+      ## subset the data to only be left with data where the series is full
       vitals_std_full <- vitals_std_all %>%
         dplyr::filter(id_series %in% id_series_full) %>%
         mutate(id_sex = paste(id, SexID, sep = " - "))
 
+    } else { vitals_std_full <- vitals_std_all }
 
-      # for each id-sex combo of full series,
-      # keep the reconciled series if it is available and discard the original abridged or complete
+      ## for each id-sex combo of full series,
+      ## keep the reconciled series if it is available and discard the original abridged or complete
 
+      if (nrow(vitals_std_full) > 0) {
 
+      ## identify unique id and sex combination
       ids_sex <- unique(vitals_std_full$id_sex)
 
+      ## create a placeholder for the object that will hold the final output (in this case the reconciled series, if it exist)
       vitals_privilege_recon <- NULL
+
+      ## for each id and sex combination
       for (i in 1:length(ids_sex)) {
 
+        ## subset the data to get data where the series is either abridged or `abridged reconciled with complete`
         abr <- vitals_std_full %>%
           dplyr::filter(id_sex == ids_sex[i] & substr(series,1,1) == "a")
+
+        ## if there are some abridged records, and `abridged reconciled with complete` exists, then this is the series we will keep
+        ## and discard the original one.
+
         if (nrow(abr) > 0) {
           if ("abridged reconciled with complete" %in% abr$series) {
             abr <- abr %>%
@@ -349,8 +370,12 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
           }
         }
 
+        ## subset the data to get data where the series is either complete or `complete reconciled with abridged`
         cpl <- vitals_std_full %>%
           dplyr::filter(id_sex == ids_sex[i] & substr(series,1,1) == "c")
+        ## if there are some complete records, and `complete reconciled with abridged` exists, then this is the series we will keep
+        ## and discard the original one.
+
         if (nrow(cpl) > 0) {
           if ("complete reconciled with abridged" %in% cpl$series) {
             cpl <- cpl %>%
@@ -358,35 +383,43 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
           }
         }
 
+        ## Append the reconciled series together to form one dataset
         vitals_privilege_recon <- vitals_privilege_recon %>%
           bind_rows(abr) %>%
           bind_rows(cpl)
 
       }
-
+      ## drop id_sex and id_series variables
       vitals_std_full <- vitals_privilege_recon %>%
         select(-id_sex, -id_series)
+    } else { vitals_std_full <- vitals_std_full }
 
+  ## -------------------------------------------------------------------------------------------------------------------
+  ## PART 3: VALIDATE THE REMAINING SERIES, CHECKING FOR BOTH SEX TOTALS THAT MATCH BY SEX,
+  # CORRECT FOR ANY INSTANCES WHERE DATA FOR SEX-AGE GROUP COMBINATIONS ARE MISSING, AND
+  # CHECK WEATHER SUM OVER AGE MATCHES THE REPORTED TOTALS
+  ## -------------------------------------------------------------------------------------------------------------------
 
-      ## -------------------------------------------------------------------------------------------------------------------
-      ## PART 3: VALIDATE THE REMAINING SERIES, CHECKING FOR BOTH SEX TOTALS THAT MATCH BY SEX,
-      # CORRECT FOR ANY INSTANCES WHERE DATA FOR SEX-AGE GROUP COMBINATIONS ARE MISSING, AND
-      # CHECK WEATHER SUM OVER AGE MATCHES THE REPORTED TOTALS
-      ## -------------------------------------------------------------------------------------------------------------------
-
+    ## identify the unique ids in the data
       ids <- unique(vitals_std_full$id)
 
+    ## create a place holder for the final output which is ...
       vitals_std_valid <- list()
+
       for (i in 1:length(ids)) {
 
+        ## subset the data to only be left with data for one id
         dd_one_id <- vitals_std_full %>%
           dplyr::filter(id == ids[i] & SexID %in% c(1,2,3))
 
+        ## validate totals over age (if the reported and actual totals exist, if computed is greater than reported,
+        ## then replace reported with computed, if computed is less than reported, then add difference to "Unknown" age)
+        ## and distribute unknowns
         # reconcile reported and computed totals over age
         # see note on "Total" record that indicates if difference was greater than 2.5% and thus irreconcilable
         dd_one_id <- dd_validate_totals_over_age(data = dd_one_id)
 
-        # distribute unkowns by age
+        # distribute unknowns by age
         dd_one_id <- dd_distribute_unknowns(data = dd_one_id)
 
         # ensure that both sexes values = males + females
@@ -403,7 +436,14 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
       }
 
-      # arrange the data, with priority colums on the left and data loader keys on the right
+      ##***********************************************************************************************************
+    }
+      ## -------------------------------------------------------------------------------------------------------------------
+      ## PART 4: FINAL CLEANUP
+      ## -------------------------------------------------------------------------------------------------------------------
+
+
+      # arrange the data, with priority columns on the left and data loader keys on the right
       first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
                          "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
                          "complete", "non_standard")
@@ -435,9 +475,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
           select(all_of(first_columns), all_of(keep_columns))
 
         ref_pds <- unique(out_all$TimeLabel)
-      }
-
-    } else { out_all <- NULL }
+      } else { out_all <- NULL }
 
     # 11. Look for years that are in raw data, but not in output
     #     If there are series with non-standard age groups, then add these to output as well
