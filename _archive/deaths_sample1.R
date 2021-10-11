@@ -14,8 +14,8 @@ require(DemoTools)
 require(tidyverse)
 require(rddharmony)
 
-# locid <- 96
-locid <- sample(get_locations()$PK_LocID, 1)
+locid <- 533
+# locid <- sample(get_locations()$PK_LocID, 1)
 times <- c(1950, 2020)
 process = c("census", "vr")
 return_unique_ref_period <- TRUE
@@ -44,7 +44,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
                                       DataSourceShortName = DataSourceShortName,
                                       DataSourceYear = DataSourceYear)
 
-  # if (!is.null(dd_extract)) {
+  if (!is.null(dd_extract)) {
 
     ## Shel added this so that it can be easy to compare the raw data with the clean and harmonized data.
     dd_extract <- dd_extract %>%
@@ -400,6 +400,8 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
   # CHECK WEATHER SUM OVER AGE MATCHES THE REPORTED TOTALS
   ## -------------------------------------------------------------------------------------------------------------------
 
+    if (nrow(vitals_std_full) > 0) {
+
     ## identify the unique ids in the data
       ids <- unique(vitals_std_full$id)
 
@@ -436,32 +438,25 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
       }
 
-      ##***********************************************************************************************************
-    }
-      ## -------------------------------------------------------------------------------------------------------------------
-      ## PART 4: FINAL CLEANUP
-      ## -------------------------------------------------------------------------------------------------------------------
+      if(length(vitals_std_valid) >0 ){
+      vitals_std_valid <- do.call(rbind, vitals_std_valid) %>%
+        mutate(five_year = abridged == TRUE & AgeSpan %in% c(-1,5),
+               abridged = abridged == TRUE & AgeLabel != "0-4")
+
+      }else
+      {
+        vitals_std_valid <- data.frame()
+      }
+    } else { vitals_std_valid <- vitals_std_full }
 
 
-      # arrange the data, with priority columns on the left and data loader keys on the right
-      first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
-                         "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
-                         "complete", "non_standard")
-      keep_columns <- names(vitals_std_all)
-      keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", "DataReliabilitySort", first_columns))]
+    ## -------------------------------------------------------------------------------------------------------------------
+    ## PART 4: SELECT THE MOST AUTHORITATIVE SERIES
+    ## -------------------------------------------------------------------------------------------------------------------
 
-      # initialize ref_pds and output data
-      ref_pds <- 0
-      out_all <- NULL
+    if (nrow(vitals_std_valid) > 0) {
 
-      if (length(vitals_std_valid) > 0) {
-
-        vitals_std_valid <- do.call(rbind, vitals_std_valid) %>%
-          mutate(five_year = abridged == TRUE & AgeSpan %in% c(-1,5),
-                 abridged = abridged == TRUE & AgeLabel != "0-4")
-
-
-        # 10.  When there is more than one id for a given census year, select the most authoritative
+    #  When there is more than one id for a given census year, select the most authoritative
 
         if (return_unique_ref_period == TRUE) {
 
@@ -469,19 +464,29 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
         } else { vitals_valid_id <- vitals_std_valid }
 
+    # arrange the data, with priority columns on the left and data loader keys on the right
+    first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
+                       "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
+                       "complete", "non_standard")
+    keep_columns <- names(vitals_std_all)
+    keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", "DataReliabilitySort", first_columns))]
+
+
         out_all <- vitals_valid_id %>%
           mutate(non_standard = FALSE,
                  DataTypeName = "Direct (age standardized)") %>%
           select(all_of(first_columns), all_of(keep_columns))
 
-        ref_pds <- unique(out_all$TimeLabel)
       } else { out_all <- NULL }
 
-    # 11. Look for years that are in raw data, but not in output
-    #     If there are series with non-standard age groups, then add these to output as well
+ ## -------------------------------------------------------------------------------------------------------------------
+  ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
+  ## -------------------------------------------------------------------------------------------------------------------
 
     first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd","SexID",
                        "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue")
+
+    ref_pds <- unique(out_all$TimeLabel)
 
     skipped <- dd_extract_194_195 %>%
       dplyr::filter(!(TimeLabel %in% ref_pds)) %>%
@@ -507,18 +512,78 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
              SexName = replace(SexName, SexID == 2, "Female"),
              SexName = replace(SexName, SexID == 3, "Both sexes"))
 
+    out_all <- out_all %>%
+      mutate(IndicatorID = ifelse(IndicatorName == "Deaths by age and sex - abridged", 194,
+                                  ifelse(IndicatorName == "Deaths by age and sex - complete", 195,  NA))) %>%
+      select(IndicatorID, IndicatorName, everything())
+
+
+
+    ## We have cases where we have complete cases that only contain 0, 1,2,3,4,5+. I (Shel) propose we drop this in cases where abridged cases exist
+    # throw it out if the open age group is below 50
+
+    out_all <- out_all %>%
+      group_by(id, SexID, complete) %>%
+      mutate(max_agestart = max(AgeStart, na.rm = TRUE)) %>%
+      filter(max_agestart > 50) %>%
+      ungroup() %>%
+      select(-max_agestart)
+
+    ## -------------------------------------------------------------------------------------------------------------------
+    ## PART 6: COMBINE THE HARMONIZED DATA WITH INDICATOR 188 DATA AND CLEAN IT
+    ## -------------------------------------------------------------------------------------------------------------------
+
+    if(nrow(dd_extract_188) >0){
+    out_all_appended <- dd_append_tcs_cas(indata = out_all,
+                                          type = "deaths",
+                                          tcs_data = dd_extract_188,
+                                          ind = 188)
+    }else
+    {
+      out_all_appended <- out_all
+    }
+
+    ## -------------------------------------------------------------------------------------------------------------------
+    ## PART 7: FINALIZE
+    ## -------------------------------------------------------------------------------------------------------------------
     if (retainKeys == FALSE) {
-      out_all <- out_all %>%
-        select(id, LocID, LocName, TimeMid, TimeEnd, DataSourceName, StatisticalConceptName,
+      out_all_appended <- out_all_appended %>%
+        select(id, LocID, LocName,IndicatorID, IndicatorName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
                DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
                AgeLabel, AgeSpan, AgeSort, DataValue, note)
     }
 
-  }
-  #   }else { # if no death counts were extracted from DemoData
-  #   print(paste0("There are no death counts by age available for LocID = ",locid," and dataprocess = ", process," for the time period ", times[1], " to ", times[length(times)]))
-  #   out_all <- NULL
-  # }
+    ## Print a text message showing the locid and the locname of the data extracted
+    cat("\n","Location ID: ", unique(out_all_appended$LocID),"\n",
+        "Location Name: ", unique(out_all_appended$LocName),"\n")
+
+    }else{## 	Deaths by age and sex not available
+      print(paste0("Deaths by age and sex not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+      out_all <- NULL
+    }
+
+    } else{## if no birth counts were extracted from DemoData
+      if(locid %in% get_locations()$LocID){
+        print(paste0("There are no death counts available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+        out_all_appended <- NULL
+      }
+      out_all_appended <- NULL
+    }
+
+
+
+## To be removed later
+## The only time labels that should be present in the raw dataset but absent in the clean dataset should be indicator 159 records.
+missing_timelabs<- unique(dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all_appended$TimeLabel)])
+assign("missing_timelabs", missing_timelabs, .GlobalEnv)
+
+if(length(missing_timelabs) >0){
+  missing_data <- dd_extract %>% filter(TimeLabel %in% missing_timelabs)
+  assign("missing_data", missing_data, .GlobalEnv)
+}else{
+  missing_data <- NULL
+}
+
 
 
 

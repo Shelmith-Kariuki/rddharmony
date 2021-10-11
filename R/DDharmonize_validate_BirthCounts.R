@@ -658,11 +658,19 @@ DDharmonize_validate_BirthCounts <- function(locid,
              SexName = replace(SexName, SexID == 2, "Female"),
              SexName = replace(SexName, SexID == 3, "Both sexes"))
 
-    ## Shel added this after noticing that a lot of indicator 159 data was being dropped
+    # out_all <- out_all %>%
+    #   mutate(IndicatorID = 170,
+    #          IndicatorName = "Births by age of mother (and sex of child)") %>%
+    #   select(IndicatorName, IndicatorID, everything())
+
     out_all <- out_all %>%
-      mutate(IndicatorID = 170,
-             IndicatorName = "Births by age of mother (and sex of child)") %>%
-      select(IndicatorName, IndicatorID, everything())
+      mutate(IndicatorID = 170) %>%
+      select(IndicatorID, IndicatorName, everything())
+
+    ## **************************************************************************************************
+    ## Add indicator 159 details here
+    ## Shel added this after noticing that a lot of indicator 159 data was being dropped
+    ## **************************************************************************************************
 
     ## Process indicator 159 data (make sure we have the latest datasource year per id)
     dd_extract_159_processed <- dd_extract_159 %>%
@@ -707,7 +715,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     if (retainKeys == FALSE) {
       out_all <- out_all %>%
-        select(id, LocID, LocName,IndicatorName, IndicatorID,  TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
+        select(id, LocID, LocName, IndicatorID, IndicatorName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
                DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
                AgeLabel, AgeSpan, AgeSort, DataValue, note)
     }
@@ -717,7 +725,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
         "Location Name: ", unique(out_all$LocName),"\n")
 
     }else{
-      print(paste0("Births by age of mother (and sex of child) data does not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+      print(paste0("Births by age of mother (and sex of child) do not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
       out_all <- NULL
     }
 
@@ -725,7 +733,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
   # if no birth counts were extracted from DemoData
     if(locid %in% get_locations()$LocID){
-    print(paste0("There are no birth counts by age available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+    print(paste0("There are no birth counts available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
     out_all <- NULL
     }
     out_all <- NULL
