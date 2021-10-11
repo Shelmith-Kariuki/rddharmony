@@ -1,127 +1,141 @@
-## THIS SCRIPT IMPLEMENTS A WORKFLOW FOR CENSUS POPULATION COUNTS
-## EXTRACTING FROM DEMODATA, HARMONIZING AGE GROUPS, IDENTIFYING FULL SERIES,
-## SELECTING PREFERRED SERIES, VALIDATING TOTALS AND BY SEX
-## modified 12 Jan 2021 to retain keys for bulk upload to DemoData
-## use retainKeys = TRUE to include these key fields in the function output
-## modified 14 Jan 2021 to allow user to specify api server address in server parameter
-## modified 29 Jan 2021 to retain more key fields for DemoData loader and to
-## eliminate dup country-census records in output
-## Valencia: "https://popdiv.dfs.un.org/DemoData/api/" is default
-## Paperspace: "http://74.82.31.177/DemoData/api/"
+#' DDharmonize_validate_DeathCounts
+#'
+#' This script implements a workflow for death counts from vr or census extracting data from Demodata, harmonizing age groups,
+#' identifying full series, selecting preferred series, validating totals by age and by sex and eventually,
+#' including key fields in the function output.
+#'
+#' @param locid location id
+#' @param times 1950, 2050
+#' @param process census or vr
+#' @param return_unique_ref_period TRUE
+#' @param DataSourceShortName NULL
+#' @param DataSourceYear NULL
+#' @param retainKeys FALSE
+#' @param server "https://popdiv.dfs.un.org/DemoData/api/"
+#'
+#' @import dplyr
+#' @import assertthat
+#' @import DDSQLtools
+#' @import DemoTools
+#' @importFrom magrittr %>%
+#' @importFrom purrr is_empty
+#'
+#' @return  A harmonized dataset containing death counts
+#'
+#' @export
+#'
+#' @examples
+#' kenya_df <- DDharmonize_validate_DeathCounts(404,
+#'                                               c(1950,2020),
+#'                                               process = c("census", "vr"),
+#'                                               return_unique_ref_period = TRUE,
+#'                                               DataSourceShortName = NULL,
+#'                                               DataSourceYear = NULL,
+#'                                               retainKeys = FALSE,
+#'                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
+DDharmonize_validate_DeathCounts <- function(locid,
+                                             times,
+                                             process = c("census", "vr"),
+                                             return_unique_ref_period = TRUE, # if true, then only most authoratative series will be returned for each reference period, per dd_rank_id_vitals()
+                                             DataSourceShortName = NULL,
+                                             DataSourceYear = NULL,
+                                             retainKeys = FALSE,
+                                             server = "https://popdiv.dfs.un.org/DemoData/api/") {
 
-require(DDSQLtools)
-require(DemoTools)
-require(tidyverse)
-require(rddharmony)
+  ## -------------------------------------------------------------------------------------------------------------------
+  ## PART 1: EXTRACT DEATHS BY AGE AND SEX FROM DEMO DATA AND HARMONIZE TO STANDARD ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
+  ## -------------------------------------------------------------------------------------------------------------------
 
-locid <- 533
-# locid <- sample(get_locations()$PK_LocID, 1)
-times <- c(1950, 2020)
-process = c("census", "vr")
-return_unique_ref_period <- TRUE
-DataSourceShortName = NULL
-DataSourceYear = NULL
-retainKeys = FALSE
-server = "https://popdiv.dfs.un.org/DemoData/api/"
+## UNPD server housing DemoData
+options(unpd_server = server)
 
+## 1. Extract all vital counts for a given country over the period specified in times
+dd_extract <- DDextract_VitalCounts(locid = locid,
+                                    type = "deaths",
+                                    process = process,
+                                    start_year = times[1],
+                                    end_year = times[length(times)],
+                                    DataSourceShortName = DataSourceShortName,
+                                    DataSourceYear = DataSourceYear)
 
+if (!is.null(dd_extract)) {
 
-  options(dplyr.summarise.inform=F)
-  ################################
-  ################################
-  ## PART 1: EXTRACT DEATHS BY AGE AND SEX FROM DEMO DATA AND HARMONIZE TO STANDARD
-  ## ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
+  ## Shel added this so that it can be easy to compare the raw data with the clean and harmonized data.
+  dd_extract <- dd_extract %>%
+    relocate(DataValue, .after = "agesort")
 
-  ## UNPD server housing DemoData
-  options(unpd_server = server)
+  assign("raw_df", dd_extract, .GlobalEnv)
 
-  ## 1. Extract all vital counts for a given country over the period specified in times
-  dd_extract <- DDextract_VitalCounts(locid = locid,
-                                      type = "deaths",
-                                      process = process,
-                                      start_year = times[1],
-                                      end_year = times[length(times)],
-                                      DataSourceShortName = DataSourceShortName,
-                                      DataSourceYear = DataSourceYear)
+  # get data process id
+  dpi <- ifelse(process == "census", 2, 36)
 
-  if (!is.null(dd_extract)) {
+  ## 2. Drop sub-national censuses (data process "vr" does not work with get_datacatalog?)
+  # filter out sub-national censuses (data process "vr" does not work with get_datacatalog?)
+  # if (dpi == 2) {
+  # Gets all DataCatalog records
 
-    ## Shel added this so that it can be easy to compare the raw data with the clean and harmonized data.
+  DataCatalog <- get_datacatalog(locIds = locid, dataProcessTypeIds = 2, addDefault = "false")
+  DataCatalog <- DataCatalog[DataCatalog$isSubnational==FALSE,]
+
+  if(nrow(DataCatalog) > 0) {
+    # Keep only those population series for which isSubnational is FALSE
     dd_extract <- dd_extract %>%
-      relocate(DataValue, .after = "agesort")
+      dplyr::filter(DataProcessID == 36 |(DataProcessID == 2 & DataCatalogID %in% DataCatalog$DataCatalogID))
+  }
 
-    assign("raw_df", dd_extract, .GlobalEnv)
+  # }
 
-    # get data process id
-    dpi <- ifelse(process == "census", 2, 36)
+  ## 3. Get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
 
-    ## 2. Drop sub-national censuses (data process "vr" does not work with get_datacatalog?)
-    # filter out sub-national censuses (data process "vr" does not work with get_datacatalog?)
-    # if (dpi == 2) {
-    # Gets all DataCatalog records
+  ## Added by Shel because locid == 832 exists in get_locations() but not in get_datasources().
+  ## To confirm with Sara
+  possible_ids <- get_datasources()$LocID
+  if (!("DataSourceTypeName" %in% names(dd_extract)) & locid %in% possible_ids) {
 
-      DataCatalog <- get_datacatalog(locIds = locid, dataProcessTypeIds = 2, addDefault = "false")
-      DataCatalog <- DataCatalog[DataCatalog$isSubnational==FALSE,]
+    # get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
+    DataSources <- get_datasources(locIds = locid, dataProcessTypeIds = dpi, addDefault = "false") %>%
+      dplyr::select(LocID, PK_DataSourceID, DataSourceTypeName, DataSourceStatusName) %>%
+      dplyr::rename(DataSourceID = PK_DataSourceID)
 
-      if(nrow(DataCatalog) > 0) {
-        # Keep only those population series for which isSubnational is FALSE
-        dd_extract <- dd_extract %>%
-          dplyr::filter(DataProcessID == 36 |(DataProcessID == 2 & DataCatalogID %in% DataCatalog$DataCatalogID))
-      }
-
-    # }
-
-      ## 3. Get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
-
-      ## Added by Shel because locid == 832 exists in get_locations() but not in get_datasources().
-      ## To confirm with Sara
-      possible_ids <- get_datasources()$LocID
-      if (!("DataSourceTypeName" %in% names(dd_extract)) & locid %in% possible_ids) {
-
-      # get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
-      DataSources <- get_datasources(locIds = locid, dataProcessTypeIds = dpi, addDefault = "false") %>%
-        dplyr::select(LocID, PK_DataSourceID, DataSourceTypeName, DataSourceStatusName) %>%
-        dplyr::rename(DataSourceID = PK_DataSourceID)
-
-      dd_extract <- dd_extract %>%
-        left_join(DataSources, by = c("LocID", "DataSourceID"), )
-    }
-
-      ## 4. Discard DataTypeName==“Direct (standard abridged age groups computed)” or
-      # “Direct (standard abridged age groups computed - Unknown redistributed)” and generate an id
     dd_extract <- dd_extract %>%
-      dplyr::filter(DataTypeName!= 'Direct (standard abridged age groups computed)',
-                    DataTypeName!= 'Direct (standard abridged age groups computed - Unknown redistributed)') %>%
-      mutate(id = paste(LocID, LocName, DataProcess, "Deaths", TimeLabel, DataProcessType, DataSourceName, StatisticalConceptName, DataTypeName, DataReliabilityName, sep = " - ")) %>%
-      arrange(id)
+      left_join(DataSources, by = c("LocID", "DataSourceID"), )
+  }
 
-    ## 5.***** Shel added this to separate indicator 159 with 170 because indicator 159 data is being dropped in the
-    ##DDharmonize_Vitals1() and DDharmonize_Vitals5() functions *****
+  ## 4. Discard DataTypeName==“Direct (standard abridged age groups computed)” or
+  # “Direct (standard abridged age groups computed - Unknown redistributed)” and generate an id
+  dd_extract <- dd_extract %>%
+    dplyr::filter(DataTypeName!= 'Direct (standard abridged age groups computed)',
+                  DataTypeName!= 'Direct (standard abridged age groups computed - Unknown redistributed)') %>%
+    mutate(id = paste(LocID, LocName, DataProcess, "Deaths", TimeLabel, DataProcessType, DataSourceName, StatisticalConceptName, DataTypeName, DataReliabilityName, sep = " - ")) %>%
+    arrange(id)
 
-    dd_extract_188 <- dd_extract %>% filter(IndicatorID == 188)
+  ## 5.***** Shel added this to separate indicator 159 with 170 because indicator 159 data is being dropped in the
+  ##DDharmonize_Vitals1() and DDharmonize_Vitals5() functions *****
 
-    ## | AgeLabel == "Total" was added because of the instances where indicator 194 or 195 has no total age record,
-    # so we borrow it from indicator 188
-    dd_extract_194_195 <- dd_extract %>% filter(IndicatorID == 194 |IndicatorID == 195| AgeLabel == "Total")
-    dd_extract_194_195 <- dd_extract_194_195 %>%
-      group_by(id, IndicatorID, SexName) %>%
-      mutate(n_id = n()) %>%
-      ungroup() %>%
-      group_by(id, SexName) %>%
-      mutate(max_length_id = max(n_id, na.rm = TRUE)) %>%
-      mutate(majority_id = ifelse(n_id == max_length_id, IndicatorID[n_id == max_length_id], 0),
-             majority_id = unique(majority_id[majority_id!=0]),
-             majority_idname = ifelse(majority_id == 194, "Deaths by age and sex - abridged",
-                                      ifelse(majority_id == 195, "Deaths by age and sex - complete",
-                                             ifelse(majority_id == 188, "Total deaths by sex","")))) %>%
-      mutate(IndicatorID = ifelse(AgeLabel == "Total" & IndicatorID == 188 &
-                                    !any(IndicatorID %in% c(194, 195) & AgeLabel == "Total"), majority_id,IndicatorID),
-             IndicatorName = ifelse(IndicatorID == majority_id, majority_idname, IndicatorName)) %>%
-      filter(IndicatorID != 188) %>%
-      ungroup() %>%
-      select(-n_id ,-max_length_id, -majority_id, -majority_idname)
+  dd_extract_188 <- dd_extract %>% filter(IndicatorID == 188)
 
-    if(nrow(dd_extract_194_195) > 0){
+  ## | AgeLabel == "Total" was added because of the instances where indicator 194 or 195 has no total age record,
+  # so we borrow it from indicator 188
+  dd_extract_194_195 <- dd_extract %>% filter(IndicatorID == 194 |IndicatorID == 195| AgeLabel == "Total")
+  dd_extract_194_195 <- dd_extract_194_195 %>%
+    group_by(id, IndicatorID, SexName) %>%
+    mutate(n_id = n()) %>%
+    ungroup() %>%
+    group_by(id, SexName) %>%
+    mutate(max_length_id = max(n_id, na.rm = TRUE)) %>%
+    mutate(majority_id = ifelse(n_id == max_length_id, IndicatorID[n_id == max_length_id], 0),
+           majority_id = unique(majority_id[majority_id!=0]),
+           majority_idname = ifelse(majority_id == 194, "Deaths by age and sex - abridged",
+                                    ifelse(majority_id == 195, "Deaths by age and sex - complete",
+                                           ifelse(majority_id == 188, "Total deaths by sex","")))) %>%
+    mutate(IndicatorID = ifelse(AgeLabel == "Total" & IndicatorID == 188 &
+                                  !any(IndicatorID %in% c(194, 195) & AgeLabel == "Total"), majority_id,IndicatorID),
+           IndicatorName = ifelse(IndicatorID == majority_id, majority_idname, IndicatorName)) %>%
+    filter(IndicatorID != 188) %>%
+    ungroup() %>%
+    select(-n_id ,-max_length_id, -majority_id, -majority_idname)
+
+  if(nrow(dd_extract_194_195) > 0){
 
     # list of series uniquely identified
     ids <- unique(dd_extract_194_195$id)
@@ -168,32 +182,32 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
       # if (!is.null(vitals1_std) | !is.null(vitals5_std)) { // Removed
 
-        ## 9. generate two datasets (vitals_abr, vitals_cpl) which are copies of (vitals5_std, vitals1_std) and set this to NULL
+      ## 9. generate two datasets (vitals_abr, vitals_cpl) which are copies of (vitals5_std, vitals1_std) and set this to NULL
 
 
-        if(!is.null(vitals5_std)) {
-          vitals_abr <- vitals5_std
-          if (nrow(vitals_abr) == 0) {
-            vitals_abr <- NULL
-          }
-        } else {
+      if(!is.null(vitals5_std)) {
+        vitals_abr <- vitals5_std
+        if (nrow(vitals_abr) == 0) {
           vitals_abr <- NULL
         }
-        if(!is.null(vitals1_std)) {
-          vitals_cpl <- vitals1_std
-        } else {
-          vitals_cpl <- NULL
-        }
+      } else {
+        vitals_abr <- NULL
+      }
+      if(!is.null(vitals1_std)) {
+        vitals_cpl <- vitals1_std
+      } else {
+        vitals_cpl <- NULL
+      }
 
-        # 10. reconcile abridged and complete series, as necessary
+      # 10. reconcile abridged and complete series, as necessary
 
-        if (!is.null(vitals_abr) & !is.null(vitals_cpl)) {
-          vitals_abr_cpl <- DDharmonize_AbridgedAndComplete(data_abr = vitals_abr,
-                                                            data_cpl_from_abr = NULL,
-                                                            data_cpl = vitals_cpl) %>%
-            dplyr::filter(series %in% c("abridged reconciled with complete", "complete reconciled with abridged"))
+      if (!is.null(vitals_abr) & !is.null(vitals_cpl)) {
+        vitals_abr_cpl <- DDharmonize_AbridgedAndComplete(data_abr = vitals_abr,
+                                                          data_cpl_from_abr = NULL,
+                                                          data_cpl = vitals_cpl) %>%
+          dplyr::filter(series %in% c("abridged reconciled with complete", "complete reconciled with abridged"))
 
-        } else { vitals_abr_cpl <- NULL }
+      } else { vitals_abr_cpl <- NULL }
 
 
       ## Added by Shel
@@ -207,30 +221,30 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
         vitals_cpl <- NULL
       }
 
-        # 11. If we only have complete series and not abridged, ...
-        if (is.null(vitals_abr) & !is.null(vitals_cpl)) {
-          vitals5_std <- NULL
-          vitals_abr_cpl <- NULL
+      # 11. If we only have complete series and not abridged, ...
+      if (is.null(vitals_abr) & !is.null(vitals_cpl)) {
+        vitals5_std <- NULL
+        vitals_abr_cpl <- NULL
 
-          ## Generate abridged data from the complete series
-          for (sex in unique(vitals_cpl$SexID)) {
+        ## Generate abridged data from the complete series
+        for (sex in unique(vitals_cpl$SexID)) {
 
-            vitals_abr_cpl_sex <- dd_single2abridged(data = vitals_cpl %>% dplyr::filter(SexID == sex)) %>%
-              mutate(SexID = sex) # this returns a dataset containing 5-year age groups generated
-            #from single years of age for each sex
-            #
-            vitals_abr_cpl <- rbind(vitals_abr_cpl, vitals_abr_cpl_sex)
-            rm(vitals_abr_cpl_sex)
-          }
-
-          ## Fill in the younger ages with 0s if the data values are NA
-          vitals_abr_cpl <- dd_fillzeros_births(vitals_abr_cpl %>% select(-AgeSort), abridged = TRUE)
-
-          vitals_abr_cpl <- vitals_abr_cpl %>%
-            mutate(abridged = TRUE,
-                   complete = FALSE,
-                   series = "abridged reconciled with complete")
+          vitals_abr_cpl_sex <- dd_single2abridged(data = vitals_cpl %>% dplyr::filter(SexID == sex)) %>%
+            mutate(SexID = sex) # this returns a dataset containing 5-year age groups generated
+          #from single years of age for each sex
+          #
+          vitals_abr_cpl <- rbind(vitals_abr_cpl, vitals_abr_cpl_sex)
+          rm(vitals_abr_cpl_sex)
         }
+
+        ## Fill in the younger ages with 0s if the data values are NA
+        vitals_abr_cpl <- dd_fillzeros_births(vitals_abr_cpl %>% select(-AgeSort), abridged = TRUE)
+
+        vitals_abr_cpl <- vitals_abr_cpl %>%
+          mutate(abridged = TRUE,
+                 complete = FALSE,
+                 series = "abridged reconciled with complete")
+      }
 
       # } else { # if there are no age-specific records
       #   vitals_cpl <- NULL
@@ -307,11 +321,11 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
       ## for each id series
       for (i in 1:length(id_sers)) {
 
-      ## subset the data to only have data for a particular id series
+        ## subset the data to only have data for a particular id series
         pop_one_series <- vitals_std_all %>%
           dplyr::filter(id_series == id_sers[i])
 
-      ## check if the series has an abridged aspect or not
+        ## check if the series has an abridged aspect or not
         abridged <- substr(pop_one_series$series[1],1,1) == "a"
 
         ## check if each of the gender datasets are full series or not
@@ -342,10 +356,10 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
     } else { vitals_std_full <- vitals_std_all }
 
-      ## for each id-sex combo of full series,
-      ## keep the reconciled series if it is available and discard the original abridged or complete
+    ## for each id-sex combo of full series,
+    ## keep the reconciled series if it is available and discard the original abridged or complete
 
-      if (nrow(vitals_std_full) > 0) {
+    if (nrow(vitals_std_full) > 0) {
 
       ## identify unique id and sex combination
       ids_sex <- unique(vitals_std_full$id_sex)
@@ -394,18 +408,18 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
         select(-id_sex, -id_series)
     } else { vitals_std_full <- vitals_std_full }
 
-  ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 3: VALIDATE THE REMAINING SERIES, CHECKING FOR BOTH SEX TOTALS THAT MATCH BY SEX,
-  # CORRECT FOR ANY INSTANCES WHERE DATA FOR SEX-AGE GROUP COMBINATIONS ARE MISSING, AND
-  # CHECK WEATHER SUM OVER AGE MATCHES THE REPORTED TOTALS
-  ## -------------------------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------------------------
+    ## PART 3: VALIDATE THE REMAINING SERIES, CHECKING FOR BOTH SEX TOTALS THAT MATCH BY SEX,
+    # CORRECT FOR ANY INSTANCES WHERE DATA FOR SEX-AGE GROUP COMBINATIONS ARE MISSING, AND
+    # CHECK WEATHER SUM OVER AGE MATCHES THE REPORTED TOTALS
+    ## -------------------------------------------------------------------------------------------------------------------
 
     if (nrow(vitals_std_full) > 0) {
 
-    ## identify the unique ids in the data
+      ## identify the unique ids in the data
       ids <- unique(vitals_std_full$id)
 
-    ## create a place holder for the final output which is ...
+      ## create a place holder for the final output which is ...
       vitals_std_valid <- list()
 
       for (i in 1:length(ids)) {
@@ -439,9 +453,9 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
       }
 
       if(length(vitals_std_valid) >0 ){
-      vitals_std_valid <- do.call(rbind, vitals_std_valid) %>%
-        mutate(five_year = abridged == TRUE & AgeSpan %in% c(-1,5),
-               abridged = abridged == TRUE & AgeLabel != "0-4")
+        vitals_std_valid <- do.call(rbind, vitals_std_valid) %>%
+          mutate(five_year = abridged == TRUE & AgeSpan %in% c(-1,5),
+                 abridged = abridged == TRUE & AgeLabel != "0-4")
 
       }else
       {
@@ -456,32 +470,32 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
     if (nrow(vitals_std_valid) > 0) {
 
-    #  When there is more than one id for a given census year, select the most authoritative
+      #  When there is more than one id for a given census year, select the most authoritative
 
-        if (return_unique_ref_period == TRUE) {
+      if (return_unique_ref_period == TRUE) {
 
-          vitals_valid_id <- vitals_std_valid %>% dd_rank_id_vitals
+        vitals_valid_id <- vitals_std_valid %>% dd_rank_id_vitals
 
-        } else { vitals_valid_id <- vitals_std_valid }
+      } else { vitals_valid_id <- vitals_std_valid }
 
-    # arrange the data, with priority columns on the left and data loader keys on the right
-    first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
-                       "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
-                       "complete", "non_standard")
-    keep_columns <- names(vitals_std_all)
-    keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", "DataReliabilitySort", first_columns))]
+      # arrange the data, with priority columns on the left and data loader keys on the right
+      first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
+                         "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
+                         "complete", "non_standard")
+      keep_columns <- names(vitals_std_all)
+      keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", "DataReliabilitySort", first_columns))]
 
 
-        out_all <- vitals_valid_id %>%
-          mutate(non_standard = FALSE,
-                 DataTypeName = "Direct (age standardized)") %>%
-          select(all_of(first_columns), all_of(keep_columns))
+      out_all <- vitals_valid_id %>%
+        mutate(non_standard = FALSE,
+               DataTypeName = "Direct (age standardized)") %>%
+        select(all_of(first_columns), all_of(keep_columns))
 
-      } else { out_all <- NULL }
+    } else { out_all <- NULL }
 
- ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
-  ## -------------------------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------------------------
+    ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
+    ## -------------------------------------------------------------------------------------------------------------------
 
     first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd","SexID",
                        "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue")
@@ -534,10 +548,10 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
     ## -------------------------------------------------------------------------------------------------------------------
 
     if(nrow(dd_extract_188) >0){
-    out_all_appended <- dd_append_tcs_cas(indata = out_all,
-                                          type = "deaths",
-                                          tcs_data = dd_extract_188,
-                                          ind = 188)
+      out_all_appended <- dd_append_tcs_cas(indata = out_all,
+                                            type = "deaths",
+                                            tcs_data = dd_extract_188,
+                                            ind = 188)
     }else
     {
       out_all_appended <- out_all
@@ -557,18 +571,18 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
     cat("\n","Location ID: ", unique(out_all_appended$LocID),"\n",
         "Location Name: ", unique(out_all_appended$LocName),"\n")
 
-    }else{## 	Deaths by age and sex not available
-      print(paste0("Deaths by age and sex not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
-      out_all <- NULL
-    }
+  }else{## 	Deaths by age and sex not available
+    print(paste0("Deaths by age and sex not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+    out_all <- NULL
+  }
 
-    } else{## if no birth counts were extracted from DemoData
-      if(locid %in% get_locations()$LocID){
-        print(paste0("There are no death counts available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
-        out_all_appended <- NULL
-      }
-      out_all_appended <- NULL
-    }
+} else{## if no birth counts were extracted from DemoData
+  if(locid %in% get_locations()$LocID){
+    print(paste0("There are no death counts available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+    out_all_appended <- NULL
+  }
+  out_all_appended <- NULL
+}
 
 ## To be removed later
 ## The only time labels that should be present in the raw dataset but absent in the clean dataset should be indicator 159 records.
@@ -583,7 +597,9 @@ if(length(missing_timelabs) >0){
 }
 
 
+return(out_all_appended)
 
+}
 
 
 

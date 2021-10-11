@@ -1,7 +1,7 @@
 #' DDharmonize_validate_BirthCounts
 #'
 #' This script implements a workflow for births counts from vr or census extracting data from Demodata, harmonizing age groups,
-#' identifying full series, selecting preferred series, validating totals by age and by sex and, eventually,
+#' identifying full series, selecting preferred series, validating totals by age and, eventually
 #' including key fields in the function output.
 #'
 #' @param locid location id
@@ -20,7 +20,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom purrr is_empty
 #'
-#' @return  A harmonized dataset
+#' @return  A harmonized dataset containing birth counts
 #'
 #' @export
 #'
