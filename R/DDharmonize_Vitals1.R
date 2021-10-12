@@ -38,6 +38,7 @@ DDharmonize_Vitals1 <- function (indata) {
         df <- df %>%
           dplyr::filter(DataStatusName == "Final")
       }
+
       ##3. check for multiple series ids
 
       ids_series <- unique(df$SeriesID)
@@ -55,7 +56,9 @@ DDharmonize_Vitals1 <- function (indata) {
         df_one_std    <- df_one[df_one$AgeSpan %in% c(-1, -2, 1),]
         if (nrow(df_one_std) > 60) {
           df_one$check_full <- dd_series_isfull(df_one_std, abridged = FALSE)
-        } else { df_one$check_full <- FALSE }
+        } else {
+          df_one$check_full <- FALSE
+          }
         df_out <- rbind(df_out, df_one)
       }
       df <- df_out
@@ -68,7 +71,7 @@ DDharmonize_Vitals1 <- function (indata) {
         latest_source_year <- max(df$DataSourceYear)
         check_latest_full  <- unique(df$check_full[df$DataSourceYear == latest_source_year])
         # ... and latest series is full then keep only that one
-        if (check_latest_full) {
+        if (any(check_latest_full)) {# Edited this. Case Study: 104 - Myanmar - VR - Deaths - 2012 - Register - Demographic Yearbook - Year of registration - Direct - Low
           df <- df[df$DataSourceYear == latest_source_year,]
         } else {
           # ... and latest series is not full, then keep the latest data source record for each age

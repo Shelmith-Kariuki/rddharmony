@@ -14,7 +14,7 @@ require(DemoTools)
 require(tidyverse)
 require(rddharmony)
 
-locid <- 533
+locid <- 104
 # locid <- sample(get_locations()$PK_LocID, 1)
 times <- c(1950, 2020)
 process = c("census", "vr")
@@ -95,7 +95,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
       mutate(id = paste(LocID, LocName, DataProcess, "Deaths", TimeLabel, DataProcessType, DataSourceName, StatisticalConceptName, DataTypeName, DataReliabilityName, sep = " - ")) %>%
       arrange(id)
 
-    ## 5.***** Shel added this to separate indicator 159 with 170 because indicator 159 data is being dropped in the
+    ## 5.***** Shel added this to separate indicator 188 with 194,195 because indicator 188 data is being dropped in the
     ##DDharmonize_Vitals1() and DDharmonize_Vitals5() functions *****
 
     dd_extract_188 <- dd_extract %>% filter(IndicatorID == 188)
@@ -311,27 +311,39 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
         pop_one_series <- vitals_std_all %>%
           dplyr::filter(id_series == id_sers[i])
 
+      ## Added: Determine the number of unique sexes in the data
+        n_sexes <- length(unique(pop_one_series$SexID))
+
       ## check if the series has an abridged aspect or not
         abridged <- substr(pop_one_series$series[1],1,1) == "a"
 
         ## check if each of the gender datasets are full series or not
-        check_full_m <- dd_series_isfull(pop_one_series %>%
+        ## dd_series_isfull() will produce the following warning in cases where one of the SexIDs does not exist. Refer to https://stackoverflow.com/questions/24282550/no-non-missing-arguments-warning-when-using-min-or-max-in-reshape2
+        ## In max(AgeStart) : no non-missing arguments to max; returning -Inf
+        ## So we wrap the function in suppressWarnings()
+        check_full_m <- suppressWarnings(dd_series_isfull(pop_one_series %>%
                                            dplyr::filter(SexID == 1),
-                                         abridged = abridged)
-        check_full_f <- dd_series_isfull(pop_one_series %>%
+                                         abridged = abridged))
+        check_full_f <- suppressWarnings(dd_series_isfull(pop_one_series %>%
                                            dplyr::filter(SexID == 2),
-                                         abridged = abridged)
-        check_full_b <- dd_series_isfull(pop_one_series %>%
+                                         abridged = abridged))
+        check_full_b <- suppressWarnings(dd_series_isfull(pop_one_series %>%
                                            dplyr::filter(SexID == 3),
-                                         abridged = abridged)
+                                         abridged = abridged))
         check_full <- c(check_full_m, check_full_f, check_full_b)
 
         ## Check how many series are full out of the three
         n_full <- length(check_full[check_full == TRUE])
 
         # if at least two are full, then identify the series as full
-        if (n_full >=2 ) {
+        # Shel edited: If only one sex exists and it is full, then identify series as full
+        # Case study: "104 - Myanmar - VR - Deaths - 2005 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+        if (n_full >=2 & n_sexes >= 2) {
           id_series_full <- c(id_series_full, id_sers[i])
+        }else{
+          if(n_full==1 & n_sexes == 1 ){
+            id_series_full <- c(id_series_full, id_sers[i])
+          }
         }
       }
 
@@ -451,7 +463,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
 
     ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 4: SELECT THE MOST AUTHORITATIVE SERIES
+    ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
     ## -------------------------------------------------------------------------------------------------------------------
 
     if (nrow(vitals_std_valid) > 0) {

@@ -81,7 +81,7 @@ out <- merged_df3 %>%
         select(-serial_no)
 
 ## Do we return only the clean records (merged_df3) or everything including the dropped records (out), to confirm with Sara
-## Returning all the records for now (including those that should be dropped)
-return(out)
+## Returning the clean records
+return(merged_df3)
 }
 

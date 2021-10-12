@@ -19,7 +19,7 @@ dd_rank_id_vitals <- function(indata){
 
   # Check id duplication for each country-year
   out <-  indata %>%
-    group_by(TimeLabel) %>%
+    group_by(TimeLabel, SexID) %>%
     mutate(num.id = length(unique(id))) %>%
     ungroup()
 
@@ -27,13 +27,13 @@ dd_rank_id_vitals <- function(indata){
   if (max(out$num.id)>1) {
     out1 <-  out %>%
       dplyr::filter(num.id>=2) %>%
-      group_by(id) %>%
+      group_by(id, SexID) %>%
       mutate(num.serie = length(unique(abridged[AgeLabel != "0-4"])),
              maxage = max(AgeStart)) %>%
       ungroup %>%
 
       # First: Rank by Statistical Concept, preferring “Year of occurrence” over “Year of registration”, for example
-      group_by(TimeLabel) %>%
+      group_by(TimeLabel, SexID) %>%
       dplyr::filter(StatisticalConceptSort == min(StatisticalConceptSort)) %>%
 
       # Second: Rank by DataStatus, preferring Final over Provisional, for example
@@ -79,8 +79,8 @@ dd_rank_id_vitals <- function(indata){
   outdata <- rbind(out1, out2)
 
   # check number of ids again
-  lookForDups <- unique(outdata[,c("TimeLabel","id")]) %>%
-    group_by(TimeLabel) %>%
+  lookForDups <- unique(outdata[,c("TimeLabel","id","SexID")]) %>%
+    group_by(TimeLabel, SexID) %>%
     mutate(n = 1:length(TimeLabel)) %>%
     dplyr::filter(n == 1) # keep only the first id for each census year
   outdata <- outdata %>%

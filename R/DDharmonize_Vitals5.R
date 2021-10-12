@@ -78,7 +78,7 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
         latest_source_year <- max(abr$DataSourceYear)
         check_latest_full  <- unique(abr$check_full[abr$DataSourceYear == latest_source_year])
         # ... and latest series is full then keep only that one
-        if (check_latest_full) {
+        if (any(check_latest_full)) {# Edited this. Case Study: 104 - Myanmar - VR - Deaths - 2012 - Register - Demographic Yearbook - Year of registration - Direct - Low
           abr <- abr[abr$DataSourceYear == latest_source_year,]
         } else {
           # ... and latest series is not full, then keep the latest data source record for each age
