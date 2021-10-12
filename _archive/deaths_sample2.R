@@ -13,6 +13,16 @@ clean_df <- DDharmonize_validate_DeathCounts(locid,
                                               retainKeys = FALSE,
                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
 
+
+sweden_df <- DDharmonize_validate_BirthCounts(752,
+                                              c(1950,2020),
+                                              process = c("census", "vr"),
+                                              return_unique_ref_period = TRUE,
+                                              DataSourceShortName = NULL,
+                                              DataSourceYear = NULL,
+                                              retainKeys = FALSE,
+                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
+
 length(unique(clean_df$id))
 
 ## **********************************************************************************************

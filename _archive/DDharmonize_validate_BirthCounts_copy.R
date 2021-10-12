@@ -33,7 +33,6 @@
 #'                                               DataSourceYear = NULL,
 #'                                               retainKeys = FALSE,
 #'                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
-
 DDharmonize_validate_BirthCounts <- function(locid,
                                              times,
                                              process = c("census", "vr"),
@@ -118,13 +117,10 @@ DDharmonize_validate_BirthCounts <- function(locid,
     dd_extract_170 <- dd_extract_170 %>%
                         group_by(id) %>%
                         mutate(IndicatorID = ifelse(AgeLabel == "Total" & IndicatorID == 159 &
-                                                      !any(IndicatorID == 170 & AgeLabel == "Total") &
-                                                      any(IndicatorID == 170), 170, IndicatorID),
+                                                      !any(IndicatorID == 170 & AgeLabel == "Total"), 170, IndicatorID),
                                IndicatorName = "Births by age of mother (and sex of child)") %>%
                         ungroup() %>%
                         filter(IndicatorID != 159)
-    dd_extract_170 <- dd_extract_170 %>%
-      mutate(AgeSort = ifelse(IndicatorID == 170 & AgeSort == 999, 184, AgeSort))
 
 
 
@@ -143,6 +139,12 @@ DDharmonize_validate_BirthCounts <- function(locid,
       vitals_raw <- dd_extract_170 %>%
         dplyr::filter(id == ids[i])
 
+      ## 6. Testing the code with a use case where we have both complete and five-year age labels for the same:
+      ## LocID: 752
+      ## Loc: Sweden
+      ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
+      # vitals_raw <- dd_extract_170 %>%
+      #   filter(TimeMid == 2018.5)
 
       ## 7. Isolate records that refer to five-year age data
       # -1 (Total), -2 (Unknown): These age labels will feature in both 5-year and 1-year data.
@@ -213,6 +215,17 @@ DDharmonize_validate_BirthCounts <- function(locid,
           vitals_cpl <- NULL
         }
 
+        # if(!is.null(vitals_abr)) {
+        #
+        # vitals_abr <- vitals_abr %>%
+        #               mutate(added_oag = ifelse(!AgeLabel %in% vitals5_raw$AgeLabel, "added_aog", ""))
+        # }
+        #
+        # if(!is.null(vitals_cpl)) {
+        # vitals_cpl <- vitals_cpl %>%
+        #   mutate(added_oag = ifelse(!AgeLabel %in% vitals1_raw$AgeLabel, "added_aog", ""))
+        # }
+
         ## 11. reconcile abridged and complete series, as necessary
 
 
@@ -222,6 +235,44 @@ DDharmonize_validate_BirthCounts <- function(locid,
                                                             data_cpl_from_abr = NULL,
                                                             data_cpl = vitals_cpl) %>%
             dplyr::filter(series %in% c("abridged reconciled with complete", "complete reconciled with abridged"))
+
+          # if(nrow(vitals_abr_cpl) >0 ){
+          #
+          # oag_added_abr = vitals_abr$AgeLabel[which(!vitals_abr$AgeLabel %in% vitals5_raw$AgeLabel)]
+          # oag_added_cpl = vitals_cpl$AgeLabel[which(!vitals_cpl$AgeLabel %in% vitals_cpl$AgeLabel)]
+          #
+          # appended_abr_cpl <- bind_rows(vitals_abr, vitals_cpl)
+          # early_ages_added0 = vitals_abr_cpl$AgeLabel[which(!vitals_abr_cpl$AgeLabel %in% appended_abr_cpl$AgeLabel)]
+          #
+          # if(length(early_ages_added0) >0){
+          #   vitals_abr_cpl <- vitals_abr_cpl %>%
+          #     mutate(early_ages_added = ifelse(AgeLabel %in% early_ages_added0, "added", ""))
+          # }else{
+          #   vitals_abr_cpl$early_ages_added = ""
+          # }
+          #
+          # if(length(c(oag_added_abr, oag_added_abr)) >0){
+          #   vitals_abr_cpl <- vitals_abr_cpl %>%
+          #     mutate(oag_added = ifelse(AgeLabel %in% c(oag_added_abr, oag_added_abr), "added",""))
+          # }else{
+          #   vitals_abr_cpl$oag_added = ""
+          # }
+          #
+          # vitals_abr_cpl <- vitals_abr_cpl %>%
+          #   group_by(complete) %>%
+          #   mutate(tot_without_oag = sum(DataValue[oag_added != "added" & AgeLabel != "Total"],na.rm = TRUE),
+          #          tot_recorded = ifelse(any(AgeLabel == "Total"), DataValue[AgeLabel == "Total"], 0),
+          #          early_ages_value = sum(DataValue[early_ages_added == "added"])) %>%
+          #   mutate(DataValue = ifelse(is.na(oag_added), DataValue,
+          #                         ifelse(oag_added == "added" & abs(tot_recorded - tot_without_oag) == 0,
+          #                             0, DataValue))) %>%
+          #   select(-tot_without_oag, -tot_recorded, -oag_added,-early_ages_added, -early_ages_value)
+          #
+          #
+          # rm(oag_added_abr, oag_added_cpl, appended_abr_cpl, early_ages_added0)
+          # }else{
+          #   vitals_abr_cpl <- vitals_abr_cpl
+          # }
 
           ## 12. fill in zeros for births at young ages, if missing
           ## part a: abridged reconciled with complete
@@ -282,7 +333,12 @@ DDharmonize_validate_BirthCounts <- function(locid,
                    series = "abridged reconciled with complete")
         }
 
+        ## What if: (!is.null(vitals_abr) & is.null(vitals_cpl)), we leave as it is?
+
         ## 14. For births, populate missing abridged age groups with zeros, as appropriate
+        ## This is a case where only one of the series exists, right?
+        ## Should this be if (!is.null(vitals_abr) & is.null(vitals_cpl))? Ask Sara
+        ## Wait ... is this redundant? Ask Sara
         if (!is.null(vitals5_std)) {
           vitals5_std <- dd_fillzeros_births(vitals5_std %>% select(-AgeSort), abridged = TRUE) %>%
             mutate(abridged = TRUE,
@@ -290,6 +346,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
                    series = "abridged")
         }
 
+        ## Should this be if (!is.null(vitals_cpl) & is.null(vitals_abr))? Ask Sara
         if (!is.null(vitals_cpl)) {
           if (nrow(vitals_cpl[vitals_cpl$AgeSpan == 1,]) >=5 ) {
             vitals_cpl <- dd_fillzeros_births(vitals_cpl %>% select(-AgeSort), abridged = FALSE) %>%
@@ -370,6 +427,39 @@ DDharmonize_validate_BirthCounts <- function(locid,
       mutate(DataValue = ifelse(oag == TRUE & (floor(tot_without_oag) == floor(tot_reported)) & tot_reported!=0, 0, DataValue)) %>%
       select(-oag, -tot_without_oag, -tot_reported)
 
+    # x <- vitals_std_all %>%
+    #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
+    # x <- vitals_std_all %>%
+    #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Eurostat Database - Year of occurrence - Direct - High quality")
+
+    # unique(x$series)
+
+    ## Potential tests at the end of part one:------------------------------------------------------------------------
+    ## 1. At the end of part one, if the data has both abridged and complete series, it should have 4 unique series:
+    ## 1) abridged , 2) complete , 3)  abridged reconciled with complete , 4) complete reconciled with abridged
+
+    ## 2. An age label can either be abridged or complete, but not both
+    ## 3. Abridged age labels can only belong to two unique series (abridged, `abridged reconciled with complete`).
+    ##    Complete age labels can only belong to two unique series (complete, `complete reconciled with abridged`)
+    ## 4. Each group of records should have ages 0, 1-4, 0-4, 5-9 as start ages with values == 0, i.e if they do not exist already
+    ## 5. Check the id_series (after removing the series) that are not in the original ids are either records
+    ## of indicator 159 (Total) or records without age labels. This will ensure that we are not dropping any data.
+
+    # incl_ids <- vitals_std_all %>% distinct(id) %>% pull()
+    # excl_ids <- ids[!ids %in% incl_ids]
+    #
+    # print(paste0(length(excl_ids), " out of ", length(ids),
+    #              " ids have been dropped from the data at this point. We need to investigate the data further to ensure that we are not losing any data"))
+    # excl_ids
+    #
+    # dropped_ids <- list()
+    #
+    # for(i in 1:length(excl_ids)){
+    #   dropped_ids[[i]] <- dd_extract %>%
+    #     filter(id == excl_ids[i])
+    # }
+    # dropped_ids_df <- bind_rows(dropped_ids)
+
     ## -------------------------------------------------------------------------------------------------------------------
     ## PART 2: FILTER AVAILABLE SERIES, KEEPING ONLY THOSE THAT CONTAIN A FULL AGE DISTRIBUTION
     # AND THE POST-RECONCILIATION ABRIDGED AND COMPLETE SERIES, WHERE APPLICABLE
@@ -411,6 +501,9 @@ DDharmonize_validate_BirthCounts <- function(locid,
         mutate(id_sex = paste(id, SexID, sep = " - "))
 
     } else { vitals_std_full <- vitals_std_all }
+
+    ## Print ids that have been dropped, i.e those that are not full
+    # print_dropped_ids( indata_before = vitals_std_all, indata_after = vitals_std_full)
 
     ## For each id-sex combo of full series, keep the reconciled series if it is available and discard the original abridged or complete
 
@@ -510,12 +603,10 @@ DDharmonize_validate_BirthCounts <- function(locid,
     ## At this point, the difference between vitals_std_full and vitals_std_valid should be qual to
     ## length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"])
 
-    # are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
-    #           length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"]))
-    #
-    ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
-    ## -------------------------------------------------------------------------------------------------------------------
+    are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
+              length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"]))
+
+    ## When there is more than one id for a given census year, select the most authoritative
 
     if (nrow(vitals_std_valid) > 0) {
 
@@ -540,9 +631,8 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     } else { out_all <- NULL }
 
-    ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
-    ## -------------------------------------------------------------------------------------------------------------------
+
+    ## Look for years that are in raw data, but not in output. If there are series with non-standard age groups, then add these to output as well
     first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
     skipped <- dd_extract_170 %>%
       dplyr::filter(!(TimeLabel %in% out_all$TimeLabel)) %>%
@@ -577,23 +667,51 @@ DDharmonize_validate_BirthCounts <- function(locid,
       mutate(IndicatorID = 170) %>%
       select(IndicatorID, IndicatorName, everything())
 
-    ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 6: COMBINE THE HARMONIZED DATA WITH INDICATOR 188 DATA AND CLEAN IT
-    ## -------------------------------------------------------------------------------------------------------------------
+    ## **************************************************************************************************
+    ## Add indicator 159 details here
+    ## Shel added this after noticing that a lot of indicator 159 data was being dropped
+    ## **************************************************************************************************
 
-    if(nrow(dd_extract_159) >0){
-      out_all_appended <- dd_append_tcs_cas(indata = out_all,
-                                            type = "births",
-                                            tcs_data = dd_extract_159,
-                                            ind = 159)
-    }else
-    {
-      out_all_appended <- out_all
-    }
+    ## Process indicator 159 data (make sure we have the latest datasource year per id)
+    dd_extract_159_processed <- dd_extract_159 %>%
+      dplyr::group_by(id) %>%
+      slice(which.max(DataSourceYear)) %>%
+      ungroup()
 
-    ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 7: FINALIZE
-    ## -------------------------------------------------------------------------------------------------------------------
+    ## Also make sure we have one record per id
+    dd_extract_159_processed <- dd_extract_159_processed %>%
+                                  mutate(abridged = FALSE) %>%
+                                 dd_rank_id_vitals()
+
+    ## Shel added this.
+    ## Merge back the indicator 159 data and drop it if the total value does not match that of indicator 170
+
+    out_all <- out_all %>%
+      bind_rows(dd_extract_159_processed %>% select(any_of(names(out_all)))) %>%
+      group_by(id, SexName) %>%
+      mutate(total_159 = ifelse(any(IndicatorID == 159 & AgeLabel == "Total"),
+                                DataValue[IndicatorID == 159 & AgeLabel == "Total"],0 ),
+             total_170 = ifelse(any(IndicatorID == 170 & AgeLabel == "Total"),
+                                DataValue[IndicatorID == 170 & AgeLabel == "Total"],0 ),
+             diff = abs(total_170 - total_159)) %>%
+      mutate(todrop = ifelse(IndicatorID == 159 & diff != 0, "drop", "")) %>%
+      filter(todrop != "drop") %>%
+      ungroup() %>%
+      select(-total_159, -total_170, -diff, -todrop)
+
+
+
+    ## Shel added this
+    ## Drop indicator159 if Indicator170 does not exist for the same id
+
+    out_all <- out_all %>%
+      group_by(id, SexName) %>%
+      mutate(todrop = ifelse(IndicatorID == 159 & !any(IndicatorID == 170), "drop", "")) %>%
+      filter(todrop != "drop") %>%
+      ungroup() %>%
+      select(-todrop, -SexName) %>%
+      arrange(id)
+
 
     if (retainKeys == FALSE) {
       out_all <- out_all %>%
@@ -621,7 +739,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
     out_all <- NULL
   }
 
-  ## To be removed later. The codes below are important for testing.
+  ## To be removed later
   ## The only time labels that should be present in the raw dataset but absent in the clean dataset should be indicator 159 records.
   missing_timelabs<- dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all$TimeLabel)]
   assign("missing_timelabs", missing_timelabs, .GlobalEnv)

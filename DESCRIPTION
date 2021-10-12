@@ -16,6 +16,7 @@ Imports:
     DemoTools,
     DDSQLtools,
     dplyr,
+    tidyr,
     magrittr,
     purrr,
     assertthat,

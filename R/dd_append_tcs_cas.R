@@ -21,8 +21,7 @@ dd_append_tcs_cas <- function(indata, type, tcs_data, ind){
 merged_df <- indata %>%
   bind_rows(., tcs_data %>% select(any_of(names(indata)))) %>%
   mutate(serial_no = seq_along(id)) %>%
-  arrange(id, desc(IndicatorID)) #%>%
-  # filter(id == "710 - South Africa - VR - Deaths - 2007 - Register - Demographic Yearbook - Year of occurrence - Direct - Low")
+  arrange(id, desc(IndicatorID))
 
 ## If Total counts by sex record exists and the harmonized data does not exist, drop the former
 merged_df2 <- merged_df %>%
@@ -81,7 +80,7 @@ out <- merged_df3 %>%
         select(-serial_no)
 
 ## Do we return only the clean records (merged_df3) or everything including the dropped records (out), to confirm with Sara
-## Returning the clean records
-return(merged_df3)
+## Returning everthing for now for testing purposes. But the final function should have return(merged_df3)
+return(out)
 }
 

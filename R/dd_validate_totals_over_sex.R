@@ -6,6 +6,7 @@
 #' @param data Data to be harmonized
 #'
 #' @import dplyr
+#' @import tidyr
 #' @importFrom magrittr %>%
 #'
 #' @return A dataset where Both sexes == Female + Male

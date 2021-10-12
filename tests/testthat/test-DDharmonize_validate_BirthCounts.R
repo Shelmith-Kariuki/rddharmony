@@ -23,13 +23,13 @@ test_that("The data has a unique locname", {
   expect_length(unique(clean_df$LocName), 1)
 })
 
-test_that("At most one indicatorid == 159 'Total' age label exists per id", {
-  tab <- clean_df %>%
-          group_by(id) %>%
-          summarise(n = sum(IndicatorID == 159 & AgeLabel == "Total", na.rm = TRUE)) %>%
-          ungroup()
-  expect_true(max(tab$n) == 1)
-})
+# test_that("At most one indicatorid == 159 'Total' age label exists per id", {
+#   tab <- clean_df %>%
+#           group_by(id) %>%
+#           summarise(n = sum(IndicatorID == 159 & AgeLabel == "Total", na.rm = TRUE)) %>%
+#           ungroup()
+#   expect_true(max(tab$n) == 1)
+# })
 
 test_that("Only one indicatorid == 170 'Total' age label exists per id", {
   tab <- clean_df %>%
@@ -181,22 +181,22 @@ test_that("There are no missing age groups",{
   expect_true(all(std_sub %in% clean_df$AgeLabel))
 })
 
-test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).",{
-
-  agesorts <- clean_df %>%
-          select(id, IndicatorID, complete, AgeLabel, AgeSort) %>%
-          filter(AgeLabel == "Total") %>%
-          group_by(id) %>%
-          mutate(complete = zoo::na.locf0(complete)) %>%
-          ungroup() %>%
-          group_by(id, complete) %>%
-          mutate(counter = length(unique(AgeSort)),
-                 list_agesort = paste(AgeSort, collapse = "_")) %>%
-          ungroup() %>%
-          filter(counter == 2) %>%
-          pull(list_agesort) %>%
-          unique()
-
-  expect_identical(agesorts, "184_999")
-
-})
+# test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).",{
+#
+#   agesorts <- clean_df %>%
+#           select(id, IndicatorID, complete, AgeLabel, AgeSort) %>%
+#           filter(AgeLabel == "Total") %>%
+#           group_by(id) %>%
+#           mutate(complete = zoo::na.locf0(complete)) %>%
+#           ungroup() %>%
+#           group_by(id, complete) %>%
+#           mutate(counter = length(unique(AgeSort)),
+#                  list_agesort = paste(AgeSort, collapse = "_")) %>%
+#           ungroup() %>%
+#           filter(counter == 2) %>%
+#           pull(list_agesort) %>%
+#           unique()
+#
+#   expect_identical(agesorts, "184_999")
+#
+# })
