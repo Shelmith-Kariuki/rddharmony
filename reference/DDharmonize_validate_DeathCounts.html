@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DDharmonize_validate_BirthCounts — DDharmonize_validate_BirthCounts • rddharmony</title>
+<title>DDharmonize_validate_DeathCounts — DDharmonize_validate_DeathCounts • rddharmony</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,9 @@
 
 
 
-<meta property="og:title" content="DDharmonize_validate_BirthCounts — DDharmonize_validate_BirthCounts" />
-<meta property="og:description" content="This script implements a workflow for births counts from vr or census extracting data from Demodata, harmonizing age groups,
-identifying full series, selecting preferred series, validating totals by age and, eventually
+<meta property="og:title" content="DDharmonize_validate_DeathCounts — DDharmonize_validate_DeathCounts" />
+<meta property="og:description" content="This script implements a workflow for death counts from vr or census extracting data from Demodata, harmonizing age groups,
+identifying full series, selecting preferred series, validating totals by age and by sex and eventually,
 including key fields in the function output." />
 <meta property="og:image" content="/logo.png" />
 
@@ -137,18 +137,18 @@ including key fields in the function output." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>DDharmonize_validate_BirthCounts</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/DDharmonize_validate_BirthCounts.R'><code>R/DDharmonize_validate_BirthCounts.R</code></a></small>
-    <div class="hidden name"><code>DDharmonize_validate_BirthCounts.Rd</code></div>
+    <h1>DDharmonize_validate_DeathCounts</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/DDharmonize_validate_DeathCounts.R'><code>R/DDharmonize_validate_DeathCounts.R</code></a></small>
+    <div class="hidden name"><code>DDharmonize_validate_DeathCounts.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This script implements a workflow for births counts from vr or census extracting data from Demodata, harmonizing age groups,
-identifying full series, selecting preferred series, validating totals by age and, eventually
+    <p>This script implements a workflow for death counts from vr or census extracting data from Demodata, harmonizing age groups,
+identifying full series, selecting preferred series, validating totals by age and by sex and eventually,
 including key fields in the function output.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DDharmonize_validate_BirthCounts</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>DDharmonize_validate_DeathCounts</span><span class='op'>(</span>
   <span class='va'>locid</span>,
   <span class='va'>times</span>,
   process <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"census"</span>, <span class='st'>"vr"</span><span class='op'>)</span>,
@@ -198,10 +198,10 @@ including key fields in the function output.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A harmonized dataset containing birth counts</p>
+    <p>A harmonized dataset containing death counts</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>sweden_df</span> <span class='op'>&lt;-</span> <span class='fu'>DDharmonize_validate_BirthCounts</span><span class='op'>(</span><span class='fl'>752</span>,
+    <pre class="examples"><div class='input'><span class='va'>kenya_df</span> <span class='op'>&lt;-</span> <span class='fu'>DDharmonize_validate_DeathCounts</span><span class='op'>(</span><span class='fl'>404</span>,
                                               <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1950</span>,<span class='fl'>2020</span><span class='op'>)</span>,
                                               process <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"census"</span>, <span class='st'>"vr"</span><span class='op'>)</span>,
                                               return_unique_ref_period <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -210,9 +210,9 @@ including key fields in the function output.</p>
                                               retainKeys <span class='op'>=</span> <span class='cn'>FALSE</span>,
                                               server <span class='op'>=</span> <span class='st'>"https://popdiv.dfs.un.org/DemoData/api/"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; 
-#&gt;  https://popdiv.dfs.un.org/DemoData/api/structureddatarecords?dataProcessIds=2,36&amp;startYear=1950&amp;endYear=2020&amp;indicatorIds=159,170&amp;locIds=752&amp;locAreaTypeIds=2&amp;subGroupIds=2 
+#&gt;  https://popdiv.dfs.un.org/DemoData/api/structureddatarecords?dataProcessIds=2,36&amp;startYear=1950&amp;endYear=2020&amp;indicatorIds=194,195,188&amp;locIds=404&amp;locAreaTypeIds=2&amp;subGroupIds=2 
 #&gt; 
-#&gt;  https://popdiv.dfs.un.org/DemoData/api/datacatalogs?dataProcessTypeIds=2&amp;locIds=752&amp;addDefault=false 
+#&gt;  https://popdiv.dfs.un.org/DemoData/api/datacatalogs?dataProcessTypeIds=2&amp;locIds=404&amp;addDefault=false 
 #&gt; 
 #&gt;  https://popdiv.dfs.un.org/DemoData/api/locations?addDefault=false&amp;includeDependencies=false&amp;includeFormerCountries=false 
 #&gt; 
@@ -222,10 +222,86 @@ including key fields in the function output.</p>
 #&gt; 
 #&gt;  https://popdiv.dfs.un.org/DemoData/api/datasources? 
 #&gt; 
-#&gt;  https://popdiv.dfs.un.org/DemoData/api/datasources?dataProcessTypeIds=2,36&amp;locIds=752&amp;addDefault=false 
+#&gt;  https://popdiv.dfs.un.org/DemoData/api/datasources?dataProcessTypeIds=2,36&amp;locIds=404&amp;addDefault=false 
+#&gt; [1] 1
+#&gt; [1] "404 - Kenya - Census - Deaths - 2009 - Census - Kenya. Population and Housing Census 2009 - De-facto - Household deaths - Fair"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 2
+#&gt; [1] "404 - Kenya - Census - Deaths - 2019 - Census - Demographic Yearbook - De-facto - Direct - Unknown"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 3
+#&gt; [1] "404 - Kenya - Census - Deaths - 2019 - Census - Demographic Yearbook - De-facto - Household deaths - Unknown"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 4
+#&gt; [1] "404 - Kenya - VR - Deaths - 1960 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 5
+#&gt; [1] "404 - Kenya - VR - Deaths - 1961 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 6
+#&gt; [1] "404 - Kenya - VR - Deaths - 1962 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 7
+#&gt; [1] "404 - Kenya - VR - Deaths - 1963 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 8
+#&gt; [1] "404 - Kenya - VR - Deaths - 1968 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 9
+#&gt; [1] "404 - Kenya - VR - Deaths - 1968 - Register - Mortality in developing countries - Unknown - Unknown/Not mentioned - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 10
+#&gt; [1] "404 - Kenya - VR - Deaths - 1969 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 11
+#&gt; [1] "404 - Kenya - VR - Deaths - 1969 - Register - Mortality in developing countries - Unknown - Unknown/Not mentioned - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 12
+#&gt; [1] "404 - Kenya - VR - Deaths - 1970 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 13
+#&gt; [1] "404 - Kenya - VR - Deaths - 1970 - Register - Mortality in developing countries - Unknown - Unknown/Not mentioned - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 14
+#&gt; [1] "404 - Kenya - VR - Deaths - 1971 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 15
+#&gt; [1] "404 - Kenya - VR - Deaths - 1972 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 16
+#&gt; [1] "404 - Kenya - VR - Deaths - 1973 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] 17
+#&gt; [1] "404 - Kenya - VR - Deaths - 1973 - Register - Mortality in developing countries - Unknown - Unknown/Not mentioned - Low"
+#&gt; [1] "harmonizing vital counts by 5-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
+#&gt; [1] "harmonizing vital counts by 1-year age group"
 #&gt; 
-#&gt;  Location ID:  752 
-#&gt;  Location Name:  Sweden </div></pre>
+#&gt;  Location ID:  404 
+#&gt;  Location Name:  Kenya </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
