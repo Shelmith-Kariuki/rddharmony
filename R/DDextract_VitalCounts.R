@@ -56,10 +56,6 @@ DDextract_VitalCounts <- function(locid,
 
     vital_counts <- vital_counts
 
-    ## Print a text message showing the locid and the locname of the data extracted
-    # cat("Location ID: ", unique(vital_counts$LocID),"\n",
-    #     "Location Name: ", unique(vital_counts$LocName))
-
   } else { vital_counts <- NULL }
 
   outdata <- vital_counts

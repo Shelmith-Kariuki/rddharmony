@@ -139,7 +139,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
       # print(ids[i])
 
-      ## 6. for each series:
+      ## 6. for each id:
       vitals_raw <- dd_extract_170 %>%
         dplyr::filter(id == ids[i])
 

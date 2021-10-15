@@ -144,7 +144,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
 
       vitals_std_all <- list()
 
-      ## 6. for each series:
+      ## 6. for each id:
 
       for (i in 1:length(ids)) {
 

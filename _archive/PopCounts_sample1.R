@@ -13,8 +13,15 @@
 # default is census
 # process = c("census","estimate","register")
 
-locid <- sample(get_locations()$PK_LocID,1)
-times <- c(1950, 2020)
+# load the packages required
+require(DDSQLtools)
+require(DemoTools)
+require(tidyverse)
+require(rddharmony)
+
+# locid <- sample(get_locations()$PK_LocID,1)
+locid <- 752
+times <- c(2010, 2020)
 process = c("census","estimate","register") #???
 return_unique_ref_period <- TRUE
 DataSourceShortName = NULL
@@ -22,9 +29,7 @@ DataSourceYear = NULL
 retainKeys = FALSE
 server = "https://popdiv.dfs.un.org/DemoData/api/"
 
-  require(DDSQLtools)
-  require(DemoTools)
-  require(tidyverse)
+
 
   options(dplyr.summarise.inform=F)
   ## -------------------------------------------------------------------------------------------------------------------
@@ -34,7 +39,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
   ## UNPD server housing DemoData
   options(unpd_server = server)
 
-# Extract population counts for a given country and process over the period specified in times
+  ## 1. Extract population counts for a given country and process over the period specified in times
   dd_extract <- DDextract_PopCounts(locid   = locid,
                                     process = process,
                                     start_year = times[1],
@@ -44,8 +49,13 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
   # if (!is.null(dd_extract)) {
 
-    # Extract data catalog info to identify and sub-national data series
+  ## Shel added this so that it can be easy to compare the raw data with the clean and harmonized data.
+  dd_extract <- dd_extract %>%
+    relocate(DataValue, .after = "agesort")
 
+  assign("raw_df", dd_extract, .GlobalEnv)
+
+  ## 2. Drop sub-national censuses (data process "vr" does not work with get_datacatalog?)
     # get data process id
     dpi <- NA
     dpi <- ifelse(process == "census", 2, dpi)
@@ -67,6 +77,8 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
       dd_extract$ReferencePeriod <- dd_extract$TimeLabel
     }
 
+    ## 3. Get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
+
     if (!("DataSourceTypeName" %in% names(dd_extract))) {
       # get additional DataSource keys (temporary fix until Dennis adds to DDSQLtools extract)
       DataSources <- get_datasources(locIds = locid, dataProcessTypeIds = dpi, addDefault = "false") %>%
@@ -77,36 +89,36 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
         left_join(DataSources, by = c("LocID", "DataSourceID"), )
     }
 
+    ## 4. Drop Discard DataTypeName==“Direct (standard abridged age groups computed) or “Direct (standard abridged age groups computed - Unknown redistributed)”
     dd_extract <- dd_extract %>%
-    # Discard DataTypeName==“Direct (standard abridged age groups computed)”
-    # or “Direct (standard abridged age groups computed - Unknown redistributed)”
     dplyr::filter(DataTypeName!= 'Direct (standard abridged age groups computed)',
            DataTypeName!= 'Direct (standard abridged age groups computed - Unknown redistributed)') %>%
     mutate(id = paste(LocID, LocName, DataProcess, ReferencePeriod, DataSourceName, StatisticalConceptName, DataTypeName, DataReliabilityName, sep = " - ")) %>%
     arrange(id)
 
-   # list of series uniquely identified by Reference Period - Data Source - Statistical Concept - Data Type
-    ids <- unique(dd_extract$id)
 
-  pop_std_all <- list()
+       # list of series uniquely identified by Reference Period - Data Source - Statistical Concept - Data Type
+       ids <- unique(dd_extract$id)
 
-  for (i in 1:length(ids)) {
-    print(ids[i])
+       pop_std_all <- list()
 
-    # for each series:
+       for (i in 1:length(ids)) {
 
-    pop_raw <- dd_extract %>%
-      dplyr::filter(id == ids[i])
+        print(ids[i])
 
-    # 1. isolate records from the "Population5" indicator
-    pop5_raw <- pop_raw %>%
-      dplyr::filter(IndicatorShortName == "Population5")
+         ## 5. For each id
+         pop_raw <- dd_extract %>%
+         dplyr::filter(id == ids[i])
 
-    # 2. hamonize the pop5 data into standard age groups
-    if (nrow(pop5_raw) > 0) {
-      print("harmonizing Population5")
-      pop5_std <- DDharmonize_Pop5(indata = pop5_raw)
-    } else { pop5_std <- NULL }
+         ## 6. isolate records from the "Population5" indicator
+         pop5_raw <- pop_raw %>%
+         dplyr::filter(IndicatorShortName == "Population5")
+
+        # 2. hamonize the pop5 data into standard age groups
+         if (nrow(pop5_raw) > 0) {
+         print("harmonizing Population5")
+         pop5_std <- DDharmonize_Pop5(indata = pop5_raw)
+         } else { pop5_std <- NULL }
 
     # 2.b Often the series for SexID == 0 (other) has records only when the DataValue is non-zero
     # To prevent errors later on, we need to fill in zeros
