@@ -16,7 +16,7 @@ require(rddharmony)
 
 locid <- 104
 # locid <- sample(get_locations()$PK_LocID, 1)
-times <- c(1950, 2020)
+times <- c(2010)
 process = c("census", "vr")
 return_unique_ref_period <- TRUE
 DataSourceShortName = NULL
