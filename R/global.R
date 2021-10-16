@@ -21,5 +21,7 @@ utils::globalVariables(c("AgeSpan", "AgeStart",#dd_oag_agestart
                          "oag", "tot_without_oag", "tot_reported", #DDharmonize_validate_BirthCounts
                         "n_id", "max_length_id", "majority_id","majority_idname", "max_agestart", #DDharmonize_validate_DeathCounts
                         ".", "present_tcs", "eq", "serial_no", #dd_append_tcs_cas
-                        "X1", "X2" #dd_validate_totals_over_sex
+                        "X1", "X2", #dd_validate_totals_over_sex
+                        "sorting", "keeping", "cpl", "cpl_std", "cpl_oag", "check_abr", #DDharmonize_Pop1
+                        "abr_cpl_recon", "abr_from_cpl", "cpl_abr_recon", "check_cpl", "open.age" #DDharmonize_Pop5
                         ))

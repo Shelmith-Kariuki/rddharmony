@@ -234,7 +234,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
             vitals_abr_cpl_sex <- dd_single2abridged(data = vitals_cpl %>% dplyr::filter(SexID == sex)) %>%
               mutate(SexID = sex) # this returns a dataset containing 5-year age groups generated
             #from single years of age for each sex
-            #
+
             vitals_abr_cpl <- rbind(vitals_abr_cpl, vitals_abr_cpl_sex)
             rm(vitals_abr_cpl_sex)
           }
@@ -327,10 +327,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
           pop_one_series <- vitals_std_all %>%
             dplyr::filter(id_series == id_sers[i])
 
-          ## Added: Determine the number of unique sexes in the data
-          n_sexes <- length(unique(pop_one_series$SexID))
-
-          ## check if the series has an abridged aspect or not
+          ## check if the series is abridged or abridged reconciled with complete
           abridged <- substr(pop_one_series$series[1],1,1) == "a"
 
           ## check if each of the gender datasets are full series or not
@@ -353,14 +350,11 @@ DDharmonize_validate_DeathCounts <- function(locid,
           n_full <- length(check_full[check_full == TRUE])
 
           # if at least two are full, then identify the series as full
-          # Shel edited: If only one sex exists and it is full, then identify series as full
-          # Case study: "104 - Myanmar - VR - Deaths - 2005 - Register - Demographic Yearbook - Year of registration - Direct - Low"
-          if (n_full >=2 & n_sexes >= 2) {
+          # if we have both and males, we can compute females.
+          # If we have males and females, we can compute both.
+          # But if we only have both, these data are not very useful to us.
+          if (n_full >=2 ) {
             id_series_full <- c(id_series_full, id_sers[i])
-          }else{
-            if(n_full==1 & n_sexes == 1 ){
-              id_series_full <- c(id_series_full, id_sers[i])
-            }
           }
         }
 

@@ -19,8 +19,8 @@ require(DemoTools)
 require(tidyverse)
 require(rddharmony)
 
-# locid <- sample(get_locations()$PK_LocID,1)
-locid <- 752
+locid <- sample(get_locations()$PK_LocID,1)
+# locid <- 404
 times <- c(2010, 2020)
 process = c("census","estimate","register") #???
 return_unique_ref_period <- TRUE
@@ -62,8 +62,20 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
     dpi <- ifelse(process == "estimate", 6, dpi)
     dpi <- ifelse(process == "register", 9, dpi)
 
-    DataCatalog <- get_datacatalog(locIds = locid, dataProcessTypeIds = dpi, addDefault = "false")
+
+    ## Shel: Edited this part after I kept getting the error: Error in open.connection(con, "rb") : HTTP error 500.
+    # DataCatalog <- get_datacatalog(locIds = locid, dataProcessTypeIds = dpi, addDefault = "false")
+    # DataCatalog <- DataCatalog[DataCatalog$isSubnational==FALSE,]
+
+    DC <- NULL
+    for (i in 1:length(dpi)){
+
+    DataCatalog <- get_datacatalog(locIds = locid, dataProcessTypeIds = dpi[i], addDefault = "false")
+    DC <- rbind(DC, DataCatalog)
+    }
+    DataCatalog <- DC
     DataCatalog <- DataCatalog[DataCatalog$isSubnational==FALSE,]
+    rm(DC)
 
     if(nrow(DataCatalog) > 0) {
     # Keep only those population series for which isSubnational is FALSE
@@ -73,7 +85,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
     # if data process is estimate or register, then the ReferencePeriod field is empty
     # fill it in with TimeLabel
-    if (process %in% c("estimate", "register")) {
+    if (any(process %in% c("estimate", "register"))) {## Shel added any to remove the warning
       dd_extract$ReferencePeriod <- dd_extract$TimeLabel
     }
 
@@ -110,113 +122,127 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
          pop_raw <- dd_extract %>%
          dplyr::filter(id == ids[i])
 
-         ## 6. isolate records from the "Population5" indicator
+         # pop_raw <- dd_extract %>%
+         #              filter(id == "404 - Kenya - Estimate - 2014 - International Data Base (IDB) - Unknown - Model-based projections/extrapolations - High quality")
+
+         ## 6. isolate records from the "Population5" indicator and harmonize the pop5 data into standard age groups
          pop5_raw <- pop_raw %>%
          dplyr::filter(IndicatorShortName == "Population5")
 
-        # 2. hamonize the pop5 data into standard age groups
          if (nrow(pop5_raw) > 0) {
          print("harmonizing Population5")
          pop5_std <- DDharmonize_Pop5(indata = pop5_raw)
          } else { pop5_std <- NULL }
 
-    # 2.b Often the series for SexID == 0 (other) has records only when the DataValue is non-zero
-    # To prevent errors later on, we need to fill in zeros
-    # This is a really clumsy way to do this -- will improve later on
 
-    if (0 %in% pop5_std$SexID) {
-      sex0_df <- unique(pop5_std[pop5_std$SexID %in% c(1,2,3),
+         ## 7. isolate records from the "Population1" indicator and harmonize the pop1 data into standard age groups
+         pop1_raw <- pop_raw %>%
+           dplyr::filter(IndicatorShortName == "Population1")
+
+         if (nrow(pop1_raw) > 0) {
+           print("harmonizing Population1")
+           pop1_std <- DDharmonize_Pop1(indata = pop1_raw)
+         } else { pop1_std <- NULL }
+
+        ## 8 Often the series for SexID == 0 (other) has records only when the DataValue is non-zero
+        ## To prevent errors later on, we need to fill in zeros
+        ## This is a really clumsy way to do this -- will improve later on
+
+         ### Population5
+         if (0 %in% pop5_std$SexID) {
+            sex0_df <- unique(pop5_std[pop5_std$SexID %in% c(1,2,3),
                                  c("AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "abridged", "complete", "series")]) %>%
-        mutate(SexID = 0,
-               DataSourceYear = NA,
-               DataValue = 0,
-               note = NA)
-      sex0_orig <- unique(pop5_std[pop5_std$SexID == 0 & pop5_std$DataValue > 0, c("AgeLabel", "DataValue")])
-      for (j in 1:nrow(sex0_orig)) {
-        sex0_df$DataValue[sex0_df$AgeLabel == sex0_orig$AgeLabel[j]] <- sex0_orig$DataValue[j]
-      }
-      pop5_std <- rbind(pop5_std[pop5_std$SexID %in% c(1,2),], sex0_df[sex0_df$AgeLabel != "Total",])
-      rm(sex0_df, sex0_orig)
+                      mutate(SexID = 0,
+                      DataSourceYear = NA,
+                      DataValue = 0,
+                      note = NA)
+
+            sex0_orig <- unique(pop5_std[pop5_std$SexID == 0 & pop5_std$DataValue > 0, c("AgeLabel", "DataValue")])
+
+            for (j in 1:nrow(sex0_orig)) {
+              sex0_df$DataValue[sex0_df$AgeLabel == sex0_orig$AgeLabel[j]] <- sex0_orig$DataValue[j]
+              }
+        pop5_std <- rbind(pop5_std[pop5_std$SexID %in% c(1,2),], sex0_df[sex0_df$AgeLabel != "Total",])
+        rm(sex0_df, sex0_orig)
     }
 
+         ### Population1
+         if (0 %in% pop1_std$SexID) {
+           sex0_df <- unique(pop1_std[pop1_std$SexID %in% c(1,2),
+                                      c("AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "abridged", "complete", "series")]) %>%
+             mutate(SexID = 0,
+                    DataSourceYear = NA,
+                    DataValue = 0,
+                    note = NA)
+           sex0_orig <- unique(pop1_std[pop1_std$SexID == 0 & pop1_std$DataValue > 0, c("AgeLabel", "DataValue")])
+           for (j in 1:nrow(sex0_orig)) {
+             sex0_df$DataValue[sex0_df$AgeLabel == sex0_orig$AgeLabel[j]] <- sex0_orig$DataValue[j]
+           }
+           pop1_std <- rbind(pop1_std[pop1_std$SexID %in% c(1,2,3),], sex0_df[sex0_df$AgeLabel != "Total",])
+           rm(sex0_df, sex0_orig)
+         }
 
-    # 3. isolate records from the "Population1" indicator
-    pop1_raw <- pop_raw %>%
-      dplyr::filter(IndicatorShortName == "Population1")
+         ## 9. Generate pop_abr, pop_cpl and pop_cpl_from_abr
 
-    # 4. hamonize the pop1 data into standard age groups
-    if (nrow(pop1_raw) > 0) {
-      print("harmonizing Population1")
-      pop1_std <- DDharmonize_Pop1(indata = pop1_raw)
-    } else { pop1_std <- NULL }
+          if(!is.null(pop5_std)) {
+            pop_abr <- pop5_std %>%
+                        dplyr::filter(series == "abridged") # standard abridged age groups
 
-    # 4.b As with abridged, deal with incomplete series of SexID = 0
+            pop_cpl_from_abr <- pop5_std %>%
+                        dplyr::filter(series == "complete from abridged") # single year and other records that were on Population5 series but may be needed for complete
 
-    if (0 %in% pop1_std$SexID) {
-      sex0_df <- unique(pop1_std[pop1_std$SexID %in% c(1,2),
-                                 c("AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "abridged", "complete", "series")]) %>%
-        mutate(SexID = 0,
-               DataSourceYear = NA,
-               DataValue = 0,
-               note = NA)
-      sex0_orig <- unique(pop1_std[pop1_std$SexID == 0 & pop1_std$DataValue > 0, c("AgeLabel", "DataValue")])
-      for (j in 1:nrow(sex0_orig)) {
-        sex0_df$DataValue[sex0_df$AgeLabel == sex0_orig$AgeLabel[j]] <- sex0_orig$DataValue[j]
-      }
-      pop1_std <- rbind(pop1_std[pop1_std$SexID %in% c(1,2,3),], sex0_df[sex0_df$AgeLabel != "Total",])
-      rm(sex0_df, sex0_orig)
-    }
+            if (nrow(pop_abr) == 0) {
+                    pop_abr <- NULL
+                  pop_abr_cpl <- NULL
+            }
 
-    # 5. reconcile abridged and complete series, as necessary
-    if(!is.null(pop5_std)) {
-      pop_abr <- pop5_std %>%
-        dplyr::filter(series == "abridged") # standard abridged age groups
-      pop_cpl_from_abr <- pop5_std %>%
-        dplyr::filter(series == "complete from abridged") # single year and other records that were on Population5 series but may be needed for complete
-      if (nrow(pop_abr) == 0) {
-        pop_abr <- NULL
-        pop_abr_cpl <- NULL
-      }
-    } else {
-      pop_abr <- NULL
-      pop_cpl_from_abr <- NULL
-    }
-    if(!is.null(pop1_std)) {
-      pop_cpl <- pop1_std
-    } else {
-      pop_cpl <- NULL
-    }
+          } else {
+            pop_abr <- NULL
+            pop_cpl_from_abr <- NULL
+            }
+
+            if(!is.null(pop1_std)) {
+                pop_cpl <- pop1_std
+                } else {
+                pop_cpl <- NULL
+            }
 
 
+         ## 10. reconcile abridged and complete series, as necessary
 
-    if (!is.null(pop_abr) & (!is.null(pop_cpl_from_abr) | !is.null(pop_cpl))) {
-    pop_abr_cpl <- DDharmonize_AbridgedAndComplete(data_abr = pop_abr,
-                                                   data_cpl_from_abr = pop_cpl_from_abr,
+            if (!is.null(pop_abr) & (!is.null(pop_cpl_from_abr) | !is.null(pop_cpl))) {
+              pop_abr_cpl <- DDharmonize_AbridgedAndComplete(data_abr = pop_abr,
+                                                     data_cpl_from_abr = pop_cpl_from_abr,
                                                    data_cpl = pop_cpl) %>%
-      dplyr::filter(series %in% c("abridged reconciled with complete", "complete reconciled with abridged"))
+                  dplyr::filter(series %in% c("abridged reconciled with complete", "complete reconciled with abridged"))
 
-    pop5_std <- pop5_std %>%
-      dplyr::filter(series == "abridged")
+            pop5_std <- pop5_std %>%
+            dplyr::filter(series == "abridged")
 
     }
+         ## 11. If we only have complete series and not abridged, ...
 
-    if(is.null(pop_abr) & !is.null(pop_cpl)) {
-      pop5_std <- NULL
-      pop_abr_cpl <- NULL
-      for (sex in unique(pop_cpl$SexID)) {
-      pop_abr_cpl_sex <- dd_single2abridged(data = pop_cpl %>% dplyr::filter(SexID == sex)) %>%
-        mutate(SexID = sex)
-      pop_abr_cpl <- rbind(pop_abr_cpl, pop_abr_cpl_sex)
-      rm(pop_abr_cpl_sex)
-      }
-      pop_abr_cpl <- pop_abr_cpl %>%
-        mutate(abridged = TRUE,
-               complete = FALSE,
-               series = "abridged reconciled with complete")
-    }
+            if(is.null(pop_abr) & !is.null(pop_cpl)) {
+                pop5_std <- NULL
+                pop_abr_cpl <- NULL
+
+                ## Generate abridged data from the complete series
+
+              for (sex in unique(pop_cpl$SexID)) {
+                pop_abr_cpl_sex <- dd_single2abridged(data = pop_cpl %>% dplyr::filter(SexID == sex)) %>%
+                                      mutate(SexID = sex)
+                # this returns a dataset containing 5-year age groups generated from single years of age for each sex
+                pop_abr_cpl <- rbind(pop_abr_cpl, pop_abr_cpl_sex)
+                rm(pop_abr_cpl_sex)
+                }
+               pop_abr_cpl <- pop_abr_cpl %>%
+                                  mutate(abridged = TRUE,
+                                  complete = FALSE,
+                                  series = "abridged reconciled with complete")
+          }
 
 
-    # 6. Assemble all of the series into a single dataset
+    # 12. Assemble all of the series into a single dataset
     pop_all <- pop5_std %>%
       bind_rows(pop_cpl) %>%
       bind_rows(pop_abr_cpl) %>%
@@ -266,39 +292,53 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
   ## AND THE POST-RECONCILIATION ABRIDGED AND COMPLETE SERIES, WHERE APPLICABLE
   ## -------------------------------------------------------------------------------------------------------------------
 
-  # 7. dplyr::filter through id_series and keep only those that are full
-  # (all age groups present)
+  if (nrow(pop_std_all) > 0) {
+
+  ## list the unique id series that exist in the data
   id_sers <- unique(pop_std_all$id_series)
 
+  ## create a placeholder for the object that will hold the final output (in this case all series that are full)
   id_series_full <- NULL
+
+  ## for each id series
   for (i in 1:length(id_sers)) {
+
+    ## subset the data to only have data for a particular id series
     pop_one_series <- pop_std_all %>%
       dplyr::filter(id_series == id_sers[i])
 
+    ## check if the series is abridged or abridged reconciled with complete
     abridged <- substr(pop_one_series$series[1],1,1) == "a"
 
+    ## if abridged or abridged reconciled with complete, the minimum number of rows should be 11, otherwise 51
     if (abridged) {
       minrows <- 11
     } else {
       minrows <- 51
     }
 
+    ## xysrev
     nrows <- min(nrow(pop_one_series %>%
                         dplyr::filter(SexID == 1)),
                  nrow(pop_one_series %>%
                         dplyr::filter(SexID == 2)))
 
-    check_full_m <- dd_series_isfull(pop_one_series %>%
+    ## check if each of the gender datasets are full series or not
+    ## dd_series_isfull() will produce the following warning in cases where one of the SexIDs does not exist. Refer to https://stackoverflow.com/questions/24282550/no-non-missing-arguments-warning-when-using-min-or-max-in-reshape2
+    ## In max(AgeStart) : no non-missing arguments to max; returning -Inf
+    ## So we wrap the function in suppressWarnings()
+    check_full_m <- suppressWarnings(dd_series_isfull(pop_one_series %>%
                                        dplyr::filter(SexID == 1),
-                                     abridged = abridged)
-    check_full_f <- dd_series_isfull(pop_one_series %>%
+                                     abridged = abridged))
+    check_full_f <- suppressWarnings(dd_series_isfull(pop_one_series %>%
                                        dplyr::filter(SexID == 2),
-                                     abridged = abridged)
-    check_full_b <- dd_series_isfull(pop_one_series %>%
+                                     abridged = abridged))
+    check_full_b <- suppressWarnings(dd_series_isfull(pop_one_series %>%
                                        dplyr::filter(SexID == 3),
-                                     abridged = abridged)
+                                     abridged = abridged))
     check_full <- c(check_full_m, check_full_f, check_full_b)
 
+    ## Check how many series are full out of the three
     n_full <- length(check_full[check_full == TRUE])
 
     max_oag <- max(pop_one_series$AgeStart)
@@ -310,22 +350,34 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
     rm(nrows, minrows, n_full, max_oag, check_full_m, check_full_f, check_full_b)
   }
 
+  ## subset the data to only be left with data where the series is full
   pop_std_full <- pop_std_all %>%
     dplyr::filter(id_series %in% id_series_full) %>%
     mutate(id_sex = paste(id, SexID, sep = " - "))
 
-
-  # 8. for each id-sex combo of full series,
-   # keep the reconciled series if it is available and discard the original abridged or complete
+  } else { pop_std_full <- pop_std_all }
 
 
+## for each id-sex combo of full series,
+## keep the reconciled series if it is available and discard the original abridged or complete
+
+if (nrow(pop_std_full) > 0) {
+
+  ## identify unique id and sex combination
   ids_sex <- unique(pop_std_full$id_sex)
 
+  ## create a placeholder for the object that will hold the final output (in this case the reconciled series, if it exist)
   pop_privilege_recon <- NULL
+
+  ## for each id and sex combination
   for (i in 1:length(ids_sex)) {
 
+    ## subset the data to get data where the series is either abridged or `abridged reconciled with complete`
     abr <- pop_std_full %>%
       dplyr::filter(id_sex == ids_sex[i] & substr(series,1,1) == "a")
+
+    ## if there are some abridged records, and `abridged reconciled with complete` exists, then this is the series we will keep
+    ## and discard the original one.
     if (nrow(abr) > 0) {
       if ("abridged reconciled with complete" %in% abr$series) {
         abr <- abr %>%
@@ -333,8 +385,12 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
       }
     }
 
+    ## subset the data to get data where the series is either complete or `complete reconciled with abridged`
     cpl <- pop_std_full %>%
       dplyr::filter(id_sex == ids_sex[i] & substr(series,1,1) == "c")
+
+    ## if there are some complete records, and `complete reconciled with abridged` exists, then this is the series we will keep
+    ## and discard the original one.
     if (nrow(cpl) > 0) {
       if ("complete reconciled with abridged" %in% cpl$series) {
         cpl <- cpl %>%
@@ -342,14 +398,17 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
       }
     }
 
+    ## Append the reconciled series together to form one dataset
     pop_privilege_recon <- pop_privilege_recon %>%
       bind_rows(abr) %>%
       bind_rows(cpl)
 
   }
 
+  ## drop id_sex and id_series variables
   pop_std_full <- pop_privilege_recon %>%
     select(-id_sex, -id_series)
+} else { pop_std_full <- pop_std_full }
 
 
   ## -------------------------------------------------------------------------------------------------------------------
@@ -458,7 +517,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
            SexName = replace(SexName, SexID == 3, "Both sexes"))
 
   ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 7: FINALIZE
+  ## PART 6: FINALIZE
   ## -------------------------------------------------------------------------------------------------------------------
 
   if (retainKeys == FALSE) {
