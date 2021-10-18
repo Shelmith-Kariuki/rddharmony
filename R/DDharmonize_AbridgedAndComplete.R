@@ -75,7 +75,8 @@ DDharmonize_AbridgedAndComplete <- function (data_abr,data_cpl_from_abr, data_cp
     if (has_abr & has_cpl) {
 
       total_diff <- total_abr - total_cpl
-      total_match <- total_diff == 0
+      # total_match <- total_diff == 0
+      total_match <- total_diff <= 0.5
       if (is_empty(total_match)) { total_match = TRUE }
 
     } else { total_match <- FALSE }

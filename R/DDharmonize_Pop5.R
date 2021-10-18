@@ -214,9 +214,7 @@ DDharmonize_Pop5 <- function (indata) {
       } else { # close for if nrow(abr) >0
 
       ##28. sometimes there are no 5-year age groups but there are 1-year.  We reserve those for complete
-        # if (nrow(abr[abr$AgeSpan == 1,]) > 0) {
-        if (nrow(abr[abr$AgeSpan == 1,]) > 0 & abr$AgeLabel[abr$AgeSpan == 1] != "0") {
-          ## Shel edited the code above because the original code was introducing dups
+        if (nrow(abr[abr$AgeSpan == 1,]) > 0) {
           abr <- abr  %>%  dd_latest_source_year
 
           cpl_from_abr <- abr %>% dd_extract_single %>%

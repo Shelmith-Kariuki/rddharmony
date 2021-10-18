@@ -122,8 +122,10 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
          pop_raw <- dd_extract %>%
          dplyr::filter(id == ids[i])
 
+         # This block of code has been maintained in order to test the lines of code that follow in this for loop.
          # pop_raw <- dd_extract %>%
-         #              filter(id == "404 - Kenya - Estimate - 2014 - International Data Base (IDB) - Unknown - Model-based projections/extrapolations - High quality")
+         #              filter(id == "724 - Spain - Census - 2011 - Demographic Yearbook - De-jure - Population by age and sex - Fair") #%>%
+         #              #filter(SexID == 3)
 
          ## 6. isolate records from the "Population5" indicator and harmonize the pop5 data into standard age groups
          pop5_raw <- pop_raw %>%
@@ -144,7 +146,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
            pop1_std <- DDharmonize_Pop1(indata = pop1_raw)
          } else { pop1_std <- NULL }
 
-        ## 8 Often the series for SexID == 0 (other) has records only when the DataValue is non-zero
+        ## 8. Often the series for SexID == 0 (other) has records only when the DataValue is non-zero
         ## To prevent errors later on, we need to fill in zeros
         ## This is a really clumsy way to do this -- will improve later on
 
@@ -164,7 +166,7 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
               }
         pop5_std <- rbind(pop5_std[pop5_std$SexID %in% c(1,2),], sex0_df[sex0_df$AgeLabel != "Total",])
         rm(sex0_df, sex0_orig)
-    }
+        }
 
          ### Population1
          if (0 %in% pop1_std$SexID) {
@@ -219,7 +221,8 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
             pop5_std <- pop5_std %>%
             dplyr::filter(series == "abridged")
 
-    }
+            }
+
          ## 11. If we only have complete series and not abridged, ...
 
             if(is.null(pop_abr) & !is.null(pop_cpl)) {
@@ -417,9 +420,12 @@ if (nrow(pop_std_full) > 0) {
   # CHECK WEATHER SUM OVER AGE MATCHES THE REPORTED TOTALS
   ## -------------------------------------------------------------------------------------------------------------------
 
+if (nrow(pop_std_full) > 0) {
+
   ids <- unique(pop_std_full$id)
 
   pop_std_valid <- list()
+
   for (i in 1:length(ids)) {
 
   dd_one_id <- pop_std_full %>%
@@ -446,29 +452,23 @@ if (nrow(pop_std_full) > 0) {
 
   }
 
-  ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
-  ## -------------------------------------------------------------------------------------------------------------------
-  # define how we want to arrange the data, with priority colums on the left and data loader keys on the right
-  first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart", "TimeMid", "SexID",
-                     "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
-                     "complete", "non_standard")
-  keep_columns <- names(pop_std_all)
-  keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", first_columns))]
-
-  # initialize ref_pds and output data
-  ref_pds <- 0
-  out_all <- NULL
-
-  if (length(pop_std_valid) > 0) {
-
+  if(length(pop_std_valid) >0 ){
     pop_std_valid <- do.call(rbind, pop_std_valid) %>%
       mutate(five_year = abridged == TRUE & AgeSpan %in% c(-1,5),
              abridged = abridged == TRUE & AgeLabel != "0-4")
 
+  }else
+  {
+    pop_std_valid <- pop_std_valid
+  }
+} else {
+    pop_std_valid <- pop_std_full
+    }
 
-    #  If user wants one id/series per reference year
-    # 10.  When there is more than one id for a given data year, select the most authoritative
+  ## -------------------------------------------------------------------------------------------------------------------
+  ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
+  ## -------------------------------------------------------------------------------------------------------------------
+  if (nrow(pop_std_valid) > 0) {
 
     if (return_unique_ref_period == TRUE) {
 
@@ -477,18 +477,28 @@ if (nrow(pop_std_full) > 0) {
     } else { pop_valid_id <- pop_std_valid }
 
 
+    # define how we want to arrange the data, with priority colums on the left and data loader keys on the right
+    first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart", "TimeMid", "SexID",
+                       "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
+                       "complete", "non_standard")
+    keep_columns <- names(pop_std_all)
+    keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", first_columns))]
+
 
     out_all <- pop_valid_id %>%
       mutate(non_standard = FALSE,
              DataTypeName = "Direct (age standardized)") %>%
       select(all_of(first_columns), all_of(keep_columns))
 
-    ref_pds <- unique(out_all$ReferencePeriod)
+  } else {
+    out_all <- NULL
   }
 
   ## -------------------------------------------------------------------------------------------------------------------
   ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
   ## -------------------------------------------------------------------------------------------------------------------
+  ref_pds <- unique(out_all$ReferencePeriod)
+
   first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
   skipped <- dd_extract %>%
     dplyr::filter(!(ReferencePeriod %in% ref_pds)) %>%

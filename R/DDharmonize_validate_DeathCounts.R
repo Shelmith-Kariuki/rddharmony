@@ -468,7 +468,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
 
         }else
         {
-          vitals_std_valid <- data.frame()
+          vitals_std_valid <- data.frame() ## maybe change this to vitals_std_valid <- vitals_std_valid
         }
       } else { vitals_std_valid <- vitals_std_full }
 
