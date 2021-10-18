@@ -1,37 +1,55 @@
-## THIS SCRIPT IMPLEMENTS A WORKFLOW FOR CENSUS POPULATION COUNTS
-## EXTRACTING FROM DEMODATA, HARMONIZING AGE GROUPS, IDENTIFYING FULL SERIES,
-## SELECTING PREFERRED SERIES, VALIDATING TOTALS AND BY SEX
-## modified 12 Jan 2021 to retain keys for bulk upload to DemoData
-## use retainKeys = TRUE to include these key fields in the function output
-## modified 14 Jan 2021 to allow user to specify api server address in server parameter
-## modified 29 Jan 2021 to retain more key fields for DemoData loader and to
-## eliminate dup country-census records in output
-## Valencia: "https://popdiv.dfs.un.org/DemoData/api/" is default
-## Paperspace: "http://74.82.31.177/DemoData/api/"
+#' DDharmonize_validate_PopCounts
+#'
+#' This script implements a workflow for census population counts extracting from DemoData, harmonizing age groups,
+#' identifying full series, selecting preferred series, validating totals and by sex and eventually
+#' including key fields in the function output.
+#'
+#' @param locid location id
+#' @param times 1950, 2050
+#' @param process census or vr
+#' @param return_unique_ref_period TRUE
+#' @param DataSourceShortName NULL
+#' @param DataSourceYear NULL
+#' @param retainKeys FALSE
+#' @param server "https://popdiv.dfs.un.org/DemoData/api/"
+#'
+#' @import dplyr
+#' @import assertthat
+#' @import DDSQLtools
+#' @import DemoTools
+#' @importFrom magrittr %>%
+#' @importFrom purrr is_empty
+#'
+#' @return  A harmonized dataset containing birth counts
+#'
+#' @export
+#'
+#' @examples
+#' sweden_df <- DDharmonize_validate_PopCounts(752,
+#'                                               c(1950,2020),
+#'                                               process = c("census", "estimate", "register"),
+#'                                               return_unique_ref_period = TRUE,
+#'                                               DataSourceShortName = NULL,
+#'                                               DataSourceYear = NULL,
+#'                                               retainKeys = FALSE,
+#'                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
 
-# you can access three different data processes (only one at a time):
-# default is census
-# process = c("census","estimate","register")
-
+DDharmonize_validate_PopCounts <- function(locid,
+                                           times,
+                                           process = c("census", "estimate", "register"),
+                                           return_unique_ref_period = TRUE, # if true, then only most authoritative series will be returned for each reference period, per dd_rank_id()
+                                           DataSourceShortName = NULL,
+                                           DataSourceYear = NULL,
+                                           retainKeys = FALSE,
+                                           server = "https://popdiv.dfs.un.org/DemoData/api/") {
 # load the packages required
 require(DDSQLtools)
 require(DemoTools)
 require(tidyverse)
-require(rddharmony)
-
-locid <- sample(get_locations()$PK_LocID,1)
-# locid <- 404
-times <- c(2010, 2020)
-process = c("census","estimate","register") #???
-return_unique_ref_period <- TRUE
-DataSourceShortName = NULL
-DataSourceYear = NULL
-retainKeys = FALSE
-server = "https://popdiv.dfs.un.org/DemoData/api/"
 
 
+options(dplyr.summarise.inform=F)
 
-  options(dplyr.summarise.inform=F)
   ## -------------------------------------------------------------------------------------------------------------------
   ## PART 1: EXTRACT POPULATION COUNTS FROM DEMO DATA AND HARMONIZE TO STANDARD ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
   ## -------------------------------------------------------------------------------------------------------------------
@@ -479,7 +497,7 @@ if (nrow(pop_std_full) > 0) {
 
 
     # define how we want to arrange the data, with priority columns on the left and data loader keys on the right
-    first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart","TimeMid","TimeLabel", "SexID",
+    first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart","TimeLabel", "TimeMid", "SexID",
                        "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
                        "complete", "non_standard")
     keep_columns <- names(pop_std_all)
@@ -533,7 +551,7 @@ if (nrow(pop_std_full) > 0) {
 
   if (retainKeys == FALSE) {
     out_all <- out_all %>%
-      select(id, LocID, LocName, ReferencePeriod, TimeMid,TimeLabel, DataSourceName, StatisticalConceptName,
+      select(id, LocID, LocName, ReferencePeriod, TimeLabel, TimeMid, DataSourceName, StatisticalConceptName,
              DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
              AgeLabel, AgeSpan, AgeSort, DataValue, note)
 
@@ -566,10 +584,9 @@ if(length(missing_refperiods) >0){
   missing_data <- NULL
 }
 
-#
-# return(out_all_appended)
-#
-# }
+return(out_all)
+
+}
 
 
 
