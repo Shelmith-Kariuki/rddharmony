@@ -18,9 +18,11 @@ reference:
     desc:
     contents:
           - '`check_locid`'
+          - '`DDextract_PopCounts`'
+          - starts_with("DDharmonize_")
           - starts_with("dd_")
           - starts_with("DDextract_Vital")
-          - "`std_age_function`"
+          - '`std_age_function`'
 navbar:
   type: reverse
   title: "rddharmony"
@@ -40,5 +42,5 @@ navbar:
       href: reference/index.html
   right:
     - icon: fa-github fa-lg
-      text: "github"
+      text: ""
       href: https://github.com/Shelmith-Kariuki/rddharmony/

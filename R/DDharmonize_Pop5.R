@@ -254,8 +254,7 @@ DDharmonize_Pop5 <- function (indata) {
       }
 
       ##31. clean up the environment before beginning next loop
-    rm(abr, abr_std, abr_cpl_recon, abr_from_cpl, abr_oag, cpl, cpl_std, cpl_abr_recon,
-       cpl_from_abr, check_cpl, cpl_oag, check_abr, check_cpl, open.age)
+    rm(abr, abr_oag, cpl_from_abr, check_abr)
 
     } # close loop for sex
 

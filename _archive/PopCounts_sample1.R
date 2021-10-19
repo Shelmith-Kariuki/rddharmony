@@ -19,9 +19,9 @@ require(DemoTools)
 require(tidyverse)
 require(rddharmony)
 
-locid <- sample(get_locations()$PK_LocID,1)
-# locid <- 404
-times <- c(2010, 2020)
+#locid <- sample(get_locations()$PK_LocID,1)
+locid <- 591
+times <- c(1977)
 process = c("census","estimate","register") #???
 return_unique_ref_period <- TRUE
 DataSourceShortName = NULL
@@ -124,8 +124,8 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 
          # This block of code has been maintained in order to test the lines of code that follow in this for loop.
          # pop_raw <- dd_extract %>%
-         #              filter(id == "724 - Spain - Census - 2011 - Demographic Yearbook - De-jure - Population by age and sex - Fair") #%>%
-         #              #filter(SexID == 3)
+         #              filter(id == "591 - Panama - Estimate - 1977 - Global Burden of Disease Study 2017 (GBD2017): Population Estimates 1950-2017 - Unknown - Model-based estimates - Fair") %>%
+         #               filter(SexID == 3)
 
          ## 6. isolate records from the "Population5" indicator and harmonize the pop5 data into standard age groups
          pop5_raw <- pop_raw %>%

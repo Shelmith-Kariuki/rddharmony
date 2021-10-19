@@ -191,8 +191,7 @@ DDharmonize_Pop1 <- function (indata) {
          cpl_sex <- rbind(cpl_sex, df)
 
   ##25. clean up the environment before beginning next loop
-    rm(df, cpl, cpl_std,
-       check_cpl, cpl_oag, check_abr, check_cpl)
+    rm(df,check_cpl)
 
     } # close loop for sex
 

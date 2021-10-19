@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DDharmonize_Vitals5 — DDharmonize_Vitals5 • rddharmony</title>
+<title>DDharmonize_Pop1 — DDharmonize_Pop1 • rddharmony</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="DDharmonize_Vitals5 — DDharmonize_Vitals5" />
-<meta property="og:description" content="This wrapper takes five-year vital counts from census and registers from DemoData and standardizes/harmonizes them." />
+<meta property="og:title" content="DDharmonize_Pop1 — DDharmonize_Pop1" />
+<meta property="og:description" content="This wrapper takes population1 indicators from DemoData and Standardizes/harmonizes by age group" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -135,16 +135,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>DDharmonize_Vitals5</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/DDharmonize_Vitals5.R'><code>R/DDharmonize_Vitals5.R</code></a></small>
-    <div class="hidden name"><code>DDharmonize_Vitals5.Rd</code></div>
+    <h1>DDharmonize_Pop1</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/DDharmonize_Pop1.R'><code>R/DDharmonize_Pop1.R</code></a></small>
+    <div class="hidden name"><code>DDharmonize_Pop1.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This wrapper takes five-year vital counts from census and registers from DemoData and standardizes/harmonizes them.</p>
+    <p>This wrapper takes population1 indicators from DemoData and Standardizes/harmonizes by age group</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DDharmonize_Vitals5</span><span class='op'>(</span><span class='va'>indata</span>, type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"births"</span>, <span class='st'>"deaths"</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>DDharmonize_Pop1</span><span class='op'>(</span><span class='va'>indata</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -153,19 +153,14 @@
       <th>indata</th>
       <td><p>The data to be harmonised</p></td>
     </tr>
-    <tr>
-      <th>type</th>
-      <td><p>births / deaths</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data frame that contains counts for five-year age groups and closed by an open age group</p>
+    <p>A data frame that contains data by single year of age up to the open age group</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='va'>vitals5_df</span>
-<span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'>DDharmonize_Vitals5</span><span class='op'>(</span><span class='va'>df</span>, type <span class='op'>=</span> <span class='st'>"births"</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

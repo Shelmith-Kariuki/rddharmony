@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DDharmonize_Vitals5 — DDharmonize_Vitals5 • rddharmony</title>
+<title>dd_extract_single — dd_extract_single • rddharmony</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="DDharmonize_Vitals5 — DDharmonize_Vitals5" />
-<meta property="og:description" content="This wrapper takes five-year vital counts from census and registers from DemoData and standardizes/harmonizes them." />
+<meta property="og:title" content="dd_extract_single — dd_extract_single" />
+<meta property="og:description" content="Extract records that refer to single-year of age. Sometimes a series identified as abridged in DemoData includes records by single year of age We extract these for use on a single year series" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -135,37 +135,32 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>DDharmonize_Vitals5</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/DDharmonize_Vitals5.R'><code>R/DDharmonize_Vitals5.R</code></a></small>
-    <div class="hidden name"><code>DDharmonize_Vitals5.Rd</code></div>
+    <h1>dd_extract_single</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/dd_extract_single.R'><code>R/dd_extract_single.R</code></a></small>
+    <div class="hidden name"><code>dd_extract_single.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This wrapper takes five-year vital counts from census and registers from DemoData and standardizes/harmonizes them.</p>
+    <p>Extract records that refer to single-year of age. Sometimes a series identified as abridged in DemoData includes records by single year of age We extract these for use on a single year series</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DDharmonize_Vitals5</span><span class='op'>(</span><span class='va'>indata</span>, type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"births"</span>, <span class='st'>"deaths"</span><span class='op'>)</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dd_extract_single</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>indata</th>
-      <td><p>The data to be harmonised</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>births / deaths</p></td>
+      <th>data</th>
+      <td><p>The data to be harmonized</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data frame that contains counts for five-year age groups and closed by an open age group</p>
+    <p>A dataset with single-year of age records only</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='va'>vitals5_df</span>
-<span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'>DDharmonize_Vitals5</span><span class='op'>(</span><span class='va'>df</span>, type <span class='op'>=</span> <span class='st'>"births"</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
