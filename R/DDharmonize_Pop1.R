@@ -67,7 +67,7 @@ DDharmonize_Pop1 <- function (indata) {
           latest_source_year <- max(df$DataSourceYear)
           check_latest_full  <- unique(df$check_full[df$DataSourceYear == latest_source_year])
           # ... and latest series is full then keep only that one
-          if (check_latest_full) {
+          if (any(check_latest_full)) {
             df <- df[df$DataSourceYear == latest_source_year,]
           } else {
             # ... and latest series is not full, then keep the latest data source record for each age

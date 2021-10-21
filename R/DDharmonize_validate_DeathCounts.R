@@ -593,6 +593,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
     out_all_appended <- NULL
   }
 
+
   ## To be removed later
   ## The only time labels that should be present in the raw dataset but absent in the clean dataset should be indicator 159 records.
   missing_timelabs<- unique(dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all_appended$TimeLabel)])

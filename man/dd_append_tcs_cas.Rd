@@ -21,6 +21,3 @@ A dataset that has both Total counts by sex data and Counts by age and sex
 \description{
 dd_append_tcs_cas
 }
-\examples{
-
-}

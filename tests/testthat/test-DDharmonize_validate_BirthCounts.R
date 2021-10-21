@@ -79,28 +79,33 @@ test_that("Complete cases do not contain wide age groups", {
 
 test_that("Every id has a closing age group",{
   tab <- clean_df %>%
-          group_by(id) %>%
-          mutate(oag_present = ifelse(any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE)),
-                                      TRUE, FALSE))
+    group_by(id, SexID, complete) %>%
+    mutate(oag_present = ifelse(any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE) |
+                                      IndicatorID == 159),
+                                TRUE, FALSE))
   expect_true(all(tab$oag_present == TRUE))
 
 })
 
 
-test_that("All Data values add up to the Total, for each id", {
-  tab <- clean_df %>%
-          group_by(id, complete) %>%
-          mutate(rec_tot = ifelse(any(AgeLabel == "Total"), DataValue[AgeLabel == "Total"], NA),
-                 calc_tot = ifelse(IndicatorID == 159, rec_tot,sum(DataValue[AgeLabel != "Total"], na.rm = TRUE)) ,
-                 diff = floor(abs(rec_tot - calc_tot))) %>%
-    filter(!is.na(rec_tot))
-  expect_true(all(tab$diff == 0))
+  test_that("All Data values add up to the Total, for each id", {
+    tab <- clean_df %>%
+      group_by(id, SexID, complete) %>%
+      mutate(rec_tot = ifelse(any(AgeLabel == "Total"), DataValue[AgeLabel == "Total"], NA),
+             calc_tot = ifelse(IndicatorID == 159, rec_tot,
+                               ifelse(IndicatorID != 159 & all(c("0-4", "1-4") %in% AgeLabel),
+                                      sum(DataValue[AgeLabel != "Total" & AgeLabel!= "0-4"], na.rm = TRUE),
+                                      sum(DataValue[AgeLabel != "Total"], na.rm = TRUE))) ,
+             diff = floor(abs(rec_tot - calc_tot))) %>%
+      filter(!is.na(rec_tot))
+    expect_true(all(tab$diff == 0))
 
-})
+  })
+
 
 test_that("There isn't any unknown in the data, and if it exists, then the total value is not reported", {
   unknown_df <- clean_df %>%
-                group_by(id) %>%
+                group_by(id, complete) %>%
                 mutate(checker = ifelse(any(AgeLabel == "Total" & IndicatorID == 170) & AgeLabel == "Unknown", "flag", "okay")) %>%
                 filter(checker == "flag" )
 
@@ -117,26 +122,40 @@ test_that("There aren't any negative data values", {
 
 })
 
+
 test_that("The complete age labels begin with a 0", {
+
   tab <- clean_df %>%
-          group_by(id, complete) %>%
-          filter(IndicatorID != 159) %>%
-          mutate(min_agesort = min(AgeSort, na.rm = TRUE)) %>%
-          mutate(min_agelabel = ifelse(AgeSort == min_agesort, AgeLabel, NA)) %>%
-          mutate(min_agelabel = ifelse(is.na(min_agelabel), min_agelabel[!is.na(min_agelabel)], min_agelabel))
+    filter(complete == TRUE)
 
-expect_true(unique(tab$min_agelabel)=="0")
+  if(nrow(tab) > 0){
 
+
+    tab2 <- tab %>%
+      group_by(id, SexID) %>%
+      filter(IndicatorID != 159) %>%
+      mutate(min_agesort = min(AgeSort, na.rm = TRUE)) %>%
+      mutate(min_agelabel = ifelse(AgeSort == min_agesort, AgeLabel, NA)) %>%
+      mutate(min_agelabel = ifelse(is.na(min_agelabel), min_agelabel[!is.na(min_agelabel)], min_agelabel))
+  }
+
+  expect_equal(ifelse(nrow(tab)>0, unique(tab2$min_agelabel), "0"), "0")
 })
 
 test_that("Abridged series start with the following values: 0, 0-4, 1-4, 5-9, 10-14", {
+
+
   abr_agelabs <- clean_df %>%
-                  filter(complete == FALSE) %>%
-                  pull(AgeLabel) %>%
-                  unique()
+    filter(complete == FALSE)
+
+  abr_agelabs2 <- abr_agelabs%>%
+    pull(AgeLabel) %>%
+    unique()
+
   expected_labs <- c("0", "0-4", "1-4", "5-9", "10-14")
 
-  expect_true(all(expected_labs %in% abr_agelabs))
+  expect_equal(ifelse(nrow(abr_agelabs)>0, all(expected_labs %in% abr_agelabs2), TRUE), TRUE)
+
 })
 
 test_that("Each age label is unique per id", {

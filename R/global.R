@@ -23,5 +23,15 @@ utils::globalVariables(c("AgeSpan", "AgeStart",#dd_oag_agestart
                         ".", "present_tcs", "eq", "serial_no", #dd_append_tcs_cas
                         "X1", "X2", #dd_validate_totals_over_sex
                         "sorting", "keeping", "cpl", "cpl_std", "cpl_oag", "check_abr", #DDharmonize_Pop1
-                        "abr_cpl_recon", "abr_from_cpl", "cpl_abr_recon", "check_cpl", "open.age" #DDharmonize_Pop5
+                        "abr_cpl_recon", "abr_from_cpl", "cpl_abr_recon", "check_cpl", "open.age", #DDharmonize_Pop5
+                        "ReferencePeriod", "IndicatorShortName", #DDharmonize_validate_PopCounts
+                        "ReferencePeriod", "has_de_facto", "keep_de_facto","DataSourceShortName",
+                        "nonipums_flag", "has_nonipums", "keep_nonipums", #dd_rank_id
+                        "X0", "X3", "total_over_sex", "pct_m" #dd_validate_totals_over_sex_new
                         ))
+
+
+
+
+
+

@@ -159,6 +159,8 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
                               abr_oag$AgeStart == oag_start,]) %>%
           arrange(AgeSort)
 
+      }else{
+        abr_oag <- NULL ## Added this to remove the warning message: In rm(abr, check_abr, abr_oag) : object 'abr_oag' not found
       }
 
       ## 17. Check again whether any open age group exists

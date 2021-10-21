@@ -34,6 +34,7 @@
 #'                                               retainKeys = FALSE,
 #'                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
 
+
 DDharmonize_validate_BirthCounts <- function(locid,
                                              times,
                                              process = c("census", "vr"),
@@ -42,6 +43,9 @@ DDharmonize_validate_BirthCounts <- function(locid,
                                              DataSourceYear = NULL,
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/") {
+
+  options(dplyr.summarise.inform=F)
+
   ## -------------------------------------------------------------------------------------------------------------------
   ## PART 1: EXTRACT VITAL COUNTS (Census and VR) FROM DEMO DATA AND HARMONIZE TO STANDARD
   ## ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES

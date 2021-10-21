@@ -42,12 +42,6 @@ DDharmonize_validate_PopCounts <- function(locid,
                                            DataSourceYear = NULL,
                                            retainKeys = FALSE,
                                            server = "https://popdiv.dfs.un.org/DemoData/api/") {
-# load the packages required
-require(DDSQLtools)
-require(DemoTools)
-require(tidyverse)
-
-
 options(dplyr.summarise.inform=F)
 
   ## -------------------------------------------------------------------------------------------------------------------
