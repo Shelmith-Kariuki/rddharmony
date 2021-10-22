@@ -1,7 +1,13 @@
+require(rddharmony)
+require(DemoTools)
+require(DDSQLtools)
+require(tidyverse)
+require(testthat)
+
 locid <- sample(get_locations()$PK_LocID, 1)
 #locid <-  140
 clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
-                                             times = c(2010, 2015),
+                                             times = c(1950, 2020),
                                              process = c("census", "vr"),
                                              return_unique_ref_period = TRUE,
                                              DataSourceShortName = NULL,
@@ -18,6 +24,7 @@ if(length(non_harmonized_ids) >0 ){
 options(dplyr.summarise.inform=F)
 
 ## These tests will only work in situations where indicator 170 data exists
+
 test_that("The data has a unique locid", {
   expect_length(unique(clean_df$LocID), 1)
 })
@@ -28,7 +35,7 @@ test_that("The data has a unique locname", {
 
 test_that("At most one indicatorid == 188 'Total' age label exists per id", {
   tab <- clean_df %>%
-          filter(is.na(note)) %>%
+          # filter(is.na(note)) %>%
           group_by(id, SexID) %>%
           summarise(n = sum(IndicatorID == 188 & AgeLabel == "Total", na.rm = TRUE)) %>%
           ungroup()
@@ -100,7 +107,7 @@ test_that("Complete cases do not contain wide age groups", {
 
 test_that("Every id has a closing age group",{
   tab <- clean_df %>%
-    filter(is.na(note)) %>%
+    # filter(is.na(note)) %>%
     group_by(id, SexID, complete) %>%
     mutate(oag_present = ifelse(any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE) |
                                       IndicatorID == 188),
@@ -181,7 +188,7 @@ test_that("Abridged series start with the following values: 0, 0-4, 1-4, 5-9, 10
 
 test_that("Each age label is unique per id", {
   tab <- clean_df %>%
-    filter(is.na(note)) %>%
+    # filter(is.na(note)) %>%
     group_by(id, complete, SexID, AgeLabel) %>%
     summarise(counter = n())
 
@@ -191,7 +198,7 @@ test_that("Each age label is unique per id", {
 
 test_that("There is only one unique id per time label",{
   tab <- clean_df %>%
-    filter(is.na(note)) %>%
+    # filter(is.na(note)) %>%
     group_by(TimeLabel) %>%
     summarise(counter = length(unique(id)))
 
@@ -203,7 +210,7 @@ test_that("There is only one unique id per time label",{
 test_that("If the data has both complete and abridged series, the totals should be equal or differ by less than 5 maybe",{
 
   tab <- clean_df %>%
-    select(id, IndicatorID, complete, AgeLabel, DataValue) %>%
+    select(id, IndicatorID, complete, SexID, AgeLabel, DataValue) %>%
     filter(AgeLabel == "Total" & IndicatorID != 188) %>%
     group_by(id) %>%
     mutate(diff = ifelse(length(id) == 2, abs(DataValue[complete == TRUE] - DataValue[complete == FALSE]),0))
@@ -229,7 +236,8 @@ test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 1
 
   agesorts <- clean_df %>%
           select(id, IndicatorID,SexID, complete, AgeLabel, AgeSort, note) %>%
-          filter(AgeLabel == "Total" & is.na(note)) %>%
+          # filter(AgeLabel == "Total" & is.na(note)) %>%
+          filter(AgeLabel == "Total") %>%
           group_by(id, SexID) %>%
           mutate(complete = zoo::na.locf0(complete)) %>%
           ungroup() %>%
