@@ -70,6 +70,12 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
       abr <- abr_out
       rm(abr_out)
 
+      ## Added by Shel (26th October at 14:26)
+      ## Case study (births): id == "578 - Norway - VR - Births - 2002 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair"
+      ## If there exists more than one total and there is a one that is equal to the computed total,
+      ## drop the others to be left with this one.
+      abr <- abr %>% dd_multiple_totals
+
       ##6. Keep the latest datasource year
       ## Should this be per series? because we are ending up dropping 159 at this point
 
@@ -102,6 +108,12 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
                                DataSourceYear = NA,
                                DataValue = 0))
       }
+
+      ## Added by Shel (26th Oct 15:16)
+      ## Case (births): "52 - Barbados - VR - Births - 2006 - Register - Demographic Yearbook - Year of registration - Direct - Fair"
+      ## if reported total - calculated total == "unknown" , then unknown == 0
+
+      abr <- abr %>% dd_drop_unknowns()
 
       ##9. For births, reconcile wide early age groups to abridged (e.g., 0-19, 0-14, 10-19 etc)
       if (type == "births") {
@@ -159,8 +171,6 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
                               abr_oag$AgeStart == oag_start,]) %>%
           arrange(AgeSort)
 
-      }else{
-        abr_oag <- NULL ## Added this to remove the warning message: In rm(abr, check_abr, abr_oag) : object 'abr_oag' not found
       }
 
       ## 17. Check again whether any open age group exists

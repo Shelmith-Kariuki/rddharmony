@@ -369,9 +369,9 @@ DDharmonize_validate_BirthCounts <- function(locid,
     vitals_std_all <- vitals_std_all %>%
       group_by(id, series, complete) %>%
       mutate(oag = ifelse(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE, ignore.case = TRUE), TRUE, FALSE)) %>%
-      mutate(tot_without_oag = ifelse(any(AgeLabel=="Total"),  sum(DataValue[AgeLabel!="Total" & oag!=TRUE], na.rm = TRUE),0),
+      mutate(tot_without_oag = ifelse(any(AgeLabel=="Total"),  sum(round(DataValue[AgeLabel!="Total" & oag!=TRUE]), na.rm = TRUE),0),
              tot_reported = ifelse(any(AgeLabel=="Total"), DataValue[AgeLabel == "Total"],0)) %>%
-      mutate(DataValue = ifelse(oag == TRUE & (floor(tot_without_oag) == floor(tot_reported)) & tot_reported!=0, 0, DataValue)) %>%
+      mutate(DataValue = ifelse(oag == TRUE & (round(tot_without_oag) == round(tot_reported)) & tot_reported!=0, 0, DataValue)) %>%
       select(-oag, -tot_without_oag, -tot_reported)
 
     ## -------------------------------------------------------------------------------------------------------------------

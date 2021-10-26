@@ -1,4 +1,12 @@
-clean_df <- DDharmonize_validate_BirthCounts(locid = 834,
+require(rddharmony)
+require(DemoTools)
+require(DDSQLtools)
+require(tidyverse)
+require(testthat)
+
+locid <- sample(get_locations()$PK_LocID, 1)
+#locid <-  140
+clean_df <- DDharmonize_validate_BirthCounts(locid = locid,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
                                              return_unique_ref_period = TRUE,
@@ -7,11 +15,19 @@ clean_df <- DDharmonize_validate_BirthCounts(locid = 834,
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
-non_harmonized_ids <- clean_df %>% filter(!is.na(note)) %>% pull(id) %>% unique()
+
+## Filter non-harmonized ids
+non_harmonized_ids <- clean_df %>%
+  filter(!is.na(note)) %>%
+  pull(id) %>%
+  unique()
 
 if(length(non_harmonized_ids) >0 ){
-clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
+  clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
 }
+
+options(dplyr.summarise.inform=F)
+
 
 ## These tests will only work in situations where indicator 170 data exists
 
@@ -23,13 +39,13 @@ test_that("The data has a unique locname", {
   expect_length(unique(clean_df$LocName), 1)
 })
 
-# test_that("At most one indicatorid == 159 'Total' age label exists per id", {
-#   tab <- clean_df %>%
-#           group_by(id) %>%
-#           summarise(n = sum(IndicatorID == 159 & AgeLabel == "Total", na.rm = TRUE)) %>%
-#           ungroup()
-#   expect_true(max(tab$n) == 1)
-# })
+test_that("At most one indicatorid == 159 'Total' age label exists per id", {
+  tab <- clean_df %>%
+    group_by(id, SexID) %>%
+    summarise(n = sum(IndicatorID == 159 & AgeLabel == "Total", na.rm = TRUE)) %>%
+    ungroup()
+  expect_true(max(tab$n, na.rm = TRUE) <= 1)
+})
 
 test_that("Only one indicatorid == 170 'Total' age label exists per id", {
   tab <- clean_df %>%
@@ -61,19 +77,28 @@ test_that("An age label cannot be complete and abridged at the same time", {
 
 
 test_that("Abridged labels should either contain a 0, a range e.g 5-9 , an open age group (with a +) and a Total", {
-  abridged_labs <- clean_df %>%
-                      filter(abridged == TRUE) %>%
+  tab <- clean_df %>%
+          filter(abridged == TRUE)
+
+  if(nrow(tab) > 0){
+  abridged_labs <- tab %>%
                       mutate(checker = ifelse(AgeLabel %in% grep("-|\\+|0|Total", AgeLabel, value = TRUE,
                                                                  ignore.case = TRUE), TRUE, FALSE))
-  expect_true(all(abridged_labs$checker == TRUE))
-})
+  }
+  expect_equal(ifelse(nrow(tab)>0, all(abridged_labs$checker == TRUE), TRUE), TRUE)
+  })
 
 test_that("Complete cases do not contain wide age groups", {
-  complete_labs <- clean_df %>%
-    filter(complete == TRUE) %>%
-    mutate(checker = ifelse(!AgeLabel %in% grep("-", AgeLabel, value = TRUE,
+
+    tab <- clean_df %>%
+      filter(complete == TRUE)
+
+    if(nrow(tab) > 0){
+      complete_labs <- tab %>%
+                         mutate(checker = ifelse(!AgeLabel %in% grep("-", AgeLabel, value = TRUE,
                                                ignore.case = TRUE), TRUE, FALSE))
-  expect_true(all(complete_labs$checker == TRUE))
+    }
+    expect_equal(ifelse(nrow(tab)>0, all(complete_labs$checker == TRUE), TRUE), TRUE)
 })
 
 
@@ -129,7 +154,6 @@ test_that("The complete age labels begin with a 0", {
     filter(complete == TRUE)
 
   if(nrow(tab) > 0){
-
 
     tab2 <- tab %>%
       group_by(id, SexID) %>%
@@ -200,22 +224,22 @@ test_that("There are no missing age groups",{
   expect_true(all(std_sub %in% clean_df$AgeLabel))
 })
 
-# test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).",{
-#
-#   agesorts <- clean_df %>%
-#           select(id, IndicatorID, complete, AgeLabel, AgeSort) %>%
-#           filter(AgeLabel == "Total") %>%
-#           group_by(id) %>%
-#           mutate(complete = zoo::na.locf0(complete)) %>%
-#           ungroup() %>%
-#           group_by(id, complete) %>%
-#           mutate(counter = length(unique(AgeSort)),
-#                  list_agesort = paste(AgeSort, collapse = "_")) %>%
-#           ungroup() %>%
-#           filter(counter == 2) %>%
-#           pull(list_agesort) %>%
-#           unique()
-#
-#   expect_identical(agesorts, "184_999")
-#
-# })
+test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 170) and the other has to be AgeSort == 999 (indicator 159).",{
+
+  agesorts <- clean_df %>%
+    select(id, IndicatorID,SexID, complete, AgeLabel, AgeSort, note) %>%
+    filter(AgeLabel == "Total") %>%
+    group_by(id, SexID) %>%
+    mutate(complete = zoo::na.locf0(complete)) %>%
+    ungroup() %>%
+    group_by(id,SexID, complete) %>%
+    mutate(counter = length(unique(AgeSort)),
+           list_agesort = paste(AgeSort, collapse = "_")) %>%
+    ungroup() %>%
+    filter(counter == 2 & is.na(note)) %>%
+    pull(list_agesort) %>%
+    unique()
+
+  expect_identical(ifelse(length(agesorts) > 0, agesorts, "184_999"), "184_999")
+
+})

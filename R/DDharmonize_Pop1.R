@@ -61,6 +61,12 @@ DDharmonize_Pop1 <- function (indata) {
         df <- df_out
         rm(df_out)
 
+        ## Added by Shel (26th October at 14:26)
+        ## Case study (births): id == "578 - Norway - VR - Births - 2002 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair"
+        ## If there exists more than one total and there is a one that is equal to the computed total,
+        ## drop the others to be left with this one.
+        df <- df %>% dd_multiple_totals
+
         ##10. Keep the latest datasource year
         # if there is more than one series ...
         if (n_series > 1) {
@@ -99,6 +105,12 @@ DDharmonize_Pop1 <- function (indata) {
                                  DataSourceYear = NA,
                                  DataValue = 0))
         }
+
+        ## Added by Shel (26th Oct 15:16)
+        ## Case (births): "52 - Barbados - VR - Births - 2006 - Register - Demographic Yearbook - Year of registration - Direct - Fair"
+        ## if reported total - calculated total == "unknown", then unknown == 0
+
+        df <- df %>% dd_drop_unknowns()
 
       ##14. if the "Total" value is less than the sum over age, discard it
         total_reported <- df$DataValue[df$AgeLabel == "Total"]

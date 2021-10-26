@@ -15,8 +15,8 @@ require(usethis)
 #                  sheet = "Sweden")
 # locid <- df %>% filter(!is.na(LocID)) %>% distinct(LocID) %>% pull()
 # times <- df %>% filter(!is.na(TimeMid)) %>% mutate(TimeLabel = TimeMid - 0.5) %>%  distinct(TimeLabel) %>% pull()
-locid <- 504
-times <- c(1950, 2020)
+locid <- 578
+times <- c(2002)
 process = c("census", "vr")
 return_unique_ref_period <- TRUE
 DataSourceShortName = NULL
@@ -47,8 +47,8 @@ server = "https://popdiv.dfs.un.org/DemoData/api/"
 dd_extract <- DDextract_VitalCounts(locid = locid,
                                     type = "births",
                                     process = process,
-                                    start_year = 1950,
-                                    end_year = 2021,
+                                    start_year = times[1],
+                                    end_year = times[2],
                                     DataSourceShortName = DataSourceShortName,
                                     DataSourceYear = DataSourceYear)
  # get data process id
@@ -99,6 +99,7 @@ dd_extract <- DDextract_VitalCounts(locid = locid,
   vitals_std_all <- list()
 
   for (i in 1:length(ids)) {
+
     print(ids[i])
 
     ## 6. for each series:
@@ -110,7 +111,7 @@ dd_extract <- DDextract_VitalCounts(locid = locid,
   ## Loc: Sweden
   ## id: 752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair
   # vitals_raw <- dd_extract %>%
-  #   dplyr::filter(id == "752 - Sweden - VR - Births - 2015 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
+  #   dplyr::filter(id == "578 - Norway - VR - Births - 2002 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair")
     # vitals_raw <- dd_extract %>%
     #      dplyr::filter(TimeMid == 2000.5)
 

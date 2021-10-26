@@ -15,7 +15,11 @@ clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
-non_harmonized_ids <- clean_df %>% filter(!is.na(note)) %>% pull(id) %>% unique()
+## Filter non-harmonized ids
+non_harmonized_ids <- clean_df %>%
+                      filter(!is.na(note)) %>%
+                      pull(id) %>%
+                      unique()
 
 if(length(non_harmonized_ids) >0 ){
   clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
@@ -89,19 +93,28 @@ test_that("An age label cannot be complete and abridged at the same time", {
 
 
 test_that("Abridged labels should either contain a 0, a range e.g 5-9 , an open age group (with a +) and a Total", {
-  abridged_labs <- clean_df %>%
-    filter(abridged == TRUE) %>%
-    mutate(checker = ifelse(AgeLabel %in% grep("-|\\+|0|Total", AgeLabel, value = TRUE,
-                                               ignore.case = TRUE), TRUE, FALSE))
-  expect_true(all(abridged_labs$checker == TRUE))
+  tab <- clean_df %>%
+    filter(abridged == TRUE)
+
+  if(nrow(tab) > 0){
+    abridged_labs <- tab %>%
+      mutate(checker = ifelse(AgeLabel %in% grep("-|\\+|0|Total", AgeLabel, value = TRUE,
+                                                 ignore.case = TRUE), TRUE, FALSE))
+  }
+  expect_equal(ifelse(nrow(tab)>0, all(abridged_labs$checker == TRUE), TRUE), TRUE)
 })
 
 test_that("Complete cases do not contain wide age groups", {
-  complete_labs <- clean_df %>%
-    filter(complete == TRUE) %>%
-    mutate(checker = ifelse(!AgeLabel %in% grep("-", AgeLabel, value = TRUE,
-                                                ignore.case = TRUE), TRUE, FALSE))
-  expect_true(all(complete_labs$checker == TRUE))
+
+  tab <- clean_df %>%
+    filter(complete == TRUE)
+
+  if(nrow(tab) > 0){
+    complete_labs <- tab %>%
+      mutate(checker = ifelse(!AgeLabel %in% grep("-", AgeLabel, value = TRUE,
+                                                  ignore.case = TRUE), TRUE, FALSE))
+  }
+  expect_equal(ifelse(nrow(tab)>0, all(complete_labs$checker == TRUE), TRUE), TRUE)
 })
 
 
@@ -136,7 +149,7 @@ test_that("All Data values add up to the Total, for each id", {
 test_that("There isn't any unknown in the data, and if it exists, then the total value is not reported", {
   unknown_df <- clean_df %>%
     group_by(id, SexID, complete) %>%
-    mutate(checker = ifelse(any(AgeLabel == "Total" & IndicatorID == 170) & AgeLabel == "Unknown", "flag", "okay")) %>%
+    mutate(checker = ifelse(any(AgeLabel == "Total" & (IndicatorID == 194|IndicatorID ==195)) & AgeLabel == "Unknown", "flag", "okay")) %>%
     filter(checker == "flag" )
 
   expect_true(nrow(unknown_df)==0)
@@ -157,8 +170,6 @@ test_that("The complete age labels begin with a 0", {
     filter(complete == TRUE)
 
   if(nrow(tab) > 0){
-
-
   tab2 <- tab %>%
     group_by(id, SexID) %>%
     filter(IndicatorID != 188) %>%
@@ -176,10 +187,12 @@ test_that("Abridged series start with the following values: 0, 0-4, 1-4, 5-9, 10
   abr_agelabs <- clean_df %>%
     filter(complete == FALSE)
 
+  if(nrow(abr_agelabs) > 0){
+
   abr_agelabs2 <- abr_agelabs%>%
     pull(AgeLabel) %>%
     unique()
-
+}
   expected_labs <- c("0", "0-4", "1-4", "5-9", "10-14")
 
   expect_equal(ifelse(nrow(abr_agelabs)>0, all(expected_labs %in% abr_agelabs2), TRUE), TRUE)

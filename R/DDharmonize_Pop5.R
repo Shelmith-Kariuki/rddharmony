@@ -78,6 +78,12 @@ DDharmonize_Pop5 <- function (indata) {
       abr <- abr_out
       rm(abr_out)
 
+      ## Added by Shel (26th October at 14:26)
+      ## Case study (births): id == "578 - Norway - VR - Births - 2002 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair"
+      ## If there exists more than one total and there is a one that is equal to the computed total,
+      ## drop the others to be left with this one.
+      abr <- abr %>% dd_multiple_totals
+
         ##10. Keep the latest datasource year
 
         ## if there is more than one series ...
@@ -117,6 +123,12 @@ DDharmonize_Pop5 <- function (indata) {
                                  DataSourceYear = NA,
                                  DataValue = 0))
         }
+
+      ## Added by Shel (26th Oct 15:16)
+      ## Case (births): "52 - Barbados - VR - Births - 2006 - Register - Demographic Yearbook - Year of registration - Direct - Fair"
+      ## if reported total - calculated total == "unknown" , then unknown == 0
+
+      abr <- abr %>% dd_drop_unknowns()
 
        ##14. sometimes there are single year ages (not 0) on the abridged series (often for children), extract these for use on single series
         cpl_from_abr <- abr %>% dd_extract_single %>%
@@ -254,6 +266,10 @@ DDharmonize_Pop5 <- function (indata) {
       }
 
       ##31. clean up the environment before beginning next loop
+      ## Added the line below for cases where check_abr and abr_oag do not exist
+      ## Case id: 752 - Sweden
+      check_abr <- NULL
+      abr_oag <- NULL
     rm(abr, abr_oag, cpl_from_abr, check_abr)
 
     } # close loop for sex

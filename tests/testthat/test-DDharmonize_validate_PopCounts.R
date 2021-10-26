@@ -4,10 +4,10 @@ require(DDSQLtools)
 require(tidyverse)
 require(testthat)
 
-#locid <-  140
+#locid <-  104
 locid <- sample(get_locations()$PK_LocID, 1)
 clean_df <- DDharmonize_validate_PopCounts(locid = locid,
-                                             times = c(1950, 2020),
+                                             times = c(2010, 2020),
                                              process = c("census", "estimate", "register"),
                                              return_unique_ref_period = TRUE,
                                              DataSourceShortName = NULL,

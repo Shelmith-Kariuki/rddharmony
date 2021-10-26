@@ -20,8 +20,8 @@ require(tidyverse)
 require(rddharmony)
 
 #locid <- sample(get_locations()$PK_LocID,1)
-locid <- 591
-times <- c(1977)
+locid <- 752
+times <- c(2010,2020)
 process = c("census","estimate","register") #???
 return_unique_ref_period <- TRUE
 DataSourceShortName = NULL
