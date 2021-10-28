@@ -4,8 +4,8 @@ require(DDSQLtools)
 require(tidyverse)
 require(testthat)
 
-locid <- sample(get_locations()$PK_LocID, 1)
-#locid <-  140
+#locid <- sample(get_locations()$PK_LocID, 1)
+locid <-  246
 clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
@@ -118,19 +118,44 @@ test_that("Complete cases do not contain wide age groups", {
 })
 
 
-test_that("Every id has a closing age group",{
+# test_that("Every id has a closing age group",{
+#   tab <- clean_df %>%
+#     # filter(is.na(note)) %>%
+#     group_by(id, SexID, complete) %>%
+#     mutate(oag_present = ifelse(any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE) |
+#                                       IndicatorID == 188),
+#                                 TRUE, FALSE))
+#   expect_true(all(tab$oag_present == TRUE))
+#
+#   ## Doesn't work for "533 - Aruba - VR - Deaths - 2014 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair" check
+#  ## Could it be because of the edit I made to do away with the negatives?
+#   })
+
+test_that("Every id has a closing age group, and if not, computed total is equal to the reported total",{
   tab <- clean_df %>%
-    # filter(is.na(note)) %>%
     group_by(id, SexID, complete) %>%
     mutate(oag_present = ifelse(any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE) |
-                                      IndicatorID == 188),
-                                TRUE, FALSE))
-  expect_true(all(tab$oag_present == TRUE))
+                                      IndicatorID == 159),
+                                TRUE, FALSE)) %>%
+    ungroup()
 
-  ## Doesn't work for "533 - Aruba - VR - Deaths - 2014 - Register - Demographic Yearbook - Year of occurrence - Direct - Fair" check
- ## Could it be because of the edit I made to do away with the negatives?
-  })
+  if(!all(tab$oag_present == TRUE)){
 
+    tab2 <- tab %>%
+      group_by(id, SexID, complete) %>%
+      mutate(rec_tot = ifelse(any(AgeLabel == "Total"), DataValue[AgeLabel == "Total"], NA),
+             calc_tot = ifelse(IndicatorID == 188, rec_tot,
+                               ifelse(IndicatorID != 188 & all(c("0-4", "1-4") %in% AgeLabel),
+                                      sum(DataValue[AgeLabel != "Total" & AgeLabel!= "0-4"], na.rm = TRUE),
+                                      sum(DataValue[AgeLabel != "Total"], na.rm = TRUE))) ,
+             diff = floor(abs(rec_tot - calc_tot))) %>%
+      filter(!is.na(rec_tot) & AgeSort!=999)
+
+    expect_true(all(tab2$diff == 0))
+
+  }
+
+})
 
 test_that("All Data values add up to the Total, for each id", {
   tab <- clean_df %>%

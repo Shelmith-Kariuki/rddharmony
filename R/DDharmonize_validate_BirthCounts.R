@@ -156,7 +156,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
       #  harmonize the vital5 data into standard age groups
       if (nrow(vitals5_raw[vitals5_raw$AgeSpan == 5,]) > 0) {
 
-        # print("harmonizing vital counts by 5-year age group")
+        print("harmonizing vital counts by 5-year age group")
         vitals5_std <- DDharmonize_Vitals5(indata = vitals5_raw, type = "births")
 
       } else { vitals5_std <- NULL }
@@ -172,7 +172,8 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
       # harmonize the pop1 data into standard age groups
       if (nrow(vitals1_raw[vitals1_raw$AgeSpan == 1,]) > 0) {
-        # print("harmonizing vital counts by 1-year age group")
+
+        print("harmonizing vital counts by 1-year age group")
         vitals1_std <- DDharmonize_Vitals1(indata = vitals1_raw)
 
       } else { vitals1_std <- NULL }
@@ -315,7 +316,9 @@ DDharmonize_validate_BirthCounts <- function(locid,
         bind_rows(vitals_abr_cpl)
 
       if (nrow(vitals_all) > 0) {
-        vitals_all <- vitals_all %>%
+        ## Shel added suppressWarnings() because some datasets do not have `DataSourceStatusName` and `DataSourceTypeName`
+        ## Case: locid == 292, Gibraltar
+        vitals_all <- suppressWarnings(vitals_all %>%
           mutate(id                     = ids[i],
                  id_series = paste(id, series, sep = " - "),
                  LocName                = vitals_raw$LocName[1],
@@ -353,7 +356,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
                  DataReliabilitySort    = vitals_raw$DataReliabilitySort[1],
                  ModelPatternName       = vitals_raw$ModelPatternName[1],
                  PeriodTypeName         = vitals_raw$PeriodTypeName[1],
-                 PeriodGroupName        = vitals_raw$PeriodGroupName[1])
+                 PeriodGroupName        = vitals_raw$PeriodGroupName[1]))
       }
       vitals_std_all[[i]] <- vitals_all
 

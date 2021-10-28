@@ -259,7 +259,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
           bind_rows(vitals_abr_cpl)
 
         if (nrow(vitals_all) > 0) {
-          vitals_all <- vitals_all %>%
+          vitals_all <- suppressWarnings(vitals_all %>%
             mutate(id                     = ids[i],
                    id_series = paste(id, series, sep = " - "),
                    LocName                = vitals_raw$LocName[1],
@@ -297,7 +297,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
                    DataReliabilitySort    = vitals_raw$DataReliabilitySort[1],
                    ModelPatternName       = vitals_raw$ModelPatternName[1],
                    PeriodTypeName         = vitals_raw$PeriodTypeName[1],
-                   PeriodGroupName        = vitals_raw$PeriodGroupName[1])
+                   PeriodGroupName        = vitals_raw$PeriodGroupName[1]))
         }
         vitals_std_all[[i]] <- vitals_all
 
@@ -581,11 +581,11 @@ DDharmonize_validate_DeathCounts <- function(locid,
           "Location Name: ", unique(out_all_appended$LocName),"\n")
 
     }else{## 	Deaths by age and sex not available
-      print(paste0("Deaths by age and sex not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+      print(paste0("Deaths by age and sex do not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
       out_all <- NULL
     }
 
-  } else{## if no birth counts were extracted from DemoData
+  } else{## if no death counts were extracted from DemoData
     if(locid %in% get_locations()$LocID){
       print(paste0("There are no death counts available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
       out_all_appended <- NULL

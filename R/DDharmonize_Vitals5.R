@@ -221,9 +221,8 @@ DDharmonize_Vitals5 <- function (indata, type = c("births","deaths")) {
 
     }
 
-
     # Clean up the environment before beginning next loop
-    rm(abr, check_abr, abr_oag)
+    # rm(abr, check_abr, abr_oag)
 
   } # close loop for sex
 

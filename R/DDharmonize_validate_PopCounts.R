@@ -258,7 +258,7 @@ options(dplyr.summarise.inform=F)
 
 
     # 12. Assemble all of the series into a single dataset
-    pop_all <- pop5_std %>%
+    pop_all <- suppressWarnings(pop5_std %>%
       bind_rows(pop_cpl) %>%
       bind_rows(pop_abr_cpl) %>%
       mutate(id                     = ids[i],
@@ -293,7 +293,7 @@ options(dplyr.summarise.inform=F)
              ModelPatternName       = pop_raw$ModelPatternName[1],
              PeriodTypeName         = pop_raw$PeriodTypeName[1],
              PeriodGroupName        = pop_raw$PeriodGroupName[1],
-             SeriesIDs              = I(list(unique(pop_raw$SeriesID))))
+             SeriesIDs              = I(list(unique(pop_raw$SeriesID)))))
 
     pop_std_all[[i]] <- pop_all
 
