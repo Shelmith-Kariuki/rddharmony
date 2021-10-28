@@ -45,8 +45,6 @@ DDharmonize_validate_DeathCounts <- function(locid,
   ## -------------------------------------------------------------------------------------------------------------------
   ## PART 1: EXTRACT DEATHS BY AGE AND SEX FROM DEMO DATA AND HARMONIZE TO STANDARD ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
   ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 1: EXTRACT DEATHS BY AGE AND SEX FROM DEMO DATA AND HARMONIZE TO STANDARD
-  ## ABRIDGED AND COMPLETE AGE GROUPS, BY SERIES
 
   ## UNPD server housing DemoData
   options(unpd_server = server)
@@ -473,6 +471,16 @@ DDharmonize_validate_DeathCounts <- function(locid,
       } else { vitals_std_valid <- vitals_std_full }
 
 
+
+      ## 29th Oct change
+      # arrange the data, with priority columns on the left and data loader keys on the right
+      first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
+                         "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
+                         "complete", "non_standard")
+      keep_columns <- names(vitals_std_all)
+      keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", first_columns))]
+
+
       ## -------------------------------------------------------------------------------------------------------------------
       ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
       ## -------------------------------------------------------------------------------------------------------------------
@@ -487,14 +495,6 @@ DDharmonize_validate_DeathCounts <- function(locid,
 
         } else { vitals_valid_id <- vitals_std_valid }
 
-        # arrange the data, with priority columns on the left and data loader keys on the right
-        first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
-                           "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
-                           "complete", "non_standard")
-        keep_columns <- names(vitals_std_all)
-        keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", "DataReliabilitySort", first_columns))]
-
-
         out_all <- vitals_valid_id %>%
           mutate(non_standard = FALSE,
                  DataTypeName = "Direct (age standardized)") %>%
@@ -506,6 +506,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
       ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
       ## -------------------------------------------------------------------------------------------------------------------
 
+
       first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd","SexID",
                          "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue")
 
@@ -513,7 +514,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
 
       skipped <- dd_extract_194_195 %>%
         dplyr::filter(!(TimeLabel %in% ref_pds)) %>%
-        select(all_of(first_columns), all_of(keep_columns)) %>%
+        select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%  ## 29th Oct change
         mutate(five_year = FALSE,
                abridged = FALSE,
                complete = FALSE,
@@ -522,8 +523,18 @@ DDharmonize_validate_DeathCounts <- function(locid,
         arrange(id, SexID, AgeSort) %>%
         distinct()
 
-      out_all <- rbind(out_all, skipped) %>%
+      out_all <- bind_rows(out_all, skipped) ## 29th Oct change
+
+      ## 29th Oct change
+      ## Modified this part because of:
+      ## Case: 583 - Micronesia (Fed. States of) - VR - Deaths - 1994 - Register - Demographic Yearbook - Year of occurrence - Direct - Low
+      ## We have cases where none of the series ids is full so out_all is NULL, but when merged with skipped, we regain the
+      ## original data. But, we do not want to lose indicator id and indicator name
+      if(any(is.na(out_all$note))){## 29th Oct change
+
+      out_all2 <- out_all %>%
         arrange(id, SexID, abridged, AgeSort) %>%
+        select(-IndicatorID, -IndicatorName) %>%
         mutate(IndicatorName = NA,
                IndicatorName = replace(IndicatorName, abridged == TRUE, "Deaths by age and sex - abridged"),
                IndicatorName = replace(IndicatorName, five_year == TRUE, "Deaths by age and sex - abridged"),
@@ -535,7 +546,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
                SexName = replace(SexName, SexID == 2, "Female"),
                SexName = replace(SexName, SexID == 3, "Both sexes"))
 
-      out_all <- out_all %>%
+      out_all2 <- out_all2 %>%
         mutate(IndicatorID = ifelse(IndicatorName == "Deaths by age and sex - abridged", 194,
                                     ifelse(IndicatorName == "Deaths by age and sex - complete", 195,  NA))) %>%
         select(IndicatorID, IndicatorName, everything())
@@ -545,25 +556,29 @@ DDharmonize_validate_DeathCounts <- function(locid,
       ## We have cases where we have complete cases that only contain 0, 1,2,3,4,5+. I (Shel) propose we drop this in cases where abridged cases exist
       # throw it out if the open age group is below 50
 
-      out_all <- out_all %>%
+      out_all2 <- out_all2 %>%
         group_by(id, SexID, complete) %>%
         mutate(max_agestart = max(AgeStart, na.rm = TRUE)) %>%
         filter(max_agestart > 50) %>%
         ungroup() %>%
         select(-max_agestart)
+      }else{
+        out_all2 <- out_all ## 29th Oct change
+      }
+
 
       ## -------------------------------------------------------------------------------------------------------------------
       ## PART 6: COMBINE THE HARMONIZED DATA WITH INDICATOR 188 DATA AND CLEAN IT
       ## -------------------------------------------------------------------------------------------------------------------
 
       if(nrow(dd_extract_188) >0){
-        out_all_appended <- dd_append_tcs_cas(indata = out_all,
+        out_all_appended <- dd_append_tcs_cas(indata = out_all2, ## 29th Oct change
                                               type = "deaths",
                                               tcs_data = dd_extract_188,
                                               ind = 188)
       }else
       {
-        out_all_appended <- out_all
+        out_all_appended <- out_all2 ## 29th Oct change
       }
 
       ## -------------------------------------------------------------------------------------------------------------------

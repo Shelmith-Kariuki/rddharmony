@@ -42,9 +42,7 @@ merged_df3 <- merged_df2 %>%
               filter(eq != "drop") %>%
               select(-eq, -present_tcs)%>%
               ungroup()
-}else{
-  merged_df3 <- merged_df2
-}
+
 
 
 ##4. Ensure we have one id per time label
@@ -85,18 +83,22 @@ merged_df3 <- merged_df3 %>%
               distinct(id, SexID, AgeLabel, DataValue,abridged, complete, .keep_all = TRUE) %>%
               arrange(id, SexID, desc(IndicatorID))
 
+}else{
+  merged_df3 <- merged_df2
+}
+
 ##6. Generate a dataset of the dropped records
 if(type == "births"){
 
 skipped <- merged_df %>%
-            filter(!serial_no %in% merged_df2$serial_no)%>%
-            mutate(note = "Record to be disregarded since either births by age of mother and sex of child don't exist for this id and sex,
-                   the record does not match the births by age of mother and sex of child total value, or it is a duplicate")
+            filter(!serial_no %in% merged_df3$serial_no)%>%
+            mutate(note = ifelse(!is.na(note), note, "Record to be disregarded since either births by age of mother and sex of child don't exist for this id and sex,
+                   the record does not match the births by age of mother and sex of child total value, or it is a duplicate"))
 }else{
   skipped <- merged_df %>%
-    filter(!serial_no %in% merged_df2$serial_no)%>%
-    mutate(note = "Record to be disregarded since either deaths by age and sex don't exist for this id and sex,
-the record does not match the deaths by age and sex total value, or it is a duplicate")
+    filter(!serial_no %in% merged_df3$serial_no)%>%
+    mutate(note = ifelse(!is.na(note), note, "Record to be disregarded since either deaths by age and sex don't exist for this id and sex,
+the record does not match the deaths by age and sex total value, or it is a duplicate"))
 
 }
 

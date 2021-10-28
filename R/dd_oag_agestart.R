@@ -18,9 +18,11 @@
 
 dd_oag_agestart <- function(data, multiple5 = TRUE){
 
-  maxage <- data %>%
+  ## Shel added suppressWarnings() to remove the following warning: In max(AgeStart) : no non-missing arguments to max; returning -Inf
+  ## "748 - Eswatini - VR - Deaths - 2016 - Register - Demographic Yearbook - Year of registration - Direct - Low"
+  maxage <- suppressWarnings(data %>%
     dplyr::filter(AgeSpan > 0) %>%
-    dplyr::filter(AgeStart == max(AgeStart))
+    dplyr::filter(AgeStart == max(AgeStart)))
 
   oag_start <- maxage$AgeEnd
 

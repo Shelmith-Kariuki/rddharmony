@@ -5,7 +5,7 @@ require(tidyverse)
 require(testthat)
 
 #locid <- sample(get_locations()$PK_LocID, 1)
-locid <-  246
+locid <-  642
 clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
@@ -151,9 +151,9 @@ test_that("Every id has a closing age group, and if not, computed total is equal
              diff = floor(abs(rec_tot - calc_tot))) %>%
       filter(!is.na(rec_tot) & AgeSort!=999)
 
-    expect_true(all(tab2$diff == 0))
-
   }
+
+  expect_true(ifelse(!all(tab$oag_present == TRUE),all(tab2$diff == 0), TRUE))
 
 })
 
