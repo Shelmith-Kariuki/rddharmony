@@ -128,6 +128,7 @@ options(dplyr.summarise.inform=F)
 
        for (i in 1:length(ids)) {
 
+         print(i)
         print(ids[i])
 
          ## 5. For each id
@@ -478,6 +479,15 @@ if (nrow(pop_std_full) > 0) {
     pop_std_valid <- pop_std_full
     }
 
+
+  # define how we want to arrange the data, with priority columns on the left and data loader keys on the right
+  first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart","TimeLabel", "TimeMid", "SexID",
+                     "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
+                     "complete", "non_standard")
+  keep_columns <- names(pop_std_all)
+  keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", first_columns))]
+
+
   ## -------------------------------------------------------------------------------------------------------------------
   ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
   ## -------------------------------------------------------------------------------------------------------------------
@@ -488,15 +498,6 @@ if (nrow(pop_std_full) > 0) {
       pop_valid_id <- pop_std_valid %>% dd_rank_id
 
     } else { pop_valid_id <- pop_std_valid }
-
-
-    # define how we want to arrange the data, with priority columns on the left and data loader keys on the right
-    first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart","TimeLabel", "TimeMid", "SexID",
-                       "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
-                       "complete", "non_standard")
-    keep_columns <- names(pop_std_all)
-    keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", first_columns))]
-
 
     out_all <- pop_valid_id %>%
       mutate(non_standard = FALSE,
@@ -518,7 +519,7 @@ if (nrow(pop_std_full) > 0) {
     group_by(id) %>%
     mutate(SeriesIDs = I(list(unique(SeriesID)))) %>%
     ungroup() %>%
-    select(all_of(first_columns), all_of(keep_columns)) %>%
+    select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%  ## 29th Oct change
     mutate(five_year = FALSE,
            abridged = FALSE,
            complete = FALSE,
@@ -527,8 +528,12 @@ if (nrow(pop_std_full) > 0) {
     arrange(id, SexID, AgeSort) %>%
     distinct()
 
-  out_all <- rbind(out_all, skipped) %>%
-    arrange(id, SexID, abridged, AgeSort) %>%
+  out_all <- bind_rows(out_all, skipped) ## 29th Oct change
+
+  if(any(is.na(out_all$note))){## 29th Oct change
+
+    out_all2 <- out_all %>%
+      arrange(id, SexID, abridged, AgeSort) %>%
     mutate(IndicatorName = NA,
            IndicatorName = replace(IndicatorName, abridged == TRUE, "Population5"),
            IndicatorName = replace(IndicatorName, complete == TRUE, "Population1"),
@@ -539,46 +544,64 @@ if (nrow(pop_std_full) > 0) {
            SexName = replace(SexName, SexID == 2, "Female"),
            SexName = replace(SexName, SexID == 3, "Both sexes"))
 
+    #Population by age and sex - abridged(58), #Population by age and sex - complete(60)
+    out_all2 <- out_all2 %>%
+      mutate(IndicatorID = ifelse(IndicatorName == "Population5", 58,
+                                  ifelse(IndicatorName == "Population1", 60,  NA))) %>%
+      select(IndicatorID, IndicatorName, everything())
+
+
+  }else{
+    out_all2 <- out_all ## 29th Oct change
+  }
+
   ## -------------------------------------------------------------------------------------------------------------------
   ## PART 6: FINALIZE
   ## -------------------------------------------------------------------------------------------------------------------
 
+  out_all_appended <- out_all2
+
+  if(nrow(out_all_appended) >0){
   if (retainKeys == FALSE) {
-    out_all <- out_all %>%
+    out_all_appended <- out_all_appended %>%
       select(id, LocID, LocName, ReferencePeriod, TimeLabel, TimeMid, DataSourceName, StatisticalConceptName,
              DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
              AgeLabel, AgeSpan, AgeSort, DataValue, note)
 
   }
+  }else{
+    print(paste0("No full data series exists for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+    out_all_appended <- NULL
+  }
 
   ## Print a text message showing the locid and the locname of the data extracted
-  cat("\n","Location ID: ", unique(out_all$LocID),"\n",
-      "Location Name: ", unique(out_all$LocName),"\n")
+  cat("\n","Location ID: ", unique(dd_extract$LocID),"\n",
+      "Location Name: ", unique(dd_extract$LocName),"\n")
 
   } else{## if no pop counts were extracted from DemoData
     if(locid %in% get_locations()$LocID){
         print(paste0("There are no census age distributions available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
-      out_all <- NULL
+      out_all_appended <- NULL
     }
-    out_all <- NULL
+    out_all_appended <- NULL
   }
 
 ## To be removed later
 ## missing_timelabs should be NULL
-missing_refperiods<- unique(dd_extract$ReferencePeriod[which(!dd_extract$ReferencePeriod %in% out_all$ReferencePeriod)])
+missing_refperiods<- unique(dd_extract$ReferencePeriod[which(!dd_extract$ReferencePeriod %in% out_all_appended$ReferencePeriod)])
 assign("missing_refperiods", missing_refperiods, .GlobalEnv)
 
 if(length(missing_refperiods) >0){
   missing_data <- dd_extract %>%
                   filter(TimeMid %in% missing_refperiods) %>%
-                  select(any_of(names(out_all)))
+                  select(any_of(names(out_all_appended)))
 
   assign("missing_data", missing_data, .GlobalEnv)
 }else{
   missing_data <- NULL
 }
 
-return(out_all)
+return(out_all_appended)
 
 }
 

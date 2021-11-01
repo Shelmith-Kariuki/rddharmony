@@ -33,7 +33,8 @@ merged_df2 <- merged_df %>%
 
 ##3. If the Total counts by sex record does not match the total value of the harmonized data, drop it
 if(nrow(merged_df2) >0){
-merged_df3 <- merged_df2 %>%
+
+  merged_df3 <- merged_df2 %>%
               group_by(id, SexID) %>%
               mutate(present_tcs = ifelse(any(IndicatorID == ind), 1,0)) %>%
               mutate(eq = ifelse(all(present_tcs == 1) & IndicatorID == ind &
@@ -101,6 +102,8 @@ skipped <- merged_df %>%
 the record does not match the deaths by age and sex total value, or it is a duplicate"))
 
 }
+
+skipped <- skipped %>% mutate(note = as.character(note))
 
 ##7. Append the dropped records to the new data
 out <- merged_df3 %>%

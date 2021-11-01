@@ -155,7 +155,8 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
       #  harmonize the vital5 data into standard age groups
       if (nrow(vitals5_raw[vitals5_raw$AgeSpan == 5,]) > 0) {
-
+        print(i)
+        print(ids[i])
         print("harmonizing vital counts by 5-year age group")
         vitals5_std <- DDharmonize_Vitals5(indata = vitals5_raw, type = "births")
 
@@ -520,6 +521,13 @@ DDharmonize_validate_BirthCounts <- function(locid,
     # are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
     #           length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"]))
     #
+    # arrange the data, with priority columns on the left and data loader keys on the right
+    first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
+                       "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
+                       "complete", "non_standard")
+    keep_columns <- names(vitals_std_all)
+    keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", first_columns))]
+
     ## -------------------------------------------------------------------------------------------------------------------
     ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
     ## -------------------------------------------------------------------------------------------------------------------
@@ -532,13 +540,6 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
       } else { vitals_valid_id <- vitals_std_valid }
 
-      ## arrange the data, with priority columns on the left and data loader keys on the right
-      first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart", "TimeMid", "SexID",
-                         "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
-                         "complete", "non_standard")
-      keep_columns <- names(vitals_std_all)
-      keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", first_columns))]
-
       out_all <- vitals_valid_id %>%
         mutate(non_standard = FALSE,
                DataTypeName = "Direct (age standardized)",
@@ -550,10 +551,15 @@ DDharmonize_validate_BirthCounts <- function(locid,
     ## -------------------------------------------------------------------------------------------------------------------
     ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
     ## -------------------------------------------------------------------------------------------------------------------
-    first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
-    skipped <- dd_extract_170 %>%
-      dplyr::filter(!(TimeLabel %in% out_all$TimeLabel)) %>%
-      select(all_of(first_columns), all_of(keep_columns)) %>%
+
+    first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd","SexID",
+                       "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue")
+
+    ref_pds <- unique(out_all$TimeLabel)
+
+    skipped <- dd_extract_159 %>%
+      dplyr::filter(!(TimeLabel %in% ref_pds)) %>%
+      select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%  ## 29th Oct change
       mutate(five_year = FALSE,
              abridged = FALSE,
              complete = FALSE,
@@ -562,60 +568,74 @@ DDharmonize_validate_BirthCounts <- function(locid,
       arrange(id, SexID, AgeSort) %>%
       distinct()
 
-    out_all <- rbind(out_all, skipped) %>%
-      arrange(id, SexID, abridged, AgeSort) %>%
-      mutate(IndicatorName = NA,
-             IndicatorName = replace(IndicatorName, abridged == TRUE, "Births by age and sex - abridged"),
-             IndicatorName = replace(IndicatorName, five_year == TRUE, "Births by age and sex - abridged"),
-             IndicatorName = replace(IndicatorName, complete == TRUE, "Births by age and sex - complete"),
-             AgeUnit = "Year",
-             SexName = NA,
-             SexName = replace(SexName, SexID == 0, "Unknown"),
-             SexName = replace(SexName, SexID == 1, "Male"),
-             SexName = replace(SexName, SexID == 2, "Female"),
-             SexName = replace(SexName, SexID == 3, "Both sexes"))
+    out_all <- bind_rows(out_all, skipped) ## 29th Oct change
 
-    # out_all <- out_all %>%
-    #   mutate(IndicatorID = 170,
-    #          IndicatorName = "Births by age of mother (and sex of child)") %>%
-    #   select(IndicatorName, IndicatorID, everything())
+    ## 29th Oct change
+    ## Modified this part because of:
+    ## Case: 156 - China - Census - Births - 2010 - Census - Demographic Yearbook - De-facto - Recent births - Unknown
+    ## We have cases where none of the series ids is full so out_all is NULL, but when merged with skipped, we regain the
+    ## original data. But, we do not want to lose indicator id and indicator name
+    if(any(is.na(out_all$note))){## 29th Oct change
 
-    out_all <- out_all %>%
+      out_all2 <- out_all %>%
+        arrange(id, SexID, abridged, AgeSort) %>%
+        mutate(IndicatorName = NA,
+               IndicatorName = replace(IndicatorName, abridged == TRUE, "Births by age and sex - abridged"),
+               IndicatorName = replace(IndicatorName, five_year == TRUE, "Births by age and sex - abridged"),
+               IndicatorName = replace(IndicatorName, complete == TRUE, "Births by age and sex - complete"),
+               AgeUnit = "Year",
+               SexName = NA,
+               SexName = replace(SexName, SexID == 0, "Unknown"),
+               SexName = replace(SexName, SexID == 1, "Male"),
+               SexName = replace(SexName, SexID == 2, "Female"),
+               SexName = replace(SexName, SexID == 3, "Both sexes"))
+
+      out_all2 <- out_all2 %>%
       mutate(IndicatorID = 170) %>%
       select(IndicatorID, IndicatorName, everything())
+
+    }else{
+      out_all2 <- out_all ## 29th Oct change
+    }
 
     ## -------------------------------------------------------------------------------------------------------------------
     ## PART 6: COMBINE THE HARMONIZED DATA WITH INDICATOR 188 DATA AND CLEAN IT
     ## -------------------------------------------------------------------------------------------------------------------
 
     if(nrow(dd_extract_159) >0){
-      out_all_appended <- dd_append_tcs_cas(indata = out_all,
+      out_all_appended <- dd_append_tcs_cas(indata = out_all2,
                                             type = "births",
                                             tcs_data = dd_extract_159,
                                             ind = 159)
     }else
     {
-      out_all_appended <- out_all
+      out_all_appended <- out_all2
     }
 
     ## -------------------------------------------------------------------------------------------------------------------
     ## PART 7: FINALIZE
     ## -------------------------------------------------------------------------------------------------------------------
 
+  if(nrow(out_all_appended) >0){
+
     if (retainKeys == FALSE) {
-      out_all <- out_all %>%
+      out_all_appended <- out_all_appended %>%
         select(id, LocID, LocName, IndicatorID, IndicatorName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
                DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
                AgeLabel, AgeSpan, AgeSort, DataValue, note)
     }
 
+  }else{
+    print(paste0("No full data series exists for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+    out_all_appended <- NULL
+  }
     ## Print a text message showing the locid and the locname of the data extracted
-    cat("\n","Location ID: ", unique(out_all$LocID),"\n",
-        "Location Name: ", unique(out_all$LocName),"\n")
+    cat("\n","Location ID: ", unique(dd_extract$LocID),"\n",
+        "Location Name: ", unique(dd_extract$LocName),"\n")
 
     }else{
       print(paste0("Births by age of mother (and sex of child) do not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
-      out_all <- NULL
+      out_all_appended <- NULL
     }
 
   } else{
@@ -623,14 +643,14 @@ DDharmonize_validate_BirthCounts <- function(locid,
   # if no birth counts were extracted from DemoData
     if(locid %in% get_locations()$LocID){
     print(paste0("There are no birth counts available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
-    out_all <- NULL
+      out_all_appended <- NULL
     }
-    out_all <- NULL
+    out_all_appended <- NULL
   }
 
   ## To be removed later. The codes below are important for testing.
   ## The only time labels that should be present in the raw dataset but absent in the clean dataset should be indicator 159 records.
-  missing_timelabs<- dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all$TimeLabel)]
+  missing_timelabs<- dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all_appended$TimeLabel)]
   assign("missing_timelabs", missing_timelabs, .GlobalEnv)
 
   if(length(missing_timelabs) >0){
@@ -639,5 +659,5 @@ DDharmonize_validate_BirthCounts <- function(locid,
   }
 
 
-  return(out_all)
+  return(out_all_appended)
 }

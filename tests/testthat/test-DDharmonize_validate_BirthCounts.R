@@ -4,8 +4,8 @@ require(DDSQLtools)
 require(tidyverse)
 require(testthat)
 
-#locid <- sample(get_locations()$PK_LocID, 1)
-locid <-  540
+locid <- sample(get_locations()$PK_LocID, 1)
+#locid <-  402
 clean_df <- DDharmonize_validate_BirthCounts(locid = locid,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
@@ -15,6 +15,7 @@ clean_df <- DDharmonize_validate_BirthCounts(locid = locid,
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
+if(!is.null(clean_df) >0 ){
 
 ## Filter non-harmonized ids
 non_harmonized_ids <- clean_df %>%
@@ -26,8 +27,11 @@ if(length(non_harmonized_ids) >0 ){
   clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
 }
 
+
 options(dplyr.summarise.inform=F)
 
+
+if(nrow(clean_df) >0 ){
 
 ## These tests will only work in situations where indicator 170 data exists
 
@@ -82,6 +86,7 @@ test_that("Abridged labels should either contain a 0, a range e.g 5-9 , an open 
 
   if(nrow(tab) > 0){
   abridged_labs <- tab %>%
+                    filter(AgeLabel != "Unknown") %>% ## Unknown would only be in existence in cases where Total is not recorded
                       mutate(checker = ifelse(AgeLabel %in% grep("-|\\+|0|Total", AgeLabel, value = TRUE,
                                                                  ignore.case = TRUE), TRUE, FALSE))
   }
@@ -154,10 +159,9 @@ test_that("Every id has a closing age group, and if not, computed total is equal
                                       sum(DataValue[AgeLabel != "Total"], na.rm = TRUE))) ,
              diff = floor(abs(rec_tot - calc_tot))) %>%
       filter(!is.na(rec_tot) & AgeSort!=999)
-
-    expect_true(all(tab2$diff == 0))
-
   }
+
+  expect_true(ifelse(!all(tab$oag_present == TRUE),all(tab2$diff == 0), TRUE))
 
   })
 
@@ -293,3 +297,5 @@ test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 1
 })
 
 
+}else skip("Data does not contain harmonised births by age of mother (and sex of child) counts")
+}else skip ("Data does not exist")

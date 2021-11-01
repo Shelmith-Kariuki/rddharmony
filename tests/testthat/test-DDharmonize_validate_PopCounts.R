@@ -4,10 +4,10 @@ require(DDSQLtools)
 require(tidyverse)
 require(testthat)
 
-#locid <-  104
+#locid <-  68
 locid <- sample(get_locations()$PK_LocID, 1)
 clean_df <- DDharmonize_validate_PopCounts(locid = locid,
-                                             times = c(2010, 2020),
+                                             times = c(1950, 2020),
                                              process = c("census", "estimate", "register"),
                                              return_unique_ref_period = TRUE,
                                              DataSourceShortName = NULL,
@@ -15,13 +15,22 @@ clean_df <- DDharmonize_validate_PopCounts(locid = locid,
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
-non_harmonized_ids <- clean_df %>% filter(!is.na(note)) %>% pull(id) %>% unique()
+if(!is.null(clean_df) >0 ){
+  ## Filter non-harmonized ids
+  non_harmonized_ids <- clean_df %>%
+    filter(!is.na(note)) %>%
+    pull(id) %>%
+    unique()
 
-if(length(non_harmonized_ids) >0 ){
-  clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
-}
+  if(length(non_harmonized_ids) >0 ){
+    clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
+  }
 
-options(dplyr.summarise.inform=F)
+
+  options(dplyr.summarise.inform=F)
+
+
+if(nrow(clean_df) >0 ){
 
 ## These tests will only work in situations where indicator 170 data exists
 
@@ -205,3 +214,7 @@ test_that("Only one total should exist per id and indicator ID",{
   expect_identical(ifelse(length(agesorts) > 0, agesorts, "184"), "184")
 
 })
+
+
+}else skip("Data does not contain harmonised population counts")
+}else skip ("Data does not exist")

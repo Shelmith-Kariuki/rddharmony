@@ -4,8 +4,8 @@ require(DDSQLtools)
 require(tidyverse)
 require(testthat)
 
-#locid <- sample(get_locations()$PK_LocID, 1)
-locid <-  642
+locid <- sample(get_locations()$PK_LocID, 1)
+# locid <-  156
 clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
@@ -15,18 +15,22 @@ clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
                                              retainKeys = FALSE,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
-## Filter non-harmonized ids
-non_harmonized_ids <- clean_df %>%
-                      filter(!is.na(note)) %>%
-                      pull(id) %>%
-                      unique()
+if(!is.null(clean_df) >0 ){
+  ## Filter non-harmonized ids
+  non_harmonized_ids <- clean_df %>%
+    filter(!is.na(note)) %>%
+    pull(id) %>%
+    unique()
 
-if(length(non_harmonized_ids) >0 ){
-  clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
-}
+  if(length(non_harmonized_ids) >0 ){
+    clean_df <- clean_df %>% filter(!id %in% non_harmonized_ids)
+  }
 
-options(dplyr.summarise.inform=F)
 
+  options(dplyr.summarise.inform=F)
+
+
+if(nrow(clean_df) >0 ){
 ## These tests will only work in situations where indicator 170 data exists
 
 test_that("The data has a unique locid", {
@@ -98,6 +102,7 @@ test_that("Abridged labels should either contain a 0, a range e.g 5-9 , an open 
 
   if(nrow(tab) > 0){
     abridged_labs <- tab %>%
+      filter(AgeLabel != "Unknown") %>% ## Unknown would only be in existence in cases where Total is not recorded
       mutate(checker = ifelse(AgeLabel %in% grep("-|\\+|0|Total", AgeLabel, value = TRUE,
                                                  ignore.case = TRUE), TRUE, FALSE))
   }
@@ -291,3 +296,5 @@ test_that("If two totals exist per id, one has to be AgeSort == 184 (indicator 1
 
 })
 
+}else skip("Data does not contain harmonised deaths by age and sex counts")
+}else skip ("Data does not exist")

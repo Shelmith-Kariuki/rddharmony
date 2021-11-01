@@ -19,7 +19,7 @@ dd_validate_totals_over_sex_new <- function(data){
   abr <- data %>%
     dplyr::filter(abridged == TRUE)
 
-  oa_min <- min(abr$AgeStart[abr$AgeSpan == -1 & abr$AgeLabel != "Total" & abr$SexID %in% c(1,2)])
+  oa_min <- suppressWarnings(min(abr$AgeStart[abr$AgeSpan == -1 & abr$AgeLabel != "Total" & abr$SexID %in% c(1,2)]))
 
   oa_record <- abr %>%
     dplyr::filter(AgeStart == oa_min & AgeSpan == -1) %>%
@@ -65,7 +65,13 @@ dd_validate_totals_over_sex_new <- function(data){
 
   if (nrow(cpl) > 50){ # only bother with this if complete series is usable
 
-      oa_min <- min(cpl$AgeStart[cpl$AgeSpan == -1 & cpl$AgeLabel != "Total" & cpl$SexID %in% c(1,2)])
+    ## Added SupressWarning ti remove the warning:
+    ## Warning message:
+    # In min(cpl$AgeStart[cpl$AgeSpan == -1 & cpl$AgeLabel != "Total" &  :
+    #                       no non-missing arguments to min; returning Inf
+    # The warning appears when the content inside min() is NULL
+    # Case: "68 - Bolivia (Plurinational State of) - Estimate - 2006 - Demographic Yearbook - De-facto - Population by age and sex - Low"
+      oa_min <- suppressWarnings(min(cpl$AgeStart[cpl$AgeSpan == -1 & cpl$AgeLabel != "Total" & cpl$SexID %in% c(1,2)]))
       oa_record <- cpl %>%
         dplyr::filter(AgeStart == oa_min & AgeSpan == -1) %>%
         select(-SexID, -DataValue) %>%

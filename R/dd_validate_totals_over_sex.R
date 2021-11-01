@@ -21,6 +21,7 @@ dd_validate_totals_over_sex <- function(data){
     select(-series, -note)
 
   if (nrow(df_abr) > 0) {
+
   sexes <- unique(df_abr$SexID)
 
   # if has data for males and females, ensure total is sum of both sexes
@@ -28,7 +29,17 @@ dd_validate_totals_over_sex <- function(data){
 
     full_m <- dd_series_isfull(data = df_abr[df_abr$SexID == 1,], abridged = TRUE)
     full_f <- dd_series_isfull(data = df_abr[df_abr$SexID == 2,], abridged = TRUE)
-    ages_same <- all(df_abr$AgeLabel[df_abr$SexID == 1] == df_abr$AgeLabel[df_abr$SexID == 2])
+
+    # Shel replaced == with %in% to remove the following warning, in cases where not all female age labels are
+    # present in the male records:
+    # Warning message:
+    #   In df_abr$AgeLabel[df_abr$SexID == 1] == df_abr$AgeLabel[df_abr$SexID ==  :
+    #                                                              longer object length is not a multiple of shorter object length
+    # ages_same <- all(df_abr$AgeLabel[df_abr$SexID == 1] == df_abr$AgeLabel[df_abr$SexID == 2])
+    # Case: 666: Saint Pierre, deaths
+
+    ages_same <- all(df_abr$AgeLabel[df_abr$SexID == 1] %in% df_abr$AgeLabel[df_abr$SexID == 2])
+
 
     if (all(full_m, full_f, ages_same)) {
     df_abr <- df_abr %>%
@@ -67,7 +78,18 @@ dd_validate_totals_over_sex <- function(data){
 
     full_m <- dd_series_isfull(data = df_cpl[df_cpl$SexID == 1,], abridged = FALSE)
     full_f <- dd_series_isfull(data = df_cpl[df_cpl$SexID == 2,], abridged = FALSE)
-    ages_same <- all(df_cpl$AgeLabel[df_cpl$SexID == 1] == df_cpl$AgeLabel[df_cpl$SexID == 2])
+
+
+    # Shel replaced == with %in% to remove the following warning, in cases where not all female age labels are
+    # present in the male records:
+    # Warning message:
+    # In df_cpl$AgeLabel[df_cpl$SexID == 1] == df_cpl$AgeLabel[df_cpl$SexID ==  :
+    #                                                            longer object length is not a multiple of shorter object length
+    # ages_same <- all(df_abr$AgeLabel[df_abr$SexID == 1] == df_abr$AgeLabel[df_abr$SexID == 2])
+    # Case: 414: Kuwait, deaths
+
+    # ages_same <- all(df_cpl$AgeLabel[df_cpl$SexID == 1] == df_cpl$AgeLabel[df_cpl$SexID == 2])
+    ages_same <- all(df_cpl$AgeLabel[df_cpl$SexID == 1] %in% df_cpl$AgeLabel[df_cpl$SexID == 2])
 
     if (all(full_m, full_f, ages_same)) {
       df_cpl <- df_cpl %>%

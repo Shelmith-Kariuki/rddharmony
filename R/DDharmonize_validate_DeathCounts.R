@@ -584,20 +584,27 @@ DDharmonize_validate_DeathCounts <- function(locid,
       ## -------------------------------------------------------------------------------------------------------------------
       ## PART 7: FINALIZE
       ## -------------------------------------------------------------------------------------------------------------------
-      if (retainKeys == FALSE) {
-        out_all_appended <- out_all_appended %>%
-          select(id, LocID, LocName,IndicatorID, IndicatorName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
-                 DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
-                 AgeLabel, AgeSpan, AgeSort, DataValue, note)
+      if(nrow(out_all_appended) >0){
+
+        if (retainKeys == FALSE) {
+          out_all_appended <- out_all_appended %>%
+            select(id, LocID, LocName, IndicatorID, IndicatorName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
+                   DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
+                   AgeLabel, AgeSpan, AgeSort, DataValue, note)
+        }
+
+      }else{
+        print(paste0("No full data series exists for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
+        out_all_appended <- NULL
       }
 
       ## Print a text message showing the locid and the locname of the data extracted
-      cat("\n","Location ID: ", unique(out_all_appended$LocID),"\n",
-          "Location Name: ", unique(out_all_appended$LocName),"\n")
+      cat("\n","Location ID: ", unique(dd_extract$LocID),"\n",
+          "Location Name: ", unique(dd_extract$LocName),"\n")
 
     }else{## 	Deaths by age and sex not available
       print(paste0("Deaths by age and sex do not exist for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
-      out_all <- NULL
+      out_all_appended <- NULL
     }
 
   } else{## if no death counts were extracted from DemoData
