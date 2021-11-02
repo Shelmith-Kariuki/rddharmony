@@ -167,8 +167,21 @@ DDharmonize_Pop5 <- function (indata) {
         oag_check <- paste0(oag_start,"+") %in% abr$AgeLabel
 
       ##21. drop records for open age groups that do not close the series
+      ## Edited the part below because of the error below, in cases where we only have the Total and Unknown:
+      ## Error : Problem with `filter()` input `..1`.
+      ## ℹ Input `..1` is `!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start)`.
+      ## x Input `..1` must be of size 2 or 1, not size 0.
+      ## Case: "470 - Malta - Estimate - 1953 - Demographic Yearbook - De-facto - Population by age and sex - Fair"
+
+        # abr <- abr %>%
+        #   dplyr::filter(!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start))
+
+      if(!all(abr$AgeLabel %in% c("Total", "Unknown"))){
+
        abr <- abr %>%
          dplyr::filter(!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start))
+
+      }
 
       ##22. check that there series is actually abridged
        if (nrow(abr[abr$AgeStart >= 5,]) > 0) {

@@ -137,9 +137,25 @@ DDharmonize_Pop1 <- function (indata) {
         oag_check <- paste0(oag_start,"+") %in% df$AgeLabel
 
         ##17. drop records for open age groups that do not close the series
-        df <- df %>%
-          dplyr::filter(!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start)) %>%
-          arrange(AgeStart, AgeSpan)
+        ##21. drop records for open age groups that do not close the series
+        ## Edited the part below because of the error below, in cases where we only have the Total and Unknown:
+        ## Error : Problem with `filter()` input `..1`.
+        ## ℹ Input `..1` is `!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start)`.
+        ## x Input `..1` must be of size 2 or 1, not size 0.
+        ## Case: "470 - Malta - Estimate - 1953 - Demographic Yearbook - De-facto - Population by age and sex - Fair"
+
+        # df <- df %>%
+        #   dplyr::filter(!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start)) %>%
+        #   arrange(AgeStart, AgeSpan)
+
+        if(!all(df$AgeLabel %in% c("Total", "Unknown"))){
+
+          df <- df %>%
+            dplyr::filter(!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start)) %>%
+            arrange(AgeStart, AgeSpan)
+
+        }
+
 
         ##18. add AgeSort field that identify standard age groups
         df <- dd_age_standard(df, abridged = FALSE) %>%

@@ -140,7 +140,7 @@ test_that("Every id has a closing age group, and if not, computed total is equal
   tab <- clean_df %>%
     group_by(id, SexID, complete) %>%
     mutate(oag_present = ifelse(any(AgeLabel %in% grep("\\+", AgeLabel, value = TRUE,ignore.case = TRUE) |
-                                      IndicatorID == 159),
+                                      IndicatorID == 188),
                                 TRUE, FALSE)) %>%
     ungroup()
 

@@ -135,10 +135,10 @@ options(dplyr.summarise.inform=F)
          pop_raw <- dd_extract %>%
          dplyr::filter(id == ids[i])
 
-         # This block of code has been maintained in order to test the lines of code that follow in this for loop.
+         # # This block of code has been maintained in order to test the lines of code that follow in this for loop.
          # pop_raw <- dd_extract %>%
-         #              filter(id == "724 - Spain - Census - 2011 - Demographic Yearbook - De-jure - Population by age and sex - Fair") #%>%
-         #              #filter(SexID == 3)
+         #              filter(id == "410 - Republic of Korea - Census - 1955 - Demographic Yearbook - De-facto - Population by age and sex - Fair") %>%
+         #              filter(SexID == 1)
 
          ## 6. isolate records from the "Population5" indicator and harmonize the pop5 data into standard age groups
          pop5_raw <- pop_raw %>%
