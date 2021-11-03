@@ -25,8 +25,8 @@
 #' @export
 #'
 #' @examples
-#' sweden_df <- DDharmonize_validate_PopCounts(752,
-#'                                               c(1950,2020),
+#' sweden_df <- DDharmonize_validate_PopCounts(locid = 752,
+#'                                               times = c(1950,2020),
 #'                                               process = c("census", "estimate", "register"),
 #'                                               return_unique_ref_period = TRUE,
 #'                                               DataSourceShortName = NULL,
@@ -273,6 +273,9 @@ options(dplyr.summarise.inform=F)
              DataCatalogID          = pop_raw$DataCatalogID[1],
              DataCatalogName        = pop_raw$DataCatalogName[1],
              DataProcess            = pop_raw$DataProcess[1],
+             DataProcessSort        = pop_raw$DataProcessSort[1],
+             DataProcessType        = pop_raw$DataProcessType[1],
+             DataProcessTypeSort    = pop_raw$DataProcessTypeSort[1],
              ReferencePeriod        = pop_raw$ReferencePeriod[1],
              TimeUnit               = pop_raw$TimeUnit[1],
              TimeStart              = pop_raw$TimeStart[1],
@@ -513,7 +516,7 @@ if (nrow(pop_std_full) > 0) {
   ## -------------------------------------------------------------------------------------------------------------------
   ref_pds <- unique(out_all$ReferencePeriod)
 
-  first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
+  # first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
   skipped <- dd_extract %>%
     dplyr::filter(!(ReferencePeriod %in% ref_pds)) %>%
     group_by(id) %>%
@@ -564,7 +567,7 @@ if (nrow(pop_std_full) > 0) {
   if(nrow(out_all_appended) >0){
   if (retainKeys == FALSE) {
     out_all_appended <- out_all_appended %>%
-      select(id, LocID, LocName, ReferencePeriod, TimeLabel, TimeMid, DataSourceName, StatisticalConceptName,
+      select(id, LocID, LocName, IndicatorID, IndicatorName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
              DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
              AgeLabel, AgeSpan, AgeSort, DataValue, note)
 

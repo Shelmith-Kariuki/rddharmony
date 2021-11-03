@@ -6,8 +6,8 @@ require(testthat)
 
 #locid <-  312
 locid <- sample(get_locations()$PK_LocID, 1)
-clean_df <- DDharmonize_validate_PopCounts(locid = locid,
-                                             times = c(1950, 2020),
+clean_df <- DDharmonize_validate_PopCounts(locid = c(404),
+                                             times = c(2020),
                                              process = c("census", "estimate", "register"),
                                              return_unique_ref_period = TRUE,
                                              DataSourceShortName = NULL,

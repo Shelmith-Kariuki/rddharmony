@@ -41,8 +41,8 @@ identifying full series, selecting preferred series, validating totals and by se
 including key fields in the function output.
 }
 \examples{
-sweden_df <- DDharmonize_validate_PopCounts(752,
-                                              c(1950,2020),
+sweden_df <- DDharmonize_validate_PopCounts(locid = 752,
+                                              times = c(1950,2020),
                                               process = c("census", "estimate", "register"),
                                               return_unique_ref_period = TRUE,
                                               DataSourceShortName = NULL,

@@ -1,8 +1,9 @@
 ---
 title: "DDharmonize_validate_BirthCounts"
 output: rmarkdown::html_vignette
+author: ""
 description: >
-  This package contains functions that implement a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location. 
+  This function implements a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location. 
 vignette: >
   %\VignetteIndexEntry{DDharmonize_validate_BirthCounts}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,6 +17,121 @@ knitr::opts_chunk$set(
 )
 ```
 
+`DDharmonize_validate_BirthCounts()` is a function that implements a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location. 
+
+The birth counts data contains two types of data:
+
++ Births by age of mother and sex of child
+
++ Total births by sex of child
+
 ```{r setup}
 library(rddharmony)
 ```
+
+```{r, eval=FALSE}
+
+clean_df <- DDharmonize_validate_BirthCounts(locid = locid,
+                                             times = c(1950, 2020),
+                                             process = c("census", "vr"),
+                                             return_unique_ref_period = TRUE,
+                                             DataSourceShortName = NULL,
+                                             DataSourceYear = NULL,
+                                             retainKeys = FALSE,
+                                             server = "https://popdiv.dfs.un.org/DemoData/api/")
+
+```
+The function contains several arguments:
+
+1. **`locid`** 
+
+This is the a numeric variable representing the location id of each of the locations. You can run `View(get_locations())` to get the list of plausible location ids. The ids are listed in the `PK_LocID` variable. 
+You can also run the function `check_locid({insert locid here})` to check whether a location id is valid (part of the locations in the UNPD website). Running `check_locid({insert locid here})` with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run `View(get_locations())` in order to get a list of plausible location ids. See example below.
+
+```{r checking validity of location ids}
+## valid id
+check_locid(404)
+
+## invalid id
+check_locid(2021)
+```
+
+
+2. **`times`**
+
+The period of the data to be extracted. You can extract one year data e.g `times = 2020` or a range of time e.g `times = c(2010, 2020)`.
+
+3. **`process`**
+
+The process through which the data was obtained from various sources i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.
+
+4. **`return_unique_ref_period`**
+
+Specifies whether the data to be returned should contain one unique id (`return_unique_ref_period == TRUE`) or several ids(`return_unique_ref_period == FALSE`) per time label. ids are a unique identifier for each unique set of records based on `LocID`, `LocName`, `DataProcess`, `ReferencePeriod`, `DataSourceName`, `StatisticalConceptName`, `DataTypeName` and `DataReliabilityName`. The definitions of these variables are provided later in this article.
+
+5. **`DataSourceShortName`**
+
+6. **`DataSourceYear`**
+
+7. **`retainKeys`**
+
+Specifies whether only a few (`retainKeys == FALSE`) or all (`retainKeys == TRUE`) variables should be retained in the output.
+
+8. **`server`**
+
+Specifies the server from which the data is to be extracted. `server = "https://popdiv.dfs.un.org/DemoData/api/"`
+
+The workflow implemented in this function is as follows: First, bla bla bla
+
+The function returns clean data with 25 variables (when `retainKeys == TRUE`) which are defined below:
+
+
++ id:
+
++ LocID:
+
++ LocName
+
++ IndicatorID: 
+
++ IndicatorName: 
+
++ TimeLabel: 
+
++ TimeMid
+
++ TimeEnd
+
++ DataProcessType
+
++ DataSourceName
+
++ StatisticalConceptName 
+
++ DataTypeName  
+
++ DataReliabilityName
+
++ five_year            
+
++ abridged      
+
++ complete      
+
++ non_standard   
+
++ SexID         
+
++ AgeStart       
+
++ AgeEnd 
+
++ AgeLabel   
+
++ AgeSpan 
+
++ AgeSort 
+
++ DataValue    
+
++ note                  
