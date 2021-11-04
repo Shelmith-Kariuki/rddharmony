@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DDharmonize_validate_PopCounts — DDharmonize_validate_PopCounts • rddharmony</title>
+<title>dd_drop_unknowns — dd_drop_unknowns • rddharmony</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,10 +46,8 @@
 
 
 
-<meta property="og:title" content="DDharmonize_validate_PopCounts — DDharmonize_validate_PopCounts" />
-<meta property="og:description" content="This script implements a workflow for census population counts extracting from DemoData, harmonizing age groups,
-identifying full series, selecting preferred series, validating totals and by sex and eventually
-including key fields in the function output." />
+<meta property="og:title" content="dd_drop_unknowns — dd_drop_unknowns" />
+<meta property="og:description" content="If reported total - calculated total == &quot;unknown&quot; , then unknown == 0" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -137,82 +135,30 @@ including key fields in the function output." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>DDharmonize_validate_PopCounts</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/DDharmonize_validate_PopCounts.R'><code>R/DDharmonize_validate_PopCounts.R</code></a></small>
-    <div class="hidden name"><code>DDharmonize_validate_PopCounts.Rd</code></div>
+    <h1>dd_drop_unknowns</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Shelmith-Kariuki/rddharmony/blob/master/R/dd_drop_unknowns.R'><code>R/dd_drop_unknowns.R</code></a></small>
+    <div class="hidden name"><code>dd_drop_unknowns.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This script implements a workflow for census population counts extracting from DemoData, harmonizing age groups,
-identifying full series, selecting preferred series, validating totals and by sex and eventually
-including key fields in the function output.</p>
+    <p>If reported total - calculated total == "unknown" , then unknown == 0</p>
     </div>
 
-    <pre class="usage"><span class='fu'>DDharmonize_validate_PopCounts</span><span class='op'>(</span>
-  <span class='va'>locid</span>,
-  <span class='va'>times</span>,
-  process <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"census"</span>, <span class='st'>"estimate"</span>, <span class='st'>"register"</span><span class='op'>)</span>,
-  return_unique_ref_period <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  DataSourceShortName <span class='op'>=</span> <span class='cn'>NULL</span>,
-  DataSourceYear <span class='op'>=</span> <span class='cn'>NULL</span>,
-  retainKeys <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  server <span class='op'>=</span> <span class='st'>"https://popdiv.dfs.un.org/DemoData/api/"</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dd_drop_unknowns</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>locid</th>
-      <td><p>location id</p></td>
-    </tr>
-    <tr>
-      <th>times</th>
-      <td><p>1950, 2050</p></td>
-    </tr>
-    <tr>
-      <th>process</th>
-      <td><p>census or vr</p></td>
-    </tr>
-    <tr>
-      <th>return_unique_ref_period</th>
-      <td><p>TRUE</p></td>
-    </tr>
-    <tr>
-      <th>DataSourceShortName</th>
-      <td><p>NULL</p></td>
-    </tr>
-    <tr>
-      <th>DataSourceYear</th>
-      <td><p>NULL</p></td>
-    </tr>
-    <tr>
-      <th>retainKeys</th>
-      <td><p>FALSE</p></td>
-    </tr>
-    <tr>
-      <th>server</th>
-      <td><p>"https://popdiv.dfs.un.org/DemoData/api/"</p></td>
+      <th>data</th>
+      <td><p>The data to be harmonised</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A harmonized dataset containing birth counts</p>
+    <p>A data frame without unknowns if reported total - calculated total</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>sweden_df</span> <span class='op'>&lt;-</span> <span class='fu'>DDharmonize_validate_PopCounts</span><span class='op'>(</span>locid <span class='op'>=</span> <span class='fl'>752</span>,
-                                              times <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1950</span>,<span class='fl'>2020</span><span class='op'>)</span>,
-                                              process <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"census"</span>, <span class='st'>"estimate"</span>, <span class='st'>"register"</span><span class='op'>)</span>,
-                                              return_unique_ref_period <span class='op'>=</span> <span class='cn'>TRUE</span>,
-                                              DataSourceShortName <span class='op'>=</span> <span class='cn'>NULL</span>,
-                                              DataSourceYear <span class='op'>=</span> <span class='cn'>NULL</span>,
-                                              retainKeys <span class='op'>=</span> <span class='cn'>FALSE</span>,
-                                              server <span class='op'>=</span> <span class='st'>"https://popdiv.dfs.un.org/DemoData/api/"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; 
-#&gt;  https://popdiv.dfs.un.org/DemoData/api/structureddatarecords?dataProcessIds=2,6,9&amp;startYear=1950&amp;endYear=2020&amp;indicatorIds=58&amp;locIds=752&amp;locAreaTypeIds=2&amp;subGroupIds=2 
-#&gt; 
-#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? </div><div class='output co'>#&gt; <span class='error'>Error in open.connection(con, "rb"): Timeout was reached: [popdiv.dfs.un.org] Connection timed out after 10001 milliseconds</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

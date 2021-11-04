@@ -15,15 +15,23 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(icons)
 ```
+
+
+
+## `r icons::fontawesome("rocket", style = "solid")` Introduction
 
 `DDharmonize_validate_BirthCounts()` is a function that implements a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location. 
 
-The birth counts data contains two types of data:
+The birth records are grouped into two types of data:
 
 + Births by age of mother and sex of child
 
 + Total births by sex of child
+
+
+The function definition is shown below:
 
 ```{r setup}
 library(rddharmony)
@@ -41,50 +49,42 @@ clean_df <- DDharmonize_validate_BirthCounts(locid = locid,
                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
 
 ```
+
+
+## `r icons::fontawesome("wrench", style = "solid")` Description of the function arguments
+
 The function contains several arguments:
 
-1. **`locid`** 
-
-This is the a numeric variable representing the location id of each of the locations. You can run `View(get_locations())` to get the list of plausible location ids. The ids are listed in the `PK_LocID` variable. 
-You can also run the function `check_locid({insert locid here})` to check whether a location id is valid (part of the locations in the UNPD website). Running `check_locid({insert locid here})` with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run `View(get_locations())` in order to get a list of plausible location ids. See example below.
+**`locid`:** This is the a numeric variable representing the location id of each of the locations. You can run `View(get_locations())` to get the list of plausible location ids. The ids are listed in the `PK_LocID` variable. 
+You can also run the function `check_locid(insert locid here)` to check whether a location id is valid (part of the locations in the UNPD website). Running `check_locid(insert locid here)` with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run `View(get_locations())` in order to get a list of plausible location ids. See example below.
 
 ```{r checking validity of location ids}
-## valid id
-check_locid(404)
-
-## invalid id
-check_locid(2021)
+# ## valid id
+# check_locid(404)
+# 
+# ## invalid id
+# check_locid(2021)
 ```
 
 
-2. **`times`**
+**`times`:** The period of the data to be extracted. You can extract one year data e.g `times = 2020` or a longer period of time e.g `times = c(2010, 2020)`.
 
-The period of the data to be extracted. You can extract one year data e.g `times = 2020` or a range of time e.g `times = c(2010, 2020)`.
+**`process`:** The process through which the data was obtained from various sources i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.
 
-3. **`process`**
+**`return_unique_ref_period`:** Specifies whether the data to be returned should contain one unique id (`return_unique_ref_period == TRUE`) or several ids (`return_unique_ref_period == FALSE`) per time label. ids are a unique identifier for each unique set of records based on `LocID`, `LocName`, `DataProcess`, `ReferencePeriod`, `DataSourceName`, `StatisticalConceptName`, `DataTypeName` and `DataReliabilityName`. The definitions of these variables are provided later in this article.
 
-The process through which the data was obtained from various sources i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.
+**`DataSourceShortName`:**
 
-4. **`return_unique_ref_period`**
+**`DataSourceYear`:**
 
-Specifies whether the data to be returned should contain one unique id (`return_unique_ref_period == TRUE`) or several ids(`return_unique_ref_period == FALSE`) per time label. ids are a unique identifier for each unique set of records based on `LocID`, `LocName`, `DataProcess`, `ReferencePeriod`, `DataSourceName`, `StatisticalConceptName`, `DataTypeName` and `DataReliabilityName`. The definitions of these variables are provided later in this article.
+**`retainKeys`:** Specifies whether only a few (`retainKeys == FALSE`) or all (`retainKeys == TRUE`) variables should be retained in the output.
 
-5. **`DataSourceShortName`**
+**`server`:** Specifies the server from which the data is to be extracted (`server = "https://popdiv.dfs.un.org/DemoData/api/"`)
 
-6. **`DataSourceYear`**
 
-7. **`retainKeys`**
-
-Specifies whether only a few (`retainKeys == FALSE`) or all (`retainKeys == TRUE`) variables should be retained in the output.
-
-8. **`server`**
-
-Specifies the server from which the data is to be extracted. `server = "https://popdiv.dfs.un.org/DemoData/api/"`
-
-The workflow implemented in this function is as follows: First, bla bla bla
+## `r icons::fontawesome("table", style = "solid")` Description of the output variables
 
 The function returns clean data with 25 variables (when `retainKeys == TRUE`) which are defined below:
-
 
 + id:
 
@@ -135,3 +135,40 @@ The function returns clean data with 25 variables (when `retainKeys == TRUE`) wh
 + DataValue    
 
 + note                  
+
+
+## `r icons::fontawesome("cog", style = "solid")` Harmonization Workflow
+
+The workflow implemented in this function is divided into four parts described below.
+
+### Part 1
+
+>> **TL;DR;** _In this section, vital counts (census and vr) are extracted from the UNPD database and harmonized to standard abridged and complete age groups, per series._ 
+ 
+ We begin by extracting the raw data from the UNPD database. We then drop sub-national census records and discard data types that are not needed in the final output. We later split the data into `Births by age of mother and sex of child` (henceforth referred to as indicator170 data) and `Total births by sex` (henceforth referred to as indicator159 data). The majority of the harmonisation process that follows is implemented on indicator170 data, so indicator159 data is merged back to the clean and harmonised data at the end of this process.
+
+A major step that follows is the harmonization of the data into standard age groups. This step is implemented on each id and each series (abridged or complete). We begin by subsetting the data, to only be left with the final series, in a case where "Final" data status is available.
+For each series, we then check whether the series is a full series with all age groups represented and also check whether an open age greater than 60 exists in the data. We also ensure that that we only have one "Total" record reported in the data. If more than one series exists, and the latest series is full, we only keep one, but if the latest series is not full, we then keep the latest data source record for each age label. In cases where an "Unknown" age label does not exist, we generate one and set its' data value to 0. The same happens in cases where an "Unknown" age label exists, but is equivalent to the difference between the reported total and calculated total. This could be a case where age labels were later updated and these changes captured in the reported total. In cases where the age labels are grouped (abridged), we reconcile wide early age groups to abridged e.g in a case where  0-4 is missing and 0 and 1-4 are present, we sum 0 and 1-4 to obtain 0-4. We also check whether there are multiple open age groups and if so, we compute closed age groups from them and add them to the data if they are missing. The start age of the open age group needed to close the series is identified and a check is done to confirm whether this open age group exists in the series. Open age groups that do not close the series are dropped, a check is done to ensure that there are no missing age groups on the abridged series after which we compute all possible open age groups and append them to the data. If the total is not recorded and the series is otherwise complete, we compute it. In a case where we still have missing age labels or an open age group does not exist, a note is generated alerting the user that the series is missing data for one or more age groups. This marks the end of harmonization of the data into standard age groups.
+
+
+Once the major harmonization step is done, we check whether the youngest age on abridged is lower than youngest age on complete (in the case where both abridged and complete series exist), and if so, we distribute births at ages 10-14 across single ages 10-14 using the Kirill's Matlab regression method.
+We then reconcile abridged and complete series, as necessary. This involves generating abridged records from complete series, checking if the totals match, in cases where they exist, filling in the total of one series if it is missing but is present in the other series, appending the abridged series with the abridged records derived from complete series, computing all possible open age groups, dropping records for open age groups that do not close the series and finally in cases where totals for both series don't match, generating a note alerting the user that different totals on abridged and complete preclude reconciliation. We proceed to fill in zeros for births at young ages, if missing and in cases where we only have the complete series and not the abridged series, we generate the latter records from the former. We later populate missing age groups with zeros, as appropriate and finally assemble all of the series into a single dataset. 
+
+
+### Part 2
+
+In this section, two major things happen. One, we check if the data(series) is full and if so, we keep it and two, for each id-sex combination of full series, we keep the reconciled series if it is available and discard the original abridged or complete series.
+
+
+### Part 3
+
+In this section, we validate the remaining series, making corrections on any instances where data for sex-age group combinations are missing and check whether the sum over age matches the reported totals. We also select the most authoritative series, in cases where there is more than one id for a given census year.
+
+### Part 4 
+
+This being the final part of the work flow, we look for years that are in the raw data but not in the output and append them to the output with a note. If there are series with non-standard age groups, we add these to the output as well. We then combine the harmonized data with the `Total births by sex` data ensuring that, for each id, one, if `Total counts by sex` records exist and the harmonized data does not, we drop the former and two, if the `Total births by sex` reported total value does not match the total value reported in the harmonized data, we drop it. We also ensure that we have one id per time label and finally drop duplicate records (especially in cases where we may have duplicate `Total counts by sex` records).
+
+
+<style>
+body {text-align: justify}
+</style>

@@ -56,27 +56,27 @@ The example below extracts Kenyan data, whose `locid == 404`. The output of the 
 
 ```{r example}
 library(rddharmony)
-kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
-                                              c(1950,2022),
-                                              process = c("census", "vr"),
-                                              return_unique_ref_period = TRUE, 
-                                              DataSourceShortName = NULL,
-                                              DataSourceYear = NULL,
-                                              retainKeys = FALSE,
-                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
+# kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
+#                                               c(1950,2022),
+#                                               process = c("census", "vr"),
+#                                               return_unique_ref_period = TRUE, 
+#                                               DataSourceShortName = NULL,
+#                                               DataSourceYear = NULL,
+#                                               retainKeys = FALSE,
+#                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
 
 ```
 
 For a case where the user inserts an invalid location id, an informative error message is displayed.
 
 ```{r}
-df <- DDharmonize_validate_BirthCounts(locid = 12345678,
-                                              c(1950,2022),
-                                              process = c("census", "vr"),
-                                              return_unique_ref_period = TRUE, 
-                                              DataSourceShortName = NULL,
-                                              DataSourceYear = NULL,
-                                              retainKeys = FALSE,
-                                              server = "https://popdiv.dfs.un.org/DemoData/api/")
+# df <- DDharmonize_validate_BirthCounts(locid = 12345678,
+#                                               c(1950,2022),
+#                                               process = c("census", "vr"),
+#                                               return_unique_ref_period = TRUE, 
+#                                               DataSourceShortName = NULL,
+#                                               DataSourceYear = NULL,
+#                                               retainKeys = FALSE,
+#                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
 
 ```

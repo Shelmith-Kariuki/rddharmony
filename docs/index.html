@@ -129,48 +129,24 @@
 <p>The example below extracts Kenyan data, whose <code>locid == 404</code>. The output of the function is a dataset with 25 variables.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony">rddharmony</a></span><span class="op">)</span>
-<span class="va">kenya_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts</a></span><span class="op">(</span>locid <span class="op">=</span> <span class="fl">404</span>,
-                                              <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1950</span>,<span class="fl">2022</span><span class="op">)</span>,
-                                              process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"census"</span>, <span class="st">"vr"</span><span class="op">)</span>,
-                                              return_unique_ref_period <span class="op">=</span> <span class="cn">TRUE</span>, 
-                                              DataSourceShortName <span class="op">=</span> <span class="cn">NULL</span>,
-                                              DataSourceYear <span class="op">=</span> <span class="cn">NULL</span>,
-                                              retainKeys <span class="op">=</span> <span class="cn">FALSE</span>,
-                                              server <span class="op">=</span> <span class="st">"https://popdiv.dfs.un.org/DemoData/api/"</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/structureddatarecords?dataProcessIds=2,36&amp;startYear=1950&amp;endYear=2022&amp;indicatorIds=159,170&amp;locIds=404&amp;locAreaTypeIds=2&amp;subGroupIds=2 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/datacatalogs?dataProcessTypeIds=2&amp;locIds=404&amp;addDefault=false </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations?addDefault=false&amp;includeDependencies=false&amp;includeFormerCountries=false </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/dataprocesses?addDefault=false </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/dataprocesstypes?addDefault=false </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/datasources? </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/datasources?dataProcessTypeIds=2,36&amp;locIds=404&amp;addDefault=false </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  Location ID:  404 </span>
-<span class="co">#&gt;  Location Name:  Kenya</span></code></pre></div>
+<span class="co"># kenya_df &lt;- DDharmonize_validate_BirthCounts(locid = 404,</span>
+<span class="co">#                                               c(1950,2022),</span>
+<span class="co">#                                               process = c("census", "vr"),</span>
+<span class="co">#                                               return_unique_ref_period = TRUE, </span>
+<span class="co">#                                               DataSourceShortName = NULL,</span>
+<span class="co">#                                               DataSourceYear = NULL,</span>
+<span class="co">#                                               retainKeys = FALSE,</span>
+<span class="co">#                                               server = "https://popdiv.dfs.un.org/DemoData/api/")</span></code></pre></div>
 <p>For a case where the user inserts an invalid location id, an informative error message is displayed.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts</a></span><span class="op">(</span>locid <span class="op">=</span> <span class="fl">12345678</span>,
-                                              <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1950</span>,<span class="fl">2022</span><span class="op">)</span>,
-                                              process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"census"</span>, <span class="st">"vr"</span><span class="op">)</span>,
-                                              return_unique_ref_period <span class="op">=</span> <span class="cn">TRUE</span>, 
-                                              DataSourceShortName <span class="op">=</span> <span class="cn">NULL</span>,
-                                              DataSourceYear <span class="op">=</span> <span class="cn">NULL</span>,
-                                              retainKeys <span class="op">=</span> <span class="cn">FALSE</span>,
-                                              server <span class="op">=</span> <span class="st">"https://popdiv.dfs.un.org/DemoData/api/"</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/structureddatarecords?dataProcessIds=2,36&amp;startYear=1950&amp;endYear=2022&amp;indicatorIds=159,170&amp;locIds=12345678&amp;locAreaTypeIds=2&amp;subGroupIds=2 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? </span>
-<span class="co">#&gt; [1] "12345678 is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the `PK_LocID` variable"</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations?</span></code></pre></div>
+<code class="sourceCode R"><span class="co"># df &lt;- DDharmonize_validate_BirthCounts(locid = 12345678,</span>
+<span class="co">#                                               c(1950,2022),</span>
+<span class="co">#                                               process = c("census", "vr"),</span>
+<span class="co">#                                               return_unique_ref_period = TRUE, </span>
+<span class="co">#                                               DataSourceShortName = NULL,</span>
+<span class="co">#                                               DataSourceYear = NULL,</span>
+<span class="co">#                                               retainKeys = FALSE,</span>
+<span class="co">#                                               server = "https://popdiv.dfs.un.org/DemoData/api/")</span></code></pre></div>
 </div>
 </div>
   </div>

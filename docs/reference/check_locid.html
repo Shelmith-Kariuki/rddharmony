@@ -163,11 +163,9 @@ where the user has inserted an invalid location id, and in cases where the locat
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>check_locid</span><span class='op'>(</span><span class='fl'>12345</span><span class='op'>)</span> <span class='co'>## invalid location id</span>
 </div><div class='output co'>#&gt; 
-#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? 
-#&gt; [1] "12345 is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the `PK_LocID` variable"</div><div class='input'><span class='fu'>check_locid</span><span class='op'>(</span><span class='fl'>404</span><span class='op'>)</span> <span class='co'>## valid location id</span>
+#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? </div><div class='output co'>#&gt; <span class='error'>Error in open.connection(con, "rb"): Timeout was reached: [popdiv.dfs.un.org] Connection timed out after 10000 milliseconds</span></div><div class='input'><span class='fu'>check_locid</span><span class='op'>(</span><span class='fl'>404</span><span class='op'>)</span> <span class='co'>## valid location id</span>
 </div><div class='output co'>#&gt; 
-#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? 
-#&gt; [1] "404 is a valid location id. The location name is Kenya"</div></pre>
+#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? </div><div class='output co'>#&gt; <span class='error'>Error in open.connection(con, "rb"): Timeout was reached: [popdiv.dfs.un.org] Connection timed out after 10000 milliseconds</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

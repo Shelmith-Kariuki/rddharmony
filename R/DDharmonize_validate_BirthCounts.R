@@ -498,6 +498,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
         ## and distribute unknowns
 
         dd_one_id <- dd_validate_totals_over_age(data = dd_one_id)
+
         ## At this point, reported totals should be equal to calculated totals
         # diff_tots <- abs(dd_one_id$DataValue[dd_one_id$AgeLabel == "Total"] - sum(dd_one_id$DataValue[dd_one_id$AgeLabel != "Total"], na.rm = TRUE))
         # print(diff_tots)
@@ -515,7 +516,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     } else { vitals_std_valid <- vitals_std_full }
 
-    ## At this point, the difference between vitals_std_full and vitals_std_valid should be qual to
+    ## At this point, the difference between vitals_std_full and vitals_std_valid should be equal to
     ## length(vitals_std_full[vitals_std_full$AgeLabel == "Unknown","AgeLabel"])
 
     # are_equal(abs(nrow(vitals_std_full) - nrow(vitals_std_valid)),
@@ -528,10 +529,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
     keep_columns <- names(vitals_std_all)
     keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", first_columns))]
 
-    ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
-    ## -------------------------------------------------------------------------------------------------------------------
-
+    ## When there is more that one id for a given census year, select the most authoritative one
     if (nrow(vitals_std_valid) > 0) {
 
       if (return_unique_ref_period == TRUE) {
@@ -549,17 +547,22 @@ DDharmonize_validate_BirthCounts <- function(locid,
     } else { out_all <- NULL }
 
     ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
+    ## PART 4: Finalize
     ## -------------------------------------------------------------------------------------------------------------------
+
+    ## Look for years that are in the raw data but not in the output. If there are series with non-standard age groups, then add these to the output as well.
 
     first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd","SexID",
                        "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue")
 
-    ref_pds <- unique(out_all$TimeLabel)
+    # ref_pds <- unique(out_all$TimeLabel)
 
-    skipped <- dd_extract_159 %>%
-      dplyr::filter(!(TimeLabel %in% ref_pds)) %>%
-      select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%  ## 29th Oct change
+    skipped <- dd_extract_170 %>%
+      dplyr::filter(!(TimeLabel %in% out_all$TimeLabel)) %>%
+      group_by(id) %>%
+      mutate(SeriesIDs = I(list(unique(SeriesID)))) %>%
+      ungroup() %>%
+      select(all_of(first_columns), all_of(keep_columns)) %>%
       mutate(five_year = FALSE,
              abridged = FALSE,
              complete = FALSE,
@@ -598,9 +601,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
       out_all2 <- out_all ## 29th Oct change
     }
 
-    ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 6: COMBINE THE HARMONIZED DATA WITH INDICATOR 188 DATA AND CLEAN IT
-    ## -------------------------------------------------------------------------------------------------------------------
+    ##  Combine the harmonized data with indicator 188 data and clean it
 
     if(nrow(dd_extract_159) >0){
       out_all_appended <- dd_append_tcs_cas(indata = out_all2,
@@ -612,9 +613,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
       out_all_appended <- out_all2
     }
 
-    ## -------------------------------------------------------------------------------------------------------------------
-    ## PART 7: FINALIZE
-    ## -------------------------------------------------------------------------------------------------------------------
+  ## Retain variables of interest
 
   if(nrow(out_all_appended) >0){
 

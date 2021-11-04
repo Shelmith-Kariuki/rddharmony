@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="DDharmonize_validate_BirthCounts">
-<meta property="og:description" content="This package contains functions that implement a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location. 
+<meta property="og:description" content="This function implements a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location. 
 ">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -104,13 +104,122 @@
 
     
     
+<div id="introduction" class="section level2">
+<h2 class="hasAnchor">
+<a href="#introduction" class="anchor"></a><svg viewbox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"><path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"></path></svg> Introduction</h2>
+<p><code><a href="../reference/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts()</a></code> is a function that implements a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location.</p>
+<p>The birth records are grouped into two types of data:</p>
+<ul>
+<li><p>Births by age of mother and sex of child</p></li>
+<li><p>Total births by sex of child</p></li>
+</ul>
+<p>The function definition is shown below:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony">rddharmony</a></span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">clean_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts</a></span><span class="op">(</span>locid <span class="op">=</span> <span class="va">locid</span>,
+                                             times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1950</span>, <span class="fl">2020</span><span class="op">)</span>,
+                                             process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"census"</span>, <span class="st">"vr"</span><span class="op">)</span>,
+                                             return_unique_ref_period <span class="op">=</span> <span class="cn">TRUE</span>,
+                                             DataSourceShortName <span class="op">=</span> <span class="cn">NULL</span>,
+                                             DataSourceYear <span class="op">=</span> <span class="cn">NULL</span>,
+                                             retainKeys <span class="op">=</span> <span class="cn">FALSE</span>,
+                                             server <span class="op">=</span> <span class="st">"https://popdiv.dfs.un.org/DemoData/api/"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="description-of-the-function-arguments" class="section level2">
+<h2 class="hasAnchor">
+<a href="#description-of-the-function-arguments" class="anchor"></a><svg viewbox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"><path d="M507.73 109.1c-2.24-9.03-13.54-12.09-20.12-5.51l-74.36 74.36-67.88-11.31-11.31-67.88 74.36-74.36c6.62-6.62 3.43-17.9-5.66-20.16-47.38-11.74-99.55.91-136.58 37.93-39.64 39.64-50.55 97.1-34.05 147.2L18.74 402.76c-24.99 24.99-24.99 65.51 0 90.5 24.99 24.99 65.51 24.99 90.5 0l213.21-213.21c50.12 16.71 107.47 5.68 147.37-34.22 37.07-37.07 49.7-89.32 37.91-136.73zM64 472c-13.25 0-24-10.75-24-24 0-13.26 10.75-24 24-24s24 10.74 24 24c0 13.25-10.75 24-24 24z"></path></svg> Description of the function arguments</h2>
+<p>The function contains several arguments:</p>
+<p><strong><code>locid</code>:</strong> This is the a numeric variable representing the location id of each of the locations. You can run <code><a href="https://rdrr.io/r/utils/View.html">View(get_locations())</a></code> to get the list of plausible location ids. The ids are listed in the <code>PK_LocID</code> variable. You can also run the function <code>check_locid(insert locid here)</code> to check whether a location id is valid (part of the locations in the UNPD website). Running <code>check_locid(insert locid here)</code> with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run <code><a href="https://rdrr.io/r/utils/View.html">View(get_locations())</a></code> in order to get a list of plausible location ids. See example below.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># ## valid id</span>
+<span class="co"># check_locid(404)</span>
+<span class="co"># </span>
+<span class="co"># ## invalid id</span>
+<span class="co"># check_locid(2021)</span></code></pre></div>
+<p><strong><code>times</code>:</strong> The period of the data to be extracted. You can extract one year data e.g <code>times = 2020</code> or a longer period of time e.g <code>times = c(2010, 2020)</code>.</p>
+<p><strong><code>process</code>:</strong> The process through which the data was obtained from various sources i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.</p>
+<p><strong><code>return_unique_ref_period</code>:</strong> Specifies whether the data to be returned should contain one unique id (<code>return_unique_ref_period == TRUE</code>) or several ids (<code>return_unique_ref_period == FALSE</code>) per time label. ids are a unique identifier for each unique set of records based on <code>LocID</code>, <code>LocName</code>, <code>DataProcess</code>, <code>ReferencePeriod</code>, <code>DataSourceName</code>, <code>StatisticalConceptName</code>, <code>DataTypeName</code> and <code>DataReliabilityName</code>. The definitions of these variables are provided later in this article.</p>
+<p><strong><code>DataSourceShortName</code>:</strong></p>
+<p><strong><code>DataSourceYear</code>:</strong></p>
+<p><strong><code>retainKeys</code>:</strong> Specifies whether only a few (<code>retainKeys == FALSE</code>) or all (<code>retainKeys == TRUE</code>) variables should be retained in the output.</p>
+<p><strong><code>server</code>:</strong> Specifies the server from which the data is to be extracted (<code>server = "https://popdiv.dfs.un.org/DemoData/api/"</code>)</p>
+</div>
+<div id="description-of-the-output-variables" class="section level2">
+<h2 class="hasAnchor">
+<a href="#description-of-the-output-variables" class="anchor"></a><svg viewbox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"><path d="M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zM224 416H64v-96h160v96zm0-160H64v-96h160v96zm224 160H288v-96h160v96zm0-160H288v-96h160v96z"></path></svg> Description of the output variables</h2>
+<p>The function returns clean data with 25 variables (when <code>retainKeys == TRUE</code>) which are defined below:</p>
+<ul>
+<li><p>id:</p></li>
+<li><p>LocID:</p></li>
+<li><p>LocName</p></li>
+<li><p>IndicatorID:</p></li>
+<li><p>IndicatorName:</p></li>
+<li><p>TimeLabel:</p></li>
+<li><p>TimeMid</p></li>
+<li><p>TimeEnd</p></li>
+<li><p>DataProcessType</p></li>
+<li><p>DataSourceName</p></li>
+<li><p>StatisticalConceptName</p></li>
+<li><p>DataTypeName</p></li>
+<li><p>DataReliabilityName</p></li>
+<li><p>five_year</p></li>
+<li><p>abridged</p></li>
+<li><p>complete</p></li>
+<li><p>non_standard</p></li>
+<li><p>SexID</p></li>
+<li><p>AgeStart</p></li>
+<li><p>AgeEnd</p></li>
+<li><p>AgeLabel</p></li>
+<li><p>AgeSpan</p></li>
+<li><p>AgeSort</p></li>
+<li><p>DataValue</p></li>
+<li><p>note</p></li>
+</ul>
+</div>
+<div id="harmonization-workflow" class="section level2">
+<h2 class="hasAnchor">
+<a href="#harmonization-workflow" class="anchor"></a><svg viewbox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"><path d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"></path></svg> Harmonization Workflow</h2>
+<p>The workflow implemented in this function is divided into four parts described below.</p>
+<div id="part-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#part-1" class="anchor"></a>Part 1</h3>
+<blockquote>
+<blockquote>
+<p><strong>TL;DR;</strong> <em>In this section, vital counts (census and vr) are extracted from the UNPD database and harmonized to standard abridged and complete age groups, per series.</em></p>
+</blockquote>
+</blockquote>
+<p>We begin by extracting the raw data from the UNPD database. We then drop sub-national census records and discard data types that are not needed in the final output. We later split the data into <code>Births by age of mother and sex of child</code> (henceforth referred to as indicator170 data) and <code>Total births by sex</code> (henceforth referred to as indicator159 data). The majority of the harmonisation process that follows is implemented on indicator170 data, so indicator159 data is merged back to the clean and harmonised data at the end of this process.</p>
+<p>A major step that follows is the harmonization of the data into standard age groups. This step is implemented on each id and each series (abridged or complete). We begin by subsetting the data, to only be left with the final series, in a case where “Final” data status is available. For each series, we then check whether the series is a full series with all age groups represented and also check whether an open age greater than 60 exists in the data. We also ensure that that we only have one “Total” record reported in the data. If more than one series exists, and the latest series is full, we only keep one, but if the latest series is not full, we then keep the latest data source record for each age label. In cases where an “Unknown” age label does not exist, we generate one and set its’ data value to 0. The same happens in cases where an “Unknown” age label exists, but is equivalent to the difference between the reported total and calculated total. This could be a case where age labels were later updated and these changes captured in the reported total. In cases where the age labels are grouped (abridged), we reconcile wide early age groups to abridged e.g in a case where 0-4 is missing and 0 and 1-4 are present, we sum 0 and 1-4 to obtain 0-4. We also check whether there are multiple open age groups and if so, we compute closed age groups from them and add them to the data if they are missing. The start age of the open age group needed to close the series is identified and a check is done to confirm whether this open age group exists in the series. Open age groups that do not close the series are dropped, a check is done to ensure that there are no missing age groups on the abridged series after which we compute all possible open age groups and append them to the data. If the total is not recorded and the series is otherwise complete, we compute it. In a case where we still have missing age labels or an open age group does not exist, a note is generated alerting the user that the series is missing data for one or more age groups. This marks the end of harmonization of the data into standard age groups.</p>
+<p>Once the major harmonization step is done, we check whether the youngest age on abridged is lower than youngest age on complete (in the case where both abridged and complete series exist), and if so, we distribute births at ages 10-14 across single ages 10-14 using the Kirill’s Matlab regression method. We then reconcile abridged and complete series, as necessary. This involves generating abridged records from complete series, checking if the totals match, in cases where they exist, filling in the total of one series if it is missing but is present in the other series, appending the abridged series with the abridged records derived from complete series, computing all possible open age groups, dropping records for open age groups that do not close the series and finally in cases where totals for both series don’t match, generating a note alerting the user that different totals on abridged and complete preclude reconciliation. We proceed to fill in zeros for births at young ages, if missing and in cases where we only have the complete series and not the abridged series, we generate the latter records from the former. We later populate missing age groups with zeros, as appropriate and finally assemble all of the series into a single dataset.</p>
+</div>
+<div id="part-2" class="section level3">
+<h3 class="hasAnchor">
+<a href="#part-2" class="anchor"></a>Part 2</h3>
+<p>In this section, two major things happen. One, we check if the data(series) is full and if so, we keep it and two, for each id-sex combination of full series, we keep the reconciled series if it is available and discard the original abridged or complete series.</p>
+</div>
+<div id="part-3" class="section level3">
+<h3 class="hasAnchor">
+<a href="#part-3" class="anchor"></a>Part 3</h3>
+<p>In this section, we validate the remaining series, making corrections on any instances where data for sex-age group combinations are missing and check whether the sum over age matches the reported totals. We also select the most authoritative series, in cases where there is more than one id for a given census year.</p>
+</div>
+<div id="part-4" class="section level3">
+<h3 class="hasAnchor">
+<a href="#part-4" class="anchor"></a>Part 4</h3>
+<p>This being the final part of the work flow, we look for years that are in the raw data but not in the output and append them to the output with a note. If there are series with non-standard age groups, we add these to the output as well. We then combine the harmonized data with the <code>Total births by sex</code> data ensuring that, for each id, one, if <code>Total counts by sex</code> records exist and the harmonized data does not, we drop the former and two, if the <code>Total births by sex</code> reported total value does not match the total value reported in the harmonized data, we drop it. We also ensure that we have one id per time label and finally drop duplicate records (especially in cases where we may have duplicate <code>Total counts by sex</code> records).</p>
+<style>
+body {text-align: justify}
+</style>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 
