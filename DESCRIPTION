@@ -20,7 +20,8 @@ Imports:
     magrittr,
     purrr,
     assertthat,
-    zoo
+    zoo,
+    icons
 Suggests: 
     rmarkdown,
     knitr,

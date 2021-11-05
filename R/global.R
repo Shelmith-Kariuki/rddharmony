@@ -27,7 +27,9 @@ utils::globalVariables(c("AgeSpan", "AgeStart",#dd_oag_agestart
                         "ReferencePeriod", "IndicatorShortName", #DDharmonize_validate_PopCounts
                         "ReferencePeriod", "has_de_facto", "keep_de_facto","DataSourceShortName",
                         "nonipums_flag", "has_nonipums", "keep_nonipums", #dd_rank_id
-                        "X0", "X3", "total_over_sex", "pct_m" #dd_validate_totals_over_sex_new
+                        "X0", "X3", "total_over_sex", "pct_m", #dd_validate_totals_over_sex_new
+                        "calc_total","reported_total", #dd_drop_unknowns
+                        "counter", "misplaced_oag", "total_todrop" #dd_multiple_totals
                         ))
 
 

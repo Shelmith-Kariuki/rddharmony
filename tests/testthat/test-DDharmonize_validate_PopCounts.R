@@ -1,7 +1,7 @@
 require(rddharmony)
 require(DemoTools)
 require(DDSQLtools)
-require(tidyverse)
+require(dplyr)
 require(testthat)
 
 #locid <-  312

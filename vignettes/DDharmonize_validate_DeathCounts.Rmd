@@ -14,10 +14,12 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(icons)
+
 ```
 
-
+```{r, echo=FALSE}
+library(icons)
+```
 
 ## `r icons::fontawesome("rocket", style = "solid")` Introduction
 
