@@ -1,6 +1,6 @@
 #' dd_series_isfull
 #'
-#' Check whether the age vector meets conditions for a full series. A full series requires all closed age groups and either an open age group or a total. if abridged, then a full series also requires either both abridged child ages or both five-year child ages to be present
+#' Check whether the age vector meets conditions for a full series.
 #' A full series requires all closed age groups and either an open age group or a total. If abridged, then a full series also requires either both abridged child ages or both five-year child ages to be present
 #'
 #' @param data The dataset to be harmonized

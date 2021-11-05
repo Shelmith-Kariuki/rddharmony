@@ -31,12 +31,14 @@ navbar:
       href: index.html
     - text: "Vignettes"
       menu:
-      - text: DDharmonize_validate_BirthCounts
+      - text: DDharmonize_validate_BirthCounts()
         href: articles/DDharmonize_validate_BirthCounts.html
-      - text: DDharmonize_validate_DeathCounts
+      - text: DDharmonize_validate_DeathCounts()
         href: articles/DDharmonize_validate_DeathCounts.html
-      - text: DDextract_PopCounts
-        href: articles/DDextract_PopCounts.html
+      - text: DDharmonize_validate_PopCounts()
+        href: articles/DDharmonize_validate_PopCounts.html
+      - text: Harmonization Workflow
+        href: articles/Harmonization_Workflow.html
 
     - text: "Functions"
       href: reference/index.html

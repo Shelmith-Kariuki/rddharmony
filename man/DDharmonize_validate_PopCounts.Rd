@@ -18,9 +18,9 @@ DDharmonize_validate_PopCounts(
 \arguments{
 \item{locid}{location id}
 
-\item{times}{1950, 2050}
+\item{times}{The period of the data to be extracted. You can extract one year data e.g times = 2020 or a longer period of time e.g times = c(1950, 2020).}
 
-\item{process}{census or vr}
+\item{process}{The process through which the data was obtained from various sources i.e either via census , register or estimates. By default, the function pulls data obtained through both of these processes.}
 
 \item{return_unique_ref_period}{TRUE}
 
@@ -36,7 +36,7 @@ DDharmonize_validate_PopCounts(
 A harmonized dataset containing birth counts
 }
 \description{
-This script implements a workflow for census population counts extracting from DemoData, harmonizing age groups,
+This script implements a work flow for census population counts extracting from DemoData, harmonizing age groups,
 identifying full series, selecting preferred series, validating totals and by sex and eventually
 including key fields in the function output.
 }

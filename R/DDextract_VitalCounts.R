@@ -56,7 +56,9 @@ DDextract_VitalCounts <- function(locid,
 
     vital_counts <- vital_counts
 
-  } else { vital_counts <- NULL }
+  } else {
+
+    vital_counts <- NULL }
 
   outdata <- vital_counts
 

@@ -1,12 +1,12 @@
 #' DDharmonize_validate_PopCounts
 #'
-#' This script implements a workflow for census population counts extracting from DemoData, harmonizing age groups,
+#' This script implements a work flow for census population counts extracting from DemoData, harmonizing age groups,
 #' identifying full series, selecting preferred series, validating totals and by sex and eventually
 #' including key fields in the function output.
 #'
 #' @param locid location id
-#' @param times 1950, 2050
-#' @param process census or vr
+#' @param times The period of the data to be extracted. You can extract one year data e.g times = 2020 or a longer period of time e.g times = c(1950, 2020).
+#' @param process The process through which the data was obtained from various sources i.e either via census , register or estimates. By default, the function pulls data obtained through both of these processes.
 #' @param return_unique_ref_period TRUE
 #' @param DataSourceShortName NULL
 #' @param DataSourceYear NULL
@@ -484,17 +484,22 @@ if (nrow(pop_std_full) > 0) {
 
 
   # define how we want to arrange the data, with priority columns on the left and data loader keys on the right
-  first_columns <- c("id", "LocID", "LocName", "DataProcess", "ReferencePeriod", "TimeStart","TimeLabel", "TimeMid", "SexID",
+  first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart","TimeLabel", "TimeMid", "SexID",
                      "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
                      "complete", "non_standard")
-  keep_columns <- names(pop_std_all)
-  keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", first_columns))]
+  ## Made this change on 5th November because of
+  ##  404, Kenya,deaths, 2010, 2011. Since the vitals_std_all == NULL is non existent, keep_columns was returning a NULL object
+  if(nrow(pop_std_all) == 0){
+    keep_columns <- names(pop_raw)
 
+  }else{
+    keep_columns <- names(pop_std_all)
+  }
+  keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", first_columns))]
 
-  ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
-  ## -------------------------------------------------------------------------------------------------------------------
-  if (nrow(pop_std_valid) > 0) {
+  ## When there is more that one id for a given census year, select the most authoritative one
+
+   if (nrow(pop_std_valid) > 0) {
 
     if (return_unique_ref_period == TRUE) {
 
@@ -512,17 +517,23 @@ if (nrow(pop_std_full) > 0) {
   }
 
   ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
+  ## PART 4: Finalize
   ## -------------------------------------------------------------------------------------------------------------------
-  ref_pds <- unique(out_all$ReferencePeriod)
 
-  # first_columns <- first_columns[!(first_columns %in% c("five_year", "abridged", "complete", "non_standard", "note"))]
+  ## Look for years that are in the raw data but not in the output. If there are series with non-standard age groups, then add these to the output as well.
+
+  # ref_pds <- unique(out_all$ReferencePeriod)
+
+
+  first_columns <- c("id", "LocID", "LocName", "DataProcess","TimeStart","TimeLabel", "TimeMid", "TimeEnd","SexID",
+                     "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue")
+
   skipped <- dd_extract %>%
-    dplyr::filter(!(ReferencePeriod %in% ref_pds)) %>%
+    dplyr::filter(!(TimeLabel %in% out_all$TimeLabel)) %>%
     group_by(id) %>%
     mutate(SeriesIDs = I(list(unique(SeriesID)))) %>%
     ungroup() %>%
-    select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%  ## 29th Oct change
+    select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%
     mutate(five_year = FALSE,
            abridged = FALSE,
            complete = FALSE,
@@ -537,7 +548,8 @@ if (nrow(pop_std_full) > 0) {
 
     out_all2 <- out_all %>%
       arrange(id, SexID, abridged, AgeSort) %>%
-    mutate(IndicatorName = NA,
+      select(-IndicatorID, -IndicatorName) %>%
+      mutate(IndicatorName = NA,
            IndicatorName = replace(IndicatorName, abridged == TRUE, "Population5"),
            IndicatorName = replace(IndicatorName, complete == TRUE, "Population1"),
            AgeUnit = "Year",
@@ -558,9 +570,7 @@ if (nrow(pop_std_full) > 0) {
     out_all2 <- out_all ## 29th Oct change
   }
 
-  ## -------------------------------------------------------------------------------------------------------------------
-  ## PART 6: FINALIZE
-  ## -------------------------------------------------------------------------------------------------------------------
+  ## Retain variables of interest
 
   out_all_appended <- out_all2
 
@@ -582,7 +592,7 @@ if (nrow(pop_std_full) > 0) {
       "Location Name: ", unique(dd_extract$LocName),"\n")
 
   } else{## if no pop counts were extracted from DemoData
-    if(locid %in% get_locations()$LocID){
+    if(locid %in% get_locations()$PK_LocID){
         print(paste0("There are no census age distributions available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
       out_all_appended <- NULL
     }
@@ -591,12 +601,12 @@ if (nrow(pop_std_full) > 0) {
 
 ## To be removed later
 ## missing_timelabs should be NULL
-missing_refperiods<- unique(dd_extract$ReferencePeriod[which(!dd_extract$ReferencePeriod %in% out_all_appended$ReferencePeriod)])
-assign("missing_refperiods", missing_refperiods, .GlobalEnv)
+missing_timelabs<- unique(dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all_appended$TimeLabel)])
+assign("missing_timelabs", missing_timelabs, .GlobalEnv)
 
-if(length(missing_refperiods) >0){
+if(length(missing_timelabs) >0){
   missing_data <- dd_extract %>%
-                  filter(TimeMid %in% missing_refperiods) %>%
+                  filter(TimeLabel %in% missing_timelabs) %>%
                   select(any_of(names(out_all_appended)))
 
   assign("missing_data", missing_data, .GlobalEnv)

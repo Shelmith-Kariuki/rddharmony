@@ -5,8 +5,8 @@
 #' including key fields in the function output.
 #'
 #' @param locid location id
-#' @param times 1950, 2050
-#' @param process census or vr
+#' @param times The period of the data to be extracted. You can extract one year data e.g times = 2020 or a longer period of time e.g times = c(1950, 2020).
+#' @param process The process through which the data was obtained from various sources i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.
 #' @param return_unique_ref_period TRUE
 #' @param DataSourceShortName NULL
 #' @param DataSourceYear NULL
@@ -347,9 +347,9 @@ DDharmonize_validate_DeathCounts <- function(locid,
           ## Check how many series are full out of the three
           n_full <- length(check_full[check_full == TRUE])
 
-          # if at least two are full, then identify the series as full
-          # if we have both and males, we can compute females.
-          # If we have males and females, we can compute both.
+          # If at least two are full, then identify the series as full
+          # If we have both and males, we can compute females.
+          # If we have males and females, we can compute both sexes.
           # But if we only have both, these data are not very useful to us.
           if (n_full >=2 ) {
             id_series_full <- c(id_series_full, id_sers[i])
@@ -477,13 +477,19 @@ DDharmonize_validate_DeathCounts <- function(locid,
       first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd", "SexID",
                          "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue", "note", "abridged", "five_year",
                          "complete", "non_standard")
-      keep_columns <- names(vitals_std_all)
+
+      ## Made this change on 5th November because of
+      ##  404, Kenya,deaths, 2010, 2011. Since the vitals_std_all == NULL is non existent, keep_columns was returning a NULL object
+      if(nrow(vitals_std_all) == 0){
+        keep_columns <- names(vitals_raw)
+
+      }else{
+        keep_columns <- names(vitals_std_all)
+      }
       keep_columns <- keep_columns[!(keep_columns %in% c("series", "id_series", "DataSeriesID", first_columns))]
 
 
-      ## -------------------------------------------------------------------------------------------------------------------
-      ## PART 4: WHEN THERE IS MORE THAN ONE ID FOR A GIVEN CENSUS YEAR, SELECT THE MOST AUTHORITATIVE SERIES
-      ## -------------------------------------------------------------------------------------------------------------------
+      ## When there is more that one id for a given census year, select the most authoritative one
 
       if (nrow(vitals_std_valid) > 0) {
 
@@ -503,18 +509,21 @@ DDharmonize_validate_DeathCounts <- function(locid,
       } else { out_all <- NULL }
 
       ## -------------------------------------------------------------------------------------------------------------------
-      ## PART 5: LOOK FOR YEARS THAT ARE IN RAW DATA, BUT NOT IN OUTPUT. IF THERE ARE SERIES WITH NON-STANDARD AGE GROUPS, THEN ADD THESE TO OUTPUT AS WELL
+      ## PART 4: Finalize
       ## -------------------------------------------------------------------------------------------------------------------
 
 
-      first_columns <- c("id", "LocID", "LocName", "DataProcess", "TimeStart", "TimeMid", "TimeEnd","SexID",
+      first_columns <- c("id", "LocID", "LocName", "DataProcess", "DataProcessType", "TimeStart","TimeLabel", "TimeMid", "TimeEnd","SexID",
                          "AgeStart", "AgeEnd", "AgeLabel", "AgeSpan", "AgeSort", "DataValue")
 
-      ref_pds <- unique(out_all$TimeLabel)
+      # ref_pds <- unique(out_all$TimeLabel)
 
       skipped <- dd_extract_194_195 %>%
-        dplyr::filter(!(TimeLabel %in% ref_pds)) %>%
-        select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%  ## 29th Oct change
+        dplyr::filter(!(TimeLabel %in% out_all$TimeLabel)) %>%
+        group_by(id) %>%
+        mutate(SeriesIDs = I(list(unique(SeriesID)))) %>%
+        ungroup() %>%
+        select(IndicatorID, IndicatorName, all_of(first_columns), all_of(keep_columns)) %>%
         mutate(five_year = FALSE,
                abridged = FALSE,
                complete = FALSE,
@@ -566,10 +575,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
         out_all2 <- out_all ## 29th Oct change
       }
 
-
-      ## -------------------------------------------------------------------------------------------------------------------
-      ## PART 6: COMBINE THE HARMONIZED DATA WITH INDICATOR 188 DATA AND CLEAN IT
-      ## -------------------------------------------------------------------------------------------------------------------
+      ##  Combine the harmonized data with indicator 188 data and clean it
 
       if(nrow(dd_extract_188) >0){
         out_all_appended <- dd_append_tcs_cas(indata = out_all2, ## 29th Oct change
@@ -581,9 +587,9 @@ DDharmonize_validate_DeathCounts <- function(locid,
         out_all_appended <- out_all2 ## 29th Oct change
       }
 
-      ## -------------------------------------------------------------------------------------------------------------------
-      ## PART 7: FINALIZE
-      ## -------------------------------------------------------------------------------------------------------------------
+
+      ## Retain variables of interest
+
       if(nrow(out_all_appended) >0){
 
         if (retainKeys == FALSE) {
@@ -608,7 +614,7 @@ DDharmonize_validate_DeathCounts <- function(locid,
     }
 
   } else{## if no death counts were extracted from DemoData
-    if(locid %in% get_locations()$LocID){
+    if(locid %in% get_locations()$PK_LocID){
       print(paste0("There are no death counts available for LocID = ",locid," for the time period ", times[1], " to ", times[length(times)]))
       out_all_appended <- NULL
     }
@@ -617,12 +623,15 @@ DDharmonize_validate_DeathCounts <- function(locid,
 
 
   ## To be removed later
-  ## The only time labels that should be present in the raw dataset but absent in the clean dataset should be indicator 159 records.
+  ## missing_timelabs should be NULL
   missing_timelabs<- unique(dd_extract$TimeLabel[which(!dd_extract$TimeLabel %in% out_all_appended$TimeLabel)])
   assign("missing_timelabs", missing_timelabs, .GlobalEnv)
 
   if(length(missing_timelabs) >0){
-    missing_data <- dd_extract %>% filter(TimeLabel %in% missing_timelabs)
+    missing_data <- dd_extract %>%
+      filter(TimeLabel %in% missing_timelabs) %>%
+      select(any_of(names(out_all_appended)))
+
     assign("missing_data", missing_data, .GlobalEnv)
   }else{
     missing_data <- NULL

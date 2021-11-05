@@ -15,7 +15,7 @@ dd_series_isfull(data, abridged = TRUE)
 \code{TRUE/FALSE}. TRUE if the series is full and FALSE otherwise
 }
 \description{
-Check whether the age vector meets conditions for a full series. A full series requires all closed age groups and either an open age group or a total. if abridged, then a full series also requires either both abridged child ages or both five-year child ages to be present
+Check whether the age vector meets conditions for a full series.
 A full series requires all closed age groups and either an open age group or a total. If abridged, then a full series also requires either both abridged child ages or both five-year child ages to be present
 }
 \examples{

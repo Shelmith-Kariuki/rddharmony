@@ -1,8 +1,8 @@
 #' dd_validate_totals_over_sex
+#'
 #' Check if Population counts by sex is equal to population counts for both sexes and adjust in case of any difference.
 #' Criteria: If Female Population + Male Population is different from the population for Both sexes, then Both sexes = Female + Male
 #
-#'
 #' @param data Data to be harmonized
 #'
 #' @import dplyr

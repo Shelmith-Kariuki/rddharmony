@@ -2,9 +2,7 @@
 % Please edit documentation in R/dd_validate_totals_over_sex.R
 \name{dd_validate_totals_over_sex}
 \alias{dd_validate_totals_over_sex}
-\title{dd_validate_totals_over_sex
-Check if Population counts by sex is equal to population counts for both sexes and adjust in case of any difference.
-Criteria: If Female Population + Male Population is different from the population for Both sexes, then Both sexes = Female + Male}
+\title{dd_validate_totals_over_sex}
 \usage{
 dd_validate_totals_over_sex(data)
 }
@@ -15,7 +13,6 @@ dd_validate_totals_over_sex(data)
 A dataset where Both sexes == Female + Male
 }
 \description{
-dd_validate_totals_over_sex
 Check if Population counts by sex is equal to population counts for both sexes and adjust in case of any difference.
 Criteria: If Female Population + Male Population is different from the population for Both sexes, then Both sexes = Female + Male
 }
