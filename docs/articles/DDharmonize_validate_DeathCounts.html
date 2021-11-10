@@ -110,7 +110,7 @@
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a><svg viewbox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"><path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"></path></svg> Introduction</h2>
-<p><code><a href="../reference/DDharmonize_validate_DeathCounts.html">DDharmonize_validate_DeathCounts()</a></code> is a function that implements a work flow for death records extracted from vital registration databases and census. This work flow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location.</p>
+<p><code><a href="../reference/DDharmonize_validate_DeathCounts.html">DDharmonize_validate_DeathCounts()</a></code> is a function that implements a work flow for death records extracted from vital registration databases and census. This work flow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location. See the <a href="https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html">harmonization workflow</a> article for a detailed overview of this process.</p>
 <p>The death records are grouped into two types of data:</p>
 <ul>
 <li><p>Deaths by age and sex</p></li>
@@ -219,40 +219,41 @@
 <span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? </span>
 <span class="co">#&gt; [1] "202178 is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the `PK_LocID` variable"</span></code></pre></div>
 <p><strong><code>times</code>:</strong> The period of the data to be extracted. You can extract one year data e.g <code>times = 2020</code> or a longer period of time e.g <code>times = c(1950, 2020)</code>.</p>
-<p><strong><code>process</code>:</strong> The process through which the data was obtained from various sources i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.</p>
+<p><strong><code>process</code>:</strong> The process used to collect or to obtain the data i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.</p>
 <p><strong><code>return_unique_ref_period</code>:</strong> Specifies whether the data to be returned should contain one unique id (<code>return_unique_ref_period == TRUE</code>) or several ids (<code>return_unique_ref_period == FALSE</code>) per time label. ids are a unique identifier for each unique set of records based on <code>LocID</code>, <code>LocName</code>, <code>DataProcess</code>, <code>ReferencePeriod</code>, <code>DataSourceName</code>, <code>StatisticalConceptName</code>, <code>DataTypeName</code> and <code>DataReliabilityName</code>. The definitions of these variables are provided later in this article.</p>
 <p><strong><code>retainKeys</code>:</strong> Specifies whether only a few (<code>retainKeys == FALSE</code>) or all (<code>retainKeys == TRUE</code>) variables should be retained in the output.</p>
 </div>
 <div id="description-of-the-output-variables" class="section level2">
 <h2 class="hasAnchor">
 <a href="#description-of-the-output-variables" class="anchor"></a><svg viewbox="0 0 512 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"><path d="M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zM224 416H64v-96h160v96zm0-160H64v-96h160v96zm224 160H288v-96h160v96zm0-160H288v-96h160v96z"></path></svg> Description of the output variables</h2>
-<p>The function returns clean data with 25 variables (when <code>retainKeys == TRUE</code>) which are defined below:</p>
+<p>The function returns clean data with 26 variables (when <code>retainKeys == TRUE</code>) which are defined below:</p>
 <ul>
-<li><p>id:</p></li>
-<li><p>LocID:</p></li>
-<li><p>LocName</p></li>
-<li><p>IndicatorID:</p></li>
-<li><p>IndicatorName:</p></li>
-<li><p>TimeLabel:</p></li>
-<li><p>TimeMid</p></li>
-<li><p>TimeEnd</p></li>
-<li><p>DataProcessType</p></li>
-<li><p>DataSourceName</p></li>
-<li><p>StatisticalConceptName</p></li>
-<li><p>DataTypeName</p></li>
-<li><p>DataReliabilityName</p></li>
-<li><p>five_year</p></li>
-<li><p>abridged</p></li>
-<li><p>complete</p></li>
-<li><p>non_standard</p></li>
-<li><p>SexID</p></li>
-<li><p>AgeStart</p></li>
-<li><p>AgeEnd</p></li>
-<li><p>AgeLabel</p></li>
-<li><p>AgeSpan</p></li>
-<li><p>AgeSort</p></li>
-<li><p>DataValue</p></li>
-<li><p>note</p></li>
+<li><p><code>id</code>: A unique id that is generated by combining the <code>LocID</code>, <code>LocName</code>, <code>DataProcess</code>, type of data (deaths), <code>TimeLabel</code>, <code>DataProcessType</code>, <code>DataSourceName</code>, <code>StatisticalConceptName</code>, <code>DataTypeName</code> and <code>DataReliabilityName</code>.</p></li>
+<li><p><code>LocID</code>: Location Id. This is a numerical Location Code (3-digit codes following ISO 3166-1 numeric standard - UNSD M49 codes) - see <a href="http://en.wikipedia.org/wiki/ISO_3166-1_numeric" class="uri">http://en.wikipedia.org/wiki/ISO_3166-1_numeric</a> .</p></li>
+<li><p><code>LocName</code>: Name of a country or territory identified by each Location Id e.g when <code>LocID</code> == 752 , <code>LocName</code> == Sweden.</p></li>
+<li><p><code>IndicatorName</code>: Identifies the type of data i.e. <code>Deaths by age and sex</code> or <code>Total deaths by sex</code>.</p></li>
+<li><p><code>IndicatorID</code>: An id representing each indicator. <code>IndicatorID</code> = 194 where <code>IndicatorName</code> = Deaths by age and sex - abridged, <code>IndicatorID</code> = 195 where <code>IndicatorName</code> == <code>Deaths by age and sex - complete</code> and <code>IndicatorID</code> = 188 where <code>IndicatorName</code> == <code>Total deaths by sex</code>.</p></li>
+<li><p><code>TimeStart</code>: Start year defining the period of interest (e.g 01/01/2000).</p></li>
+<li><p><code>TimeLabel</code>: The year of interest (e.g 2000).</p></li>
+<li><p><code>TimeEnd</code>: End year defining the period of interest (e.g 31/12/2000).</p></li>
+<li><p><code>TimeMid</code>: Mid-period based on <code>TimeStart</code> and <code>TimeEnd</code> (e.g 2000.500).</p></li>
+<li><p><code>DataProcessType</code>: Defines the process used to collect or to obtain the data.</p></li>
+<li><p><code>DataSourceName</code>: This defines the source of data (e.g. Demographic Year Book, World Health Organization records, etc).</p></li>
+<li><p><code>StatisticalConceptName</code>: Defines the concept under which individuals (or vital events) are recorded (e.g De-facto, Year of occurrence).</p></li>
+<li><p><code>DataTypeName</code>: Indicates the type of collected data or estimation process used to derive the data.</p></li>
+<li><p><code>DataReliabilityName</code>: Denotes the reliability of the data values (default is unknown): Error, typo or invalid value, Very low quality, Low , Fair, High quality, etc. This is a default rating either obtained from the Data Source or assigned by default to the data during initial loading.</p></li>
+<li><p><code>AgeLabel</code>: Age bracket (where data is abridged) or single year of age (where the data is complete).</p></li>
+<li><p><code>AgeStart</code>: The start age of a particular age label e.g where the age label is 10-14, the start age is 10.</p></li>
+<li><p><code>AgeEnd</code>: The end age of a particular age label + 1 e.g where the age label is 10-14, the end age is 15.</p></li>
+<li><p><code>AgeSpan</code>: The difference between <code>AgeStart</code> and <code>AgeEnd</code>.</p></li>
+<li><p><code>AgeSort</code>: Defines the order of a particular age label when the age labels are arranged in ascending order.</p></li>
+<li><p><code>abridged</code>: Identifies age labels that have an age span of 5 years, including open age groups and the total, but excluding the label <code>0-4</code> (<code>IndicatorID</code> = 194).</p></li>
+<li><p><code>five_year</code>: Identifies age labels that are abridged including <code>0-4</code>.</p></li>
+<li><p><code>complete</code>: Identifies single year of age labels, including open age groups and the total (<code>IndicatorID</code> = 195).</p></li>
+<li><p><code>non_standard</code>: These are age labels that are not standard e.g those with an age span of anything other than 1, 5 and they are neither total nor unknown.</p></li>
+<li><p><code>SexID</code>: ID for each of the sex groups (1: Males, 2: Females, 3: Both sexes).</p></li>
+<li><p><code>DataValue</code>: The numerical value of interest for a specific set of unique characteristics as defined by <code>id</code>.</p></li>
+<li><p><code>note</code>: Gives the user more information about a particular record in cases where the data is not fully clean e.g the record may not have been harmonized because of non-standard age groups or that the series is missing data for one or more age groups.</p></li>
 </ul>
 </div>
   </div>

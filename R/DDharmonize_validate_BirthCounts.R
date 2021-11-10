@@ -629,7 +629,7 @@ DDharmonize_validate_BirthCounts <- function(locid,
 
     if (retainKeys == FALSE) {
       out_all_appended <- out_all_appended %>%
-        select(id, LocID, LocName, IndicatorID, IndicatorName, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
+        select(id, LocID, LocName, IndicatorID, IndicatorName, TimeStart, TimeLabel, TimeMid, TimeEnd, DataProcessType, DataSourceName, StatisticalConceptName,
                DataTypeName, DataReliabilityName, five_year, abridged, complete, non_standard, SexID, AgeStart, AgeEnd,
                AgeLabel, AgeSpan, AgeSort, DataValue, note)
     }
