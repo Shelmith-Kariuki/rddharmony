@@ -41,9 +41,11 @@ dd_rank_id_vitals <- function(indata){
       dplyr::filter(DataStatusSort == min(DataStatusSort)) %>%
 
       # Third: Rank by DataProcess
+      # Shel: Here, we are preferring Census over Vital Registrations data
       dplyr::filter(DataProcessSort == min(DataProcessSort)) %>%
 
       # Fourth: Rank by DataProcessType
+      # Shel: Here, we are preferring Census over Register
       dplyr::filter(DataProcessTypeSort == min(DataProcessTypeSort)) %>%
 
       # Fifth: Prefer better DataReliability
