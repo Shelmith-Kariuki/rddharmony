@@ -35,6 +35,9 @@ A dataset showing counts for each location, type of data (births or deaths), pro
 \description{
 Extracts births and/or deaths data for a given country and time period from the UNDP portal.
 }
+\details{
+Testing that this section shows up at the Details section of the help file
+}
 \examples{
 dd_extract <- DDextract_VitalCounts(404, #Kenya
                                    type = c("births"),

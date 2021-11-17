@@ -9,7 +9,7 @@
 #' @importFrom magrittr %>%
 #'
 #' @return A value that would close the series. It has to be a multiple of 5
-
+#'
 #' @export
 #'
 #' @examples

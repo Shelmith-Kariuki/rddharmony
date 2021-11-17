@@ -2,6 +2,7 @@
 #'
 #' Extracts births and/or deaths data for a given country and time period from the UNDP portal.
 #'
+#'
 #' @param locid The Location Id for each country. Run `DemoTools::get_locations()` to get information about available locations. The ids are indicated in the `PK_LocID` variable.
 #' @param type The type of data to be pulled i.e. births/deaths
 #' @param process The data collection process i.e. Census (census) or Vital Registrations (vr)
