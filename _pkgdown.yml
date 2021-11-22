@@ -18,10 +18,9 @@ reference:
     desc:
     contents:
           - '`check_locid`'
-          - '`DDextract_PopCounts`'
           - starts_with("DDharmonize_")
           - starts_with("dd_")
-          - starts_with("DDextract_Vital")
+          - starts_with("DDextract_")
           - '`std_age_function`'
 navbar:
   type: reverse

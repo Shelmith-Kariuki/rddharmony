@@ -1,32 +1,55 @@
+#' @title
 #' DDextract_VitalCounts
 #'
+#' @description
 #' Extracts births and/or deaths data for a given country and time period from the UNDP portal.
 #'
+#' @details
+#' This function extracts data using \link[DDSQLtools]{get_recorddata} .
+#' The function returns `NULL` in cases where the data is not available and a dataframe of 93 variables where it exists.
+#' In cases where the user inserts an invalid location id, a message is returned prompting them to run `View(get_locations())` to get a list of plausible location ids. See
+#' \link{check_locid} for more details on this.
 #'
 #' @param locid The Location Id for each country. Run `DemoTools::get_locations()` to get information about available locations. The ids are indicated in the `PK_LocID` variable.
-#' @param type The type of data to be pulled i.e. births/deaths
-#' @param process The data collection process i.e. Census (census) or Vital Registrations (vr)
-#' @param start_year The minimum year for the data available for each country
-#' @param end_year The maximum year for the data available for each country
+#' @param type The type of data to be pulled i.e. births/deaths.
+#' @param process The data collection process i.e. Census (census) or Vital Registrations (vr).
+#' @param start_year The minimum year for the data to be extracted.
+#' @param end_year The maximum year for the data to be extracted.
 #' @param DataSourceShortName NULL.
 #' @param DataSourceYear NULL.
+#'
 #' @return A dataset showing counts for each location, type of data (births or deaths), process, year, sex and age label.
+#'
 #' @export
 #'
 #' @examples
-#' dd_extract <- DDextract_VitalCounts(404, #Kenya
+#' \dontrun{
+#' # Extracting births data
+#' births_df <- DDextract_VitalCounts(404, #Kenya
 #'                                    type = c("births"),
 #'                                    process = c("census","vr"),
 #'                                    1950,
 #'                                    2050,
 #'                                    DataSourceShortName = NULL,
 #'                                    DataSourceYear = NULL)
+#'
+#' # Extracting deaths data
+#' deaths_df <- DDextract_VitalCounts(364, #Iran
+#'                                    type = c("deaths"),
+#'                                    process = c("census","vr"),
+#'                                    1950,
+#'                                    2050,
+#'                                    DataSourceShortName = NULL,
+#'                                    DataSourceYear = NULL)
+#'}
 DDextract_VitalCounts <- function(locid,
                                   type = c("births","deaths"),
                                   process = c("census","vr"),
-                                  start_year, end_year,
+                                  start_year,
+                                  end_year,
                                   DataSourceShortName = NULL,
                                   DataSourceYear = NULL) {
+
 
 ## List the indicator ids for each type of data
   if (type == "births") {
