@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(icons)
+download_fontawesome()
+
 ```
 
 
