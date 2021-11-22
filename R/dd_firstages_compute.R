@@ -1,6 +1,12 @@
+#' @title
 #' dd_firstages_compute
 #'
+#' @description
 #' Reconcile ages 0-1, 1-4 and 0-4
+#'
+#' @details
+#' If 0-4 is missing and 0-1 and 1-4 are present, then sum both to get 0-4.
+#' You can run `getAnywhere(dd_firstages_compute)` to view the definition of this function.
 #'
 #' @param data The data to be harmonized
 #'
@@ -12,12 +18,12 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- firstages_compute_df
 #' df <- dd_firstages_compute(df)
+#' }
 
 dd_firstages_compute <- function(data){
-
-  # require(tidyverse)
 
   df <- dd_age_standard(data, abridged = TRUE)
 

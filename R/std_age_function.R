@@ -1,6 +1,11 @@
+#' @title
 #' std_age_function
 #'
+#' @description
 #' Creates a data frame with all of the standard age groups we would expect for abridged and complete series (up to 130+ open age group)
+#'
+#' @details
+#' You can run `getAnywhere(std_age_function)` to view the definition of this function.
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%

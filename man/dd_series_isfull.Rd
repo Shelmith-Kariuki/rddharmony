@@ -23,5 +23,9 @@ You can run \code{getAnywhere(dd_series_isfull)} to see the function definition.
 }
 \examples{
 \dontrun{
+df <- series_isfull_df \%>\%
+select(IndicatorID, IndicatorName, LocID, LocName, TimeLabel, AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) \%>\%
+arrange(AgeLabel)
+dd_series_isfull(df, abridged = TRUE)
 }
 }
