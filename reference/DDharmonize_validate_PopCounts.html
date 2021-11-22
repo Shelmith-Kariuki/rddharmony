@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="DDharmonize_validate_PopCounts — DDharmonize_validate_PopCounts" />
-<meta property="og:description" content="This script implements a workflow for census population counts extracting from DemoData, harmonizing age groups,
+<meta property="og:description" content="This script implements a work flow for census population counts extracting from DemoData, harmonizing age groups,
 identifying full series, selecting preferred series, validating totals and by sex and eventually
 including key fields in the function output." />
 <meta property="og:image" content="/logo.png" />
@@ -102,13 +102,16 @@ including key fields in the function output." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts</a>
+      <a href="../articles/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts()</a>
     </li>
     <li>
-      <a href="../articles/DDharmonize_validate_DeathCounts.html">DDharmonize_validate_DeathCounts</a>
+      <a href="../articles/DDharmonize_validate_DeathCounts.html">DDharmonize_validate_DeathCounts()</a>
     </li>
     <li>
-      <a href="../articles/DDextract_PopCounts.html">DDextract_PopCounts</a>
+      <a href="../articles/DDharmonize_validate_PopCounts.html">DDharmonize_validate_PopCounts()</a>
+    </li>
+    <li>
+      <a href="../articles/Harmonization_Workflow.html">Harmonization Workflow</a>
     </li>
   </ul>
 </li>
@@ -143,7 +146,7 @@ including key fields in the function output." />
     </div>
 
     <div class="ref-description">
-    <p>This script implements a workflow for census population counts extracting from DemoData, harmonizing age groups,
+    <p>This script implements a work flow for census population counts extracting from DemoData, harmonizing age groups,
 identifying full series, selecting preferred series, validating totals and by sex and eventually
 including key fields in the function output.</p>
     </div>
@@ -168,11 +171,11 @@ including key fields in the function output.</p>
     </tr>
     <tr>
       <th>times</th>
-      <td><p>1950, 2050</p></td>
+      <td><p>The period of the data to be extracted. You can extract one year data e.g times = 2020 or a longer period of time e.g times = c(1950, 2020).</p></td>
     </tr>
     <tr>
       <th>process</th>
-      <td><p>census or vr</p></td>
+      <td><p>The process through which the data was obtained from various sources i.e either via census , register or estimates. By default, the function pulls data obtained through both of these processes.</p></td>
     </tr>
     <tr>
       <th>return_unique_ref_period</th>
@@ -201,8 +204,8 @@ including key fields in the function output.</p>
     <p>A harmonized dataset containing birth counts</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'><span class='va'>sweden_df</span> <span class='op'>&lt;-</span> <span class='fu'>DDharmonize_validate_PopCounts</span><span class='op'>(</span><span class='fl'>752</span>,</span>
-<span class='r-in'>                                              <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1950</span>,<span class='fl'>2020</span><span class='op'>)</span>,</span>
+    <pre class="examples"><span class='r-in'><span class='va'>sweden_df</span> <span class='op'>&lt;-</span> <span class='fu'>DDharmonize_validate_PopCounts</span><span class='op'>(</span>locid <span class='op'>=</span> <span class='fl'>752</span>,</span>
+<span class='r-in'>                                              times <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1950</span>,<span class='fl'>2020</span><span class='op'>)</span>,</span>
 <span class='r-in'>                                              process <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"census"</span>, <span class='st'>"estimate"</span>, <span class='st'>"register"</span><span class='op'>)</span>,</span>
 <span class='r-in'>                                              return_unique_ref_period <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
 <span class='r-in'>                                              DataSourceShortName <span class='op'>=</span> <span class='cn'>NULL</span>,</span>
