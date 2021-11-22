@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="dd_oag_agestart — dd_oag_agestart" />
-<meta property="og:description" content="Identify the starting age needed for the open age group that closes the series. For abridged data, it must be a multiple of 5" />
+<meta property="og:description" content="Identifies the starting age needed for the open age group that closes the series. It must be a multiple of 5" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -144,7 +144,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Identify the starting age needed for the open age group that closes the series. For abridged data, it must be a multiple of 5</p>
+    <p>Identifies the starting age needed for the open age group that closes the series. It must be a multiple of 5</p>
     </div>
 
     <pre class="usage"><span class='fu'>dd_oag_agestart</span><span class='op'>(</span><span class='va'>data</span>, multiple5 <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
@@ -164,12 +164,21 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A value that would close the series. It has to be a multiple of 5</p>
+    <p>An age label that would close the series. It has to be a multiple of 5</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The function returns the starting age needed for the open age group that closes the series. This corresponds to the
+<code>AgeEnd</code> of the maximum <code>AgeStart</code> in the series, for records with an <code>AgeSpan &gt; 0</code> per id, sex id and time label.
+You can run <code>getAnywhere(dd_oag_agestart)</code> to see the function definition.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='va'>series_isfull_df</span>
-<span class='va'>oag_start</span> <span class='op'>&lt;-</span> <span class='fu'>dd_oag_agestart</span><span class='op'>(</span><span class='va'>df</span>, multiple5 <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='va'>series_isfull_df</span> <span class='op'>%&gt;%</span></span>
+<span class='r-in'><span class='fu'>select</span><span class='op'>(</span><span class='va'>IndicatorID</span>, <span class='va'>IndicatorName</span>, <span class='va'>id</span>, <span class='va'>SexName</span>, <span class='va'>TimeLabel</span>,<span class='va'>AgeSpan</span>, <span class='va'>AgeStart</span>, <span class='va'>AgeEnd</span>, <span class='va'>AgeLabel</span>, <span class='va'>DataValue</span><span class='op'>)</span> <span class='op'>%&gt;%</span></span>
+<span class='r-in'><span class='fu'>arrange</span><span class='op'>(</span><span class='va'>AgeLabel</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>oag_start</span> <span class='op'>&lt;-</span> <span class='fu'>dd_oag_agestart</span><span class='op'>(</span><span class='va'>df</span>, multiple5 <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

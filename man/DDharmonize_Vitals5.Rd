@@ -21,6 +21,8 @@ This wrapper takes five-year vital counts from census and registers from the UND
 See the \href{https://shelmith-kariuki.github.io/rddharmony/index.html}{DDharmonize_Vitals5 vignette} for more details about this function.
 }
 \examples{
+\dontrun{
 df <- vitals5_df
 df <- DDharmonize_Vitals5(df, type = "births")
+}
 }

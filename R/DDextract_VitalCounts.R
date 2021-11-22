@@ -5,10 +5,10 @@
 #' Extracts births and/or deaths data for a given country and time period from the UNDP portal.
 #'
 #' @details
-#' This function extracts data using \link[DDSQLtools]{get_recorddata} .
+#' This function extracts data using \href{https://timriffe.github.io/DDSQLtools/reference/get_recorddata.html}{get_recorddata()}.
 #' The function returns `NULL` in cases where the data is not available and a dataframe of 93 variables where it exists.
 #' In cases where the user inserts an invalid location id, a message is returned prompting them to run `View(get_locations())` to get a list of plausible location ids. See
-#' \link{check_locid} for more details on this.
+#' \link{check_locid} for more details on this. You can run `getAnywhere(DDextract_VitalCounts)` to see how the function is defined.
 #'
 #' @param locid The Location Id for each country. Run `DemoTools::get_locations()` to get information about available locations. The ids are indicated in the `PK_LocID` variable.
 #' @param type The type of data to be pulled i.e. births/deaths.

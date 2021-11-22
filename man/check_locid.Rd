@@ -10,7 +10,7 @@ check_locid(locid)
 \item{locid}{location id}
 }
 \value{
-The message: "\code{locid} is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the \code{PK_LocID} variable" in the case
+The message: "\code{locid} is not a valid location id. Please run \code{View(get_locations())} to get a list of plausible location ids. They are listed in the \code{PK_LocID} variable" in the case
 where the user has inserted an invalid location id, and in cases where the location id is valid, the following message is returned: "\code{locid} is a valid location id. The location name is \verb{location name}"
 }
 \description{
@@ -18,10 +18,11 @@ Throws an error message if a location id is not part of the location ids in the 
 }
 \details{
 Run \verb{check_locid(insert locid here)} to check whether a location id is valid (part of the locations in the UNPD website). Running \verb{check_locid(insert locid here)} with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run \code{View(get_locations())} in order to get a list of plausible location ids.
+You can run \code{getAnywhere(check_locid)} to see how the function is defined.
 }
 \examples{
-\dontrun{}
+\dontrun{
 check_locid(12345) ## invalid location id
-\dontrun{}
 check_locid(404) ## valid location id
+}
 }

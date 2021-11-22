@@ -1,6 +1,13 @@
+#' @title
 #' dd_firstages_compute_births
 #'
-#' Reconcile early age groups for births
+#' @description
+#' Reconcile early age groups for births.
+#'
+#' @details
+#' In cases where for example 10_14 is missing and 0_14 is present, convert the latter to the former.
+#' Another case is if 0-4 is missing and 0-1 and 1-4 are present, then sum both to get 0-4.
+#' You can run `getAnywhere(dd_firstages_compute_births)` to view the definition of this function.
 #'
 #' @param data The data to be harmonized
 #'
@@ -13,8 +20,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- firstages_compute_births_df
 #' df <- dd_firstages_compute_births(df)
+#' }
 
 dd_firstages_compute_births <- function(data){
 

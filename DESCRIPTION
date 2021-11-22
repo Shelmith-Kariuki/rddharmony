@@ -32,5 +32,6 @@ Depends:
 VignetteBuilder: knitr
 Remotes: 
     github::timriffe/DemoTools,
-    github::timriffe/DDSQLtools
+    github::timriffe/DDSQLtools,
+    github::mitchelloharawild/icons
 Language: en-US

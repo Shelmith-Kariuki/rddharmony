@@ -13,9 +13,17 @@ dd_latest_source_year(data)
 A dataset with a unique \strong{DataSourceYear}
 }
 \description{
-Select the latest data source year. For some periods of reference, there are multiple values in the \strong{DataSourceYear} variable. For these cases, the criteria is to choose the latest \strong{DataSourceYear}
+Select the latest data source year. For some periods of reference, there are multiple values in the \strong{DataSourceYear} variable. For these cases, the criteria is to choose the latest \strong{DataSourceYear}.
+}
+\details{
+You can run \code{getAnywhere(dd_latest_source_year)} to view the definition of this function.
 }
 \examples{
-df <- latest_source_year_df
+\dontrun{
+df <- latest_source_year_df \%>\%
+select(IndicatorID, IndicatorName, LocID, LocName,DataSourceYear, TimeLabel, AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) \%>\%
+arrange(TimeLabel)
+
 df <- dd_latest_source_year(df)
+}
 }

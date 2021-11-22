@@ -195,10 +195,10 @@
     <p>A dataset showing counts for each location, type of data (births or deaths), process, year, sex and age label.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This function extracts data using <a href='https://rdrr.io/pkg/DDSQLtools/man/get_recorddata.html'>get_recorddata</a> .
+    <p>This function extracts data using <a href='https://timriffe.github.io/DDSQLtools/reference/get_recorddata.html'>get_recorddata()</a>.
 The function returns <code>NULL</code> in cases where the data is not available and a dataframe of 93 variables where it exists.
 In cases where the user inserts an invalid location id, a message is returned prompting them to run <code>View(get_locations())</code> to get a list of plausible location ids. See
-<a href='check_locid.html'>check_locid</a> for more details on this.</p>
+<a href='check_locid.html'>check_locid</a> for more details on this. You can run <code>getAnywhere(DDextract_VitalCounts)</code> to see how the function is defined.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
