@@ -100,6 +100,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/Harmonization_Workflow.html">Harmonization Workflow</a>
+    </li>
+    <li>
       <a href="../articles/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts()</a>
     </li>
     <li>
@@ -109,7 +112,10 @@
       <a href="../articles/DDharmonize_validate_PopCounts.html">DDharmonize_validate_PopCounts()</a>
     </li>
     <li>
-      <a href="../articles/Harmonization_Workflow.html">Harmonization Workflow</a>
+      <a href="../articles/dd_oag_compute.html">Computing data values for the open age group needed to close a series</a>
+    </li>
+    <li>
+      <a href="../articles/DDharmonize_Vitals5.html">DDharmonize Vitals5</a>
     </li>
   </ul>
 </li>
@@ -167,8 +173,10 @@
     <p>A dataset with ages 10-14 distributed across single ages</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='va'>vitals1_std</span></span>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='va'>vitals1_std</span></span>
 <span class='r-in'><span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'>dd_births_abridged2single_1014</span><span class='op'>(</span><span class='va'>df</span>, <span class='fl'>4</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
 </pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

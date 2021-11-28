@@ -13,8 +13,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- vitals_std_full_sample
 #' df <- dd_validate_totals_over_age(df)
+#' }
 
 dd_validate_totals_over_age <- function(data){
 

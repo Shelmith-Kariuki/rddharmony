@@ -25,6 +25,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' sweden_df <- DDharmonize_validate_BirthCounts(752,
 #'                                               c(1950,2020),
 #'                                               process = c("census", "vr"),
@@ -33,6 +34,7 @@
 #'                                               DataSourceYear = NULL,
 #'                                               retainKeys = FALSE,
 #'                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
+#'}
 
 
 DDharmonize_validate_BirthCounts <- function(locid,

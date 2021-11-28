@@ -25,6 +25,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' sweden_df <- DDharmonize_validate_PopCounts(locid = 752,
 #'                                               times = c(1950,2020),
 #'                                               process = c("census", "estimate", "register"),
@@ -33,6 +34,7 @@
 #'                                               DataSourceYear = NULL,
 #'                                               retainKeys = FALSE,
 #'                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
+#'}
 
 DDharmonize_validate_PopCounts <- function(locid,
                                            times,

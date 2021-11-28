@@ -17,6 +17,8 @@ Reconcile \code{Totals}, in cases where reported values are different from calcu
 If the computed total is greater than reported total, then replace reported with computed. If computed is less than reported, then add difference to "Unknown" age
 }
 \examples{
+\dontrun{
 df <- vitals_std_full_sample
 df <- dd_validate_totals_over_age(df)
+}
 }

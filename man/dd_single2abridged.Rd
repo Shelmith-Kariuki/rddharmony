@@ -16,5 +16,7 @@ A dataset containing 5-year age groups generated from single years of age
 Creates 5-year age groups based on single years of age data.
 }
 \examples{
+\dontrun{
 df <- dd_single2abridged(vitals_abr_cpl2)
+}
 }

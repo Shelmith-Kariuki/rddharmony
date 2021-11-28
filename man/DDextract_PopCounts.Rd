@@ -33,10 +33,12 @@ A dataset showing population counts for each location, process, year, sex and ag
 Extract population counts by age and sex for a given country and time period can choose process = "census", "estimate", or "register"
 }
 \examples{
+\dontrun{
 dd_extract <- DDextract_PopCounts(404, #Kenya
                                    process = c("census","estimate","register"),
                                    1950,
                                    2050,
                                    DataSourceShortName = NULL,
                                    DataSourceYear = NULL)
+}
 }

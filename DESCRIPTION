@@ -21,7 +21,8 @@ Imports:
     purrr,
     assertthat,
     zoo,
-    icons
+    icons,
+    kableExtra
 Suggests: 
     rmarkdown,
     knitr,

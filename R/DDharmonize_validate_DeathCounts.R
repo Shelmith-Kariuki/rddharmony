@@ -25,6 +25,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' kenya_df <- DDharmonize_validate_DeathCounts(404,
 #'                                               c(1950,2020),
 #'                                               process = c("census", "vr"),
@@ -33,6 +34,7 @@
 #'                                               DataSourceYear = NULL,
 #'                                               retainKeys = FALSE,
 #'                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
+#' }
 DDharmonize_validate_DeathCounts <- function(locid,
                                              times,
                                              process = c("census", "vr"),

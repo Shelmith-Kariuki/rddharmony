@@ -18,7 +18,7 @@ utils::globalVariables(c("AgeSpan", "AgeStart",#dd_oag_agestart
                          "LocName", "DataProcess", "StatisticalConceptName", "DataReliabilityName",
                          "series", "id_sex", "IndicatorName", "five_year", "SexName", "TimeMid",
                          "TimeEnd", "non_standard","IndicatorID", "todrop", "total_159", "total_170",
-                         "oag", "tot_without_oag", "tot_reported", #DDharmonize_validate_BirthCounts
+                         "oag", "tot_without_oag", "tot_reported","TimeStart", #DDharmonize_validate_BirthCounts
                         "n_id", "max_length_id", "majority_id","majority_idname", "max_agestart", #DDharmonize_validate_DeathCounts
                         ".", "present_tcs", "eq", "serial_no", #dd_append_tcs_cas
                         "X1", "X2", #dd_validate_totals_over_sex

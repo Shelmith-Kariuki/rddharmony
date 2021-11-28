@@ -11,7 +11,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- data.frame()
+#' }
 dd_extract_single <- function(data){
   data.out <- data %>%
     dplyr::filter(AgeSpan == 1 )

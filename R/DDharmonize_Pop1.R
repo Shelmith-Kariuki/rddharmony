@@ -11,7 +11,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- data.frame()
+#' }
 DDharmonize_Pop1 <- function (indata) {
 
     ##1. Create an object containing population counts by single year of age

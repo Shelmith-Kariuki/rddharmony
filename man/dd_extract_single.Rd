@@ -16,5 +16,7 @@ A dataset with single-year of age records only
 Extract records that refer to single-year of age. Sometimes a series identified as abridged in DemoData includes records by single year of age We extract these for use on a single year series
 }
 \examples{
+\dontrun{
 df <- data.frame()
+}
 }

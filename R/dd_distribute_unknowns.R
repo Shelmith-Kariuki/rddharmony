@@ -12,9 +12,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- vitals_std_valid_sample
 #' df <- dd_distribute_unknowns(df)
-#'
+#'}
 dd_distribute_unknowns <- function(data){
 
   out.data <- NULL

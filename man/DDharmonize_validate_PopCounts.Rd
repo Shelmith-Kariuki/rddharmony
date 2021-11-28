@@ -41,6 +41,7 @@ identifying full series, selecting preferred series, validating totals and by se
 including key fields in the function output.
 }
 \examples{
+\dontrun{
 sweden_df <- DDharmonize_validate_PopCounts(locid = 752,
                                               times = c(1950,2020),
                                               process = c("census", "estimate", "register"),
@@ -49,4 +50,5 @@ sweden_df <- DDharmonize_validate_PopCounts(locid = 752,
                                               DataSourceYear = NULL,
                                               retainKeys = FALSE,
                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
+}
 }

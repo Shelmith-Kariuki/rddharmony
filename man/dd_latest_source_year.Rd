@@ -21,7 +21,8 @@ You can run \code{getAnywhere(dd_latest_source_year)} to view the definition of 
 \examples{
 \dontrun{
 df <- latest_source_year_df \%>\%
-select(IndicatorID, IndicatorName, LocID, LocName,DataSourceYear, TimeLabel, AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) \%>\%
+select(IndicatorID, IndicatorName, LocID, LocName,DataSourceYear, TimeLabel,
+AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) \%>\%
 arrange(TimeLabel)
 
 df <- dd_latest_source_year(df)

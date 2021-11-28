@@ -16,6 +16,8 @@ A dataset with only one id per country and year
 Ranking id; For each country- year, we rank the available ids for counts of vital events
 }
 \examples{
+\dontrun{
 df <- vitals_std_valid_sample2
 df <- dd_rank_id_vitals(df)
+}
 }

@@ -16,5 +16,7 @@ Creates a data frame with all of the standard age groups we would expect for abr
 You can run \code{getAnywhere(std_age_function)} to view the definition of this function.
 }
 \examples{
+\dontrun{
 std_ages <- std_age_function()
+}
 }

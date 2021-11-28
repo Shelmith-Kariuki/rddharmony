@@ -1,6 +1,11 @@
+#' @title
 #' dd_oag2closed
 #'
+#' @description
 #' Compute associated closed age group values from multiple open-age groups
+#'
+#' @details
+#' You can run `getAnywhere(dd_oag2closed)` to view the definition of this function.
 #'
 #' @param data The data to be harmonized
 #'

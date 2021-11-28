@@ -15,9 +15,15 @@ dd_age_standard(data, abridged = TRUE)
 The DemoData dataset with standard age groups appended to it.
 }
 \description{
-Add standard age groups in the dataset
+Adds standard age groups (the result of \code{std_age_function()}) in the dataset
+}
+\details{
+Performs a \code{full_join()} operation between the standard age groups dataset (the result of \code{std_age_function()}) and the data to be harmonized,
+using \code{AgeStart},\code{AgeEnd},\code{AgeLabel},\code{AgeSpan} as keys. You can run \code{getAnywhere(dd_age_standard)} to view the definition of this function.
 }
 \examples{
+\dontrun{
 df <- firstages_compute_births_df
 df <- dd_age_standard(df)
+}
 }

@@ -1,11 +1,17 @@
+#' @title
 #' dd_oag_compute
 #'
+#' @description
 #' Compute data values for the open age group needed to close the series
+#'
+#' @details
+#' You can read more about this function on \href{https://shelmith-kariuki.github.io/rddharmony/dd_oag_compute.html}{this vignette} .
 #'
 #' @param data The data to be harmonized
 #' @param age_span The range of the age label e.g the age span of the age label 10-14 is 5
 #'
 #' @import dplyr
+#' @import purrr
 #' @importFrom magrittr %>%
 #'
 #' @return A dataset with plausible closing age groups and their data values
@@ -13,8 +19,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- oag_compute_df
 #' df <- dd_oag_compute(df)
+#' }
 
 dd_oag_compute  <- function(data, age_span = c(1, 5)){
 

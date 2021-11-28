@@ -12,8 +12,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- vitals_std_valid_sample2
 #' df <- dd_rank_id_vitals(df)
+#' }
 
 
 dd_rank_id_vitals <- function(indata){

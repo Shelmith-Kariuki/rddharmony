@@ -12,13 +12,14 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' dd_extract <- DDextract_PopCounts(404, #Kenya
 #'                                    process = c("census","estimate","register"),
 #'                                    1950,
 #'                                    2050,
 #'                                    DataSourceShortName = NULL,
 #'                                    DataSourceYear = NULL)
-#
+#'}
 
 
 DDextract_PopCounts <- function(locid,

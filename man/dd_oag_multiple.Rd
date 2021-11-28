@@ -13,8 +13,14 @@ dd_oag_multiple(data)
 \code{TRUE/FALSE}
 }
 \description{
-Check whether the series has more than one open age group
+Checks whether the series has more than one open age group.
+}
+\details{
+An open age group is identified as one where the \code{AgeSpan} == -1 and \code{AgeStart} != 0.
+You can run \code{getAnywhere(dd_oag_multiple)} to view the definition of this function.
 }
 \examples{
+\dontrun{
 dd_oag_multiple(oag_multiple_df)
+}
 }

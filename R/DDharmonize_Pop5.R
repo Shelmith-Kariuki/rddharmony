@@ -12,7 +12,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- data.frame()
+#' }
 
 DDharmonize_Pop5 <- function (indata) {
 

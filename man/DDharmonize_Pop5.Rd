@@ -16,5 +16,7 @@ A data frame that contains standard abridged age groups 0, 1-4, 0-4, 5-9, 10-14 
 This wrapper takes Population5 indicators from DemoData and Standardizes/harmonizes by age group.
 }
 \examples{
+\dontrun{
 df <- data.frame()
+}
 }

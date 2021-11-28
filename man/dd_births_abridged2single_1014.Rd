@@ -18,6 +18,8 @@ A dataset with ages 10-14 distributed across single ages
 Distribute births to ages 10-14 across single ages. Arbitrary distribution of births across ages 10-14 for now. Need to update with Kirill's regression
 }
 \examples{
+\dontrun{
 df <- vitals1_std
 df <- dd_births_abridged2single_1014(df, 4)
+}
 }

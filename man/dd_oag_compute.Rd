@@ -17,7 +17,12 @@ A dataset with plausible closing age groups and their data values
 \description{
 Compute data values for the open age group needed to close the series
 }
+\details{
+You can read more about this function on \href{https://shelmith-kariuki.github.io/rddharmony/dd_oag_compute.html}{this vignette} .
+}
 \examples{
+\dontrun{
 df <- oag_compute_df
 df <- dd_oag_compute(df)
+}
 }

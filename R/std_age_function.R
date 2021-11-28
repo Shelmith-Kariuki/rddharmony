@@ -15,7 +15,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' std_ages <- std_age_function()
+#' }
 
 std_age_function <- function() {
 

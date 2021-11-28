@@ -15,3 +15,6 @@ A dataset with closed age groups derived from multiple open age groups.
 \description{
 Compute associated closed age group values from multiple open-age groups
 }
+\details{
+You can run \code{getAnywhere(dd_oag2closed)} to view the definition of this function.
+}

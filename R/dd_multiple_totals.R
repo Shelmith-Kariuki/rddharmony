@@ -25,4 +25,6 @@ data <- data %>%
                                  AgeLabel=="Total" & any(DataValue == calc_total) & DataValue != calc_total, "drop","")) %>%
   filter(total_todrop != "drop") %>%
   select(-calc_total, -total_todrop)
+
+return(data)
 }

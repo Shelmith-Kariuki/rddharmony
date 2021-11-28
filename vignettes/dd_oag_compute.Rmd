@@ -1,0 +1,240 @@
+---
+title: "Computing data values for the open age group needed to close a series"
+output: rmarkdown::html_vignette
+author: ""
+description: >
+ This function defines how one can calculate the data value for a open age group needed to close the series, in cases where it does not exist.
+vignette: >
+  %\VignetteIndexEntry{Computing data values for the open age group needed to close a series}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+```
+
+The function used to carry out this process is defined as follows:
+
+> dd_oag_compute(data, age_span = c(1, 5))[^1]
+
+To show how this function works, we shall use the `oag_compute_df` dataset that is embedded on this package. This is an example of an abridged series so `age_span == 5`. 
+
+```{r setup}
+## Load the packages required
+library(rddharmony)
+library(kableExtra)
+library(dplyr)
+library(purrr)
+
+## Create a function to be used to generate the table output
+tab_output <- function(tab){
+kable(tab, booktabs=TRUE, align = "c",table.envir = "capctable", longtable = TRUE) %>%
+  kable_styling() %>%
+  row_spec(0, bold = T, color = "white", background = "#6ebed8") %>% 
+  kable_paper(html_font = "helvetica") %>%
+  scroll_box(width = "100%", height = "300px")
+  
+}
+
+
+```
+
+```{r}
+oag_compute_df %>% tab_output()
+```
+
+
+From the data, the open age needed to close this series is present (50+ with a data value of 27), so we will drop it for now and show how it can be re-calculated.
+
+```{r}
+new_df <- oag_compute_df %>% 
+  filter(!AgeLabel %in% grep("\\+", AgeLabel, value = TRUE, ignore.case = TRUE))
+
+new_df %>% tab_output()
+
+
+```
+
+
+We start by defining the standard age groups using the `std_age_function()`[^2] function. 
+
+
+```{r}
+std_ages <- std_age_function()
+
+std_ages %>% tab_output()
+
+```
+
+
+Since the data we are dealing with is an abridged series, we subset the standard age groups to only contain standard *abridged* age groups, and drop the variables that specify whether the records are abridged or complete.
+
+
+```{r}
+age_std <- std_ages %>%
+             filter(abridged == TRUE) %>%
+             select(-abridged, -complete)
+
+age_std %>% tab_output()
+
+```
+
+
+We then subset the data in question to remove any missing data values
+
+
+```{r}
+age_span = 5
+df <- new_df %>%
+    dplyr::filter(!is.na(DataValue) & AgeSpan %in% c(age_span, -1, -2))
+
+df %>% tab_output()
+
+```
+
+
+We later identify the start age of the open age group needed to close the series using the `dd_oag_agestart()`[^3] function
+
+
+```{r}
+oag_start <- df %>% dd_oag_agestart
+oag_start
+```
+
+From there, we list the possible standard open age groups that can be computed from the standard age groups.
+
+
+```{r}
+  if (!is_empty(oag_start)) {
+    age_std_open <- age_std %>%
+      dplyr::filter(AgeSpan < 0 & AgeStart <= oag_start & !(AgeStart %in% c(-2,0)))
+  } else {
+    age_std_open <- NULL
+  }
+age_std_open %>% tab_output()
+```
+
+
+We proceed to look for an open age group record on input file that closes out the series. If an open age group already exists, the number of records for this output should be greater than 0 but since we already dropped the age group needed to close the series at the beginning for demonstration purposes, the result of this will be NULL. 
+
+
+```{r}
+oag_indata <- df %>%
+      dplyr::filter(AgeLabel == paste0(oag_start,"+")) %>%
+      select(AgeStart, AgeEnd, AgeSpan, AgeLabel, DataValue)
+nrow(oag_indata)
+
+## check if an open age group already exists
+oag_check <- nrow(oag_indata) > 0
+oag_check
+```
+
+
+We then check if there is a `Total` age label present in the data, and whether it is valid i.e is it an actual total or is it different from the sum of the data values of the age labels present in the data?
+
+
+```{r}
+# check if there is a "Total" age label in the data
+total_check <- "Total" %in% df$AgeLabel
+
+# and whether it is valid
+if (total_check) {
+ total_value <- df$DataValue[df$AgeLabel=="Total"]
+ total_value_valid <- total_value >= suppressWarnings(sum(df$DataValue[df$AgeSpan == age_span]))
+} else 
+{ total_value_valid <- FALSE 
+}
+total_value_valid
+```
+
+We also check if there is an unknown age label that exists in the data, and if it does, we extract its value, if it does not, we set the value to 0
+
+
+```{r}
+unknown_check <- "Unknown" %in% df$AgeLabel
+unknown_check
+unknown_value <- ifelse(unknown_check, df$DataValue[df$AgeLabel=="Unknown"], 0)
+unknown_value
+```
+In this case, an unknown exists and its data value is 1.
+
+If an open age group record already exists, we use this to compute other open age groups. 
+
+```{r}
+    if (oag_check) {
+
+      data.out <- NULL
+      for (i in 1:nrow(age_std_open)) {
+        df.out <- df %>%
+          dplyr::filter((AgeStart >= age_std_open$AgeStart[i] & AgeSpan > 0) | AgeLabel==paste0(oag_start,"+")) %>%
+          select(AgeStart,AgeEnd,AgeSpan,AgeLabel,DataValue) %>%
+          summarise(DataValue = sum(DataValue)) %>%
+          mutate(AgeStart = age_std_open$AgeStart[i],
+                 AgeEnd   = age_std_open$AgeEnd[i],
+                 AgeSpan  = age_std_open$AgeSpan[i],
+                 AgeLabel = age_std_open$AgeLabel[i],
+                 AgeSort  = age_std_open$AgeSort[i])
+        data.out <- rbind(data.out,df.out)
+      }
+
+    }
+```
+ 
+But in our case, we know that the open age does not exist in the series since we already dropped it at the beginning, but there is a total, so we use this to compute the possible oag values.
+ 
+```{r}
+    # if the needed open age group is not on the series, but there is a total, then use this to compute oag values
+    if (!(oag_check) & total_check & total_value_valid) {
+
+      data.out <- NULL
+      for (i in 1:nrow(age_std_open)) {
+        df.out <- df %>%
+          dplyr::filter(AgeStart < age_std_open$AgeStart[i] & AgeSpan > 0) %>%
+          select(AgeStart,AgeEnd,AgeSpan,AgeLabel,DataValue) %>%
+          summarise(DataValue = total_value - unknown_value - sum(DataValue)) %>%
+          mutate(AgeStart = age_std_open$AgeStart[i],
+                 AgeEnd   = age_std_open$AgeEnd[i],
+                 AgeSpan  = age_std_open$AgeSpan[i],
+                 AgeLabel = age_std_open$AgeLabel[i],
+                 AgeSort  = age_std_open$AgeSort[i])
+        data.out <- rbind(data.out,df.out)
+      }
+    }
+
+data.out %>% 
+  relocate(DataValue , .after = last_col()) %>% 
+  tab_output()
+```
+ 
+
+As shown in DDharmonize_Vitals5 [^4], the result of this function is integrated back into the data to end up with only one open age group for the series. This is done by picking the `AgeLabel` in the output above whose `AgeStart` corresponds to the open age group needed to close the series, in this case 50. 
+
+
+```{r}
+fin_df <- df %>%
+        bind_rows(data.out[!(data.out$AgeLabel %in% df$AgeLabel) &
+                              data.out$AgeStart == oag_start,]) %>%
+       arrange(AgeSort)
+
+fin_df %>% arrange(AgeLabel) %>%  tab_output()
+```
+
+
+From the data above, the open age group needed to close the series is "50+" with a data value of 27, similar to the record that we dropped in the beginning.
+
+NB: if neither an open age group nor a `Total` value exists, then we don't compute open age group values.
+
+
+[^1]: [dd_oag_compute](https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_compute.html)
+
+[^2]: [std_age_function](https://shelmith-kariuki.github.io/rddharmony/reference/std_age_function.html)
+
+[^3]: [dd_oag_agestart](https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_agestart.html)
+
+[^4]: [DDharmonize_Vitals5](https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals5.html)

@@ -1,6 +1,12 @@
+#' @title
 #' dd_age_standard
 #'
-#' Add standard age groups in the dataset
+#' @description
+#' Adds standard age groups (the result of `std_age_function()`) in the dataset
+#'
+#' @details
+#' Performs a `full_join()` operation between the standard age groups dataset (the result of `std_age_function()`) and the data to be harmonized,
+#' using `AgeStart`,`AgeEnd`,`AgeLabel`,`AgeSpan` as keys. You can run `getAnywhere(dd_age_standard)` to view the definition of this function.
 #'
 #' @param data The data to be harmonized
 #' @param abridged `TRUE/FALSE`
@@ -13,8 +19,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- firstages_compute_births_df
 #' df <- dd_age_standard(df)
+#' }
 
 dd_age_standard<- function(data, abridged = TRUE){
 

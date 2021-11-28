@@ -1,6 +1,12 @@
+#' @title
 #' dd_oag_multiple
 #'
-#' Check whether the series has more than one open age group
+#' @description
+#' Checks whether the series has more than one open age group.
+#'
+#' @details
+#' An open age group is identified as one where the `AgeSpan` == -1 and `AgeStart` != 0.
+#' You can run `getAnywhere(dd_oag_multiple)` to view the definition of this function.
 #'
 #' @param data The data to be harmonized
 #'
@@ -9,7 +15,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' dd_oag_multiple(oag_multiple_df)
+#' }
 
 dd_oag_multiple <- function(data){
 

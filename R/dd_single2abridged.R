@@ -12,7 +12,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df <- dd_single2abridged(vitals_abr_cpl2)
+#' }
 
 dd_single2abridged  <- function(data){ #input should be a dataset with single year age labels
 

@@ -41,6 +41,7 @@ identifying full series, selecting preferred series, validating totals by age an
 including key fields in the function output.
 }
 \examples{
+\dontrun{
 kenya_df <- DDharmonize_validate_DeathCounts(404,
                                               c(1950,2020),
                                               process = c("census", "vr"),
@@ -49,4 +50,5 @@ kenya_df <- DDharmonize_validate_DeathCounts(404,
                                               DataSourceYear = NULL,
                                               retainKeys = FALSE,
                                               server = "https://popdiv.dfs.un.org/DemoData/api/")
+}
 }

@@ -16,7 +16,8 @@ A dataset without unknowns
 Distribute Unknowns over age
 }
 \examples{
+\dontrun{
 df <- vitals_std_valid_sample
 df <- dd_distribute_unknowns(df)
-
+}
 }

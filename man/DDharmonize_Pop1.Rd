@@ -16,5 +16,7 @@ A data frame that contains data by single year of age up to the open age group
 This wrapper takes population1 indicators from DemoData and Standardizes/harmonizes by age group
 }
 \examples{
+\dontrun{
 df <- data.frame()
+}
 }

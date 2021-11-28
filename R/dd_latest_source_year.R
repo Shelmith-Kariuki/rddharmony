@@ -18,7 +18,8 @@
 #' @examples
 #' \dontrun{
 #' df <- latest_source_year_df %>%
-#' select(IndicatorID, IndicatorName, LocID, LocName,DataSourceYear, TimeLabel, AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) %>%
+#' select(IndicatorID, IndicatorName, LocID, LocName,DataSourceYear, TimeLabel,
+#' AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) %>%
 #' arrange(TimeLabel)
 #'
 #' df <- dd_latest_source_year(df)

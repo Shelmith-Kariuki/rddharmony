@@ -13,8 +13,10 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' df_abr <- dd_fillzeros_births(data = vitals_abr_cpl1_f0, abridged = TRUE)
 #' df_cpl <- dd_fillzeros_births(data = vitals_abr_cpl2_f0, abridged = FALSE)
+#' }
 
 dd_fillzeros_births <- function(data, abridged = TRUE){
 

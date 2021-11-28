@@ -2,9 +2,11 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
+  DDharmonize_Vitals5: DDharmonize_Vitals5.html
   DDharmonize_validate_BirthCounts: DDharmonize_validate_BirthCounts.html
   DDharmonize_validate_DeathCounts: DDharmonize_validate_DeathCounts.html
   DDharmonize_validate_PopCounts: DDharmonize_validate_PopCounts.html
   Harmonization_Workflow: Harmonization_Workflow.html
-last_built: 2021-11-22T13:16Z
+  dd_oag_compute: dd_oag_compute.html
+last_built: 2021-11-28T12:43Z
 
