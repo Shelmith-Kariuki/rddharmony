@@ -19,3 +19,6 @@ A dataset with reconciled abridged and complete series i.e. abridged reconciled 
 \description{
 This wrapper takes the output of harmonization and reconciles abridged and complete series
 }
+\details{
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_AbridgedAndComplete.html}{DDharmonize_AbridgedAndComplete vignette} for more details about this function.
+}

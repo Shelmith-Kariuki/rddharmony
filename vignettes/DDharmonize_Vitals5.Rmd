@@ -1,11 +1,11 @@
 ---
-title: "DDharmonize Vitals5"
+title: "Harmonizing five-year vital counts"
 output: rmarkdown::html_vignette
 author: ""
 description: >
  This wrapper takes five-year vital counts from census and registers from the UNDP database and standardizes/harmonizes them.
 vignette: >
-  %\VignetteIndexEntry{DDharmonize Vitals5}
+  %\VignetteIndexEntry{Harmonizing five-year vital counts}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

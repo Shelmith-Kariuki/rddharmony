@@ -18,7 +18,7 @@ A data frame that contains counts for five-year age groups and closed by an open
 This wrapper takes five-year vital counts from census and registers from the UNDP database and standardizes/harmonizes them.
 }
 \details{
-See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/Dharmonize_Vitals5.html}{DDharmonize_Vitals5 vignette} for more details about this function.
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_Vitals5.html}{"Harmonizing five-year vital counts" vignette} for more details about this function.
 }
 \examples{
 \dontrun{

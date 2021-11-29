@@ -1,0 +1,115 @@
+---
+title: "Validating totals over age"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Validating totals over age}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+```
+
+The purpose of this function is to reconcile `Totals`, in cases where reported values are different from calculated values, after having standardized age series. If the computed total is greater than reported total, the reported total is replaced with the computed total. If computed is less than reported, the difference is added to "Unknown" age
+
+This function is defined as follows:
+
+> dd_validate_totals_over_age(data) [^1]
+
+To show how it works, we shall use the `vitals_std_full_sample` dataset that is embedded on this package. This dataset represents a scenario where we have both abridged and complete series for the same unique id. 
+
+```{r setup}
+## Load the packages required
+library(rddharmony)
+library(kableExtra)
+library(dplyr)
+library(purrr)
+
+## Create a function to be used to generate the table output
+tab_output <- function(tab) {
+  kable(tab, booktabs = TRUE, align = "c", table.envir = "capctable", longtable = TRUE, row.names = FALSE) %>%
+    kable_styling() %>%
+    row_spec(0, bold = T, color = "white", background = "#6ebed8") %>%
+    kable_paper(html_font = "helvetica") %>%
+    scroll_box(width = "100%", height = "300px")
+}
+```
+
+```{r}
+data <- vitals_std_full_sample %>% 
+       select(starts_with("Age"), SexID, DataValue, abridged, complete)
+data %>% tab_output()
+```
+
+This process begins by subsetting the data to have abridged records for each particular sex id. The reported totals are extracted and actual totals calculated. If the reported and actual totals exist and if the computed total is greater than reported total, then the reported total is replaced with the computed. If the computed total is less than the reported, then the difference is added to the "Unknown" age label. 
+
+```{r}
+sex <- 3 
+
+    ## subset the data to have abridged records for each particular sex id
+    df_abr <- data %>%
+      dplyr::filter(SexID == sex & abridged == TRUE)
+
+    ## extract the reported totals and the actual totals
+    total_reported_abr <- df_abr$DataValue[df_abr$AgeLabel == "Total"]
+    total_computed_abr <- sum(df_abr$DataValue[df_abr$AgeSpan %in% c(-1,-2, 5) & df_abr$AgeLabel != "Total"])
+
+
+    ## if the reported and actual totals exist...
+    if (!is_empty(total_reported_abr) & !is_empty(total_computed_abr)) {
+
+      # if computed is greater than reported, then replace reported with computed
+      diff <- total_computed_abr - total_reported_abr
+      if (diff > 0 ) {
+        df_abr$DataValue[df_abr$AgeLabel == "Total"] <- total_computed_abr
+      }
+      # if computed is less than reported, then add difference to "Unknown" age
+      if (diff < 0 ) {
+        df_abr$DataValue[df_abr$AgeLabel == "Unknown"] <- df_abr$DataValue[df_abr$AgeLabel == "Unknown"] +
+          (total_reported_abr-total_computed_abr)
+      }
+
+    }
+```
+
+The same process is repeated for complete records
+
+```{r}
+    ## subset the data to have complete records for each particular sex id
+    df_cpl <- data %>%
+      dplyr::filter(SexID == sex & complete == TRUE)
+
+    total_reported_cpl <- df_cpl$DataValue[df_cpl$AgeLabel == "Total"]
+    total_computed_cpl <- sum(df_cpl$DataValue[df_cpl$AgeLabel != "Total"])
+
+    if (!is_empty(total_reported_cpl) & !is_empty(total_computed_cpl)) {
+
+      # if computed is greater than reported, then replace reported with computed
+      diff <- total_computed_cpl - total_reported_cpl
+      if (diff > 0 ) {
+        df_cpl$DataValue[df_cpl$AgeLabel == "Total"] <- total_computed_cpl
+      }
+      # if computed is less than reported, then add difference to "Unknown" age
+      if (diff < 0 ) {
+        df_cpl$DataValue[df_cpl$AgeLabel == "Unknown"] <- df_cpl$DataValue[df_cpl$AgeLabel == "Unknown"] +
+          (total_reported_cpl-total_computed_cpl)
+      }
+
+    }
+```
+
+Eventually, both datasets are appended to form the final output
+
+```{r}
+out.data <- NULL
+out.data <- rbind(out.data, df_abr, df_cpl)
+out.data %>% tab_output()
+```
+
+[^1]: [dd_validate_totals_over_age](https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_age.html)

@@ -1,7 +1,12 @@
+#' @title
 #' dd_validate_totals_over_age
 #'
+#' @description
 #' Reconcile `Totals`, in cases where reported values are different from calculated values, after having standardized age series.
 #' If the computed total is greater than reported total, then replace reported with computed. If computed is less than reported, then add difference to "Unknown" age
+#'
+#' @details
+#'See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/dd_validate_totals_over_age.html}{"Validating totals over age" vignette} for more details about this function.
 #'
 #' @param data The data to be harmonized
 #'
@@ -50,6 +55,8 @@ dd_validate_totals_over_age <- function(data){
       }
 
     }
+
+    ## subset the data to have complete records for each particular sex id
 
     df_cpl <- data %>%
       dplyr::filter(SexID == sex & complete == TRUE)

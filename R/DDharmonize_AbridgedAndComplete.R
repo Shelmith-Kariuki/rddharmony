@@ -1,6 +1,11 @@
+#' @title
 #' DDharmonize_AbridgedAndComplete
 #'
+#' @description
 #' This wrapper takes the output of harmonization and reconciles abridged and complete series
+#'
+#' @details
+#' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_AbridgedAndComplete.html}{DDharmonize_AbridgedAndComplete vignette} for more details about this function.
 #'
 #' @param data_abr data containing abridged series age labels
 #' @param data_cpl_from_abr data containing complete series derived from abridged series
