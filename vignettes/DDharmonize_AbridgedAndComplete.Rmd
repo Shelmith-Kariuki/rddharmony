@@ -1,0 +1,108 @@
+---
+title: "Reconciling abridged and complete series"
+output: rmarkdown::html_vignette
+description: >
+  This function reconciles abridged and complete series. 
+vignette: >
+  %\VignetteIndexEntry{Reconciling abridged and complete series}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+```
+
+This function is implemented in cases where we have both abridged and complete series. It is defined as follows:
+
+> DDharmonize_AbridgedAndComplete(data_abr, data_cpl_from_abr, data_cpl) [^1]
+
+To show how it works, we shall use the `data_abr` and `data_cpl` datasets that are embedded on this package. For this vignette, we shall assume that `data_cpl_from_abr == NULL` i.e we do not have complete records obtained from abridged series. This is very common in the deaths data. 
+
+```{r setup}
+## Load the packages required
+library(rddharmony)
+library(kableExtra)
+library(dplyr)
+library(purrr)
+
+## Create a function to be used to generate the table output
+tab_output <- function(tab) {
+  kable(tab, booktabs = TRUE, align = "c", table.envir = "capctable", longtable = TRUE, row.names = FALSE) %>%
+    kable_styling() %>%
+    row_spec(0, bold = T, color = "white", background = "#6ebed8") %>%
+    kable_paper(html_font = "helvetica") %>%
+    scroll_box(width = "100%", height = "300px")
+}
+```
+
+The abridged data consists of 5-year age groups ranging from "10-14" to "50+" with a total value of 114870 
+
+```{r}
+data_abr %>%
+  select(-note) %>%
+  tab_output()
+```
+
+... and the complete series contains single years of age ranging from "10" to "50+" with a total value of 114870 as well.
+
+```{r}
+data_cpl %>%
+  select(-note) %>%
+  tab_output()
+data_cpl_from_abr <- NULL
+```
+
+This function should be implemented on each of the Sex Ids but in the current data, we will only be handling SexId == 3 (Both sexes). 
+
+```{r}
+sex <- 3
+```
+
+The first step in this function involves creating flags to check whether each of the datasets listed in the function arguments is available. 
+
+```{r}
+
+has_abr <- nrow(data_abr[!is.na(data_abr$DataValue) & data_abr$SexID == sex, ]) > 0
+has_abr <- ifelse(is_empty(has_abr), FALSE, has_abr)
+has_cpl_from_abr <- nrow(data_cpl_from_abr[!is.na(data_cpl_from_abr$DataValue) & data_cpl_from_abr$SexID == sex, ]) > 0
+has_cpl_from_abr <- ifelse(is_empty(has_cpl_from_abr), FALSE, has_cpl_from_abr)
+has_cpl <- nrow(data_cpl[!is.na(data_cpl$DataValue) & data_cpl$SexID == sex, ]) > 0
+has_cpl <- ifelse(is_empty(has_cpl), FALSE, has_cpl)
+
+cat("has_abr: ", has_abr, "\n")
+cat("has_cpl: ", has_cpl, "\n")
+cat("has_cpl_from_abr: ", has_cpl_from_abr, "\n")
+```
+
+If the abridged series exists, extract the data value of AgeLabel == "Total" for each of the sex ids.
+
+```{r}
+if (has_abr) {
+  df_abr <- data_abr %>%
+    dplyr::filter(SexID == sex) %>%
+    select(-note, -SexID)
+  total_abr <- df_abr$DataValue[df_abr$AgeLabel == "Total"]
+} else {
+  df_abr <- NULL
+}
+total_abr
+```
+
+If complete records obtained from abridged series exist, extract them for each of the sex ids. We know that this does not exist so the `df_cpl_from_abr` will be NULL.
+
+```{r}
+if (has_cpl_from_abr) {
+  df_cpl_from_abr <- data_cpl_from_abr %>%
+    dplyr::filter(SexID == sex) %>%
+    select(-note, -SexID)
+} else {
+  df_cpl_from_abr <- NULL
+}
+```
