@@ -36,13 +36,13 @@ The birth records are grouped into two types of data:
 
 ## Function definition
 
-```{r, eval=FALSE}
+```{r }
 
-clean_df <- DDharmonize_validate_BirthCounts(locid = 752,
-                                             times = c(2010, 2011),
-                                             process = c("census", "vr"),
-                                             return_unique_ref_period = TRUE,
-                                             retainKeys = FALSE)
+# clean_df <- DDharmonize_validate_BirthCounts(locid = 752,
+#                                              times = c(2010, 2011),
+#                                              process = c("census", "vr"),
+#                                              return_unique_ref_period = TRUE,
+#                                              retainKeys = FALSE)
 
 ```
 
@@ -56,10 +56,10 @@ You can also run the function `check_locid(insert locid here)` to check whether 
 
 ```{r checking validity of location ids}
 ## valid id
-check_locid(752)
+## check_locid(752)
 
 ## invalid id
-check_locid(2021)
+## check_locid(2021)
 ```
 
 

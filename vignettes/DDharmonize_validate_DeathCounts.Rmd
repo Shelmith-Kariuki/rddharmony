@@ -35,13 +35,13 @@ The death records are grouped into two types of data:
 
 ## Function definition
 
-```{r, eval=FALSE}
+```{r}
 
-clean_df <- DDharmonize_validate_DeathCounts(locid = 404,
-                                             times = c(1950, 2000),
-                                             process = c("census", "vr"),
-                                             return_unique_ref_period = TRUE,
-                                             retainKeys = FALSE)
+# clean_df <- DDharmonize_validate_DeathCounts(locid = 404,
+#                                              times = c(1950, 2000),
+#                                              process = c("census", "vr"),
+#                                              return_unique_ref_period = TRUE,
+#                                              retainKeys = FALSE)
 ```
 
 ## Description of the function arguments
@@ -53,10 +53,10 @@ You can also run the function `check_locid(insert locid here)` to check whether 
 
 ```{r checking validity of location ids}
 ## valid id
-check_locid(404)
+## check_locid(404)
 
 ## invalid id
-check_locid(202178)
+## check_locid(202178)
 ```
 
 
