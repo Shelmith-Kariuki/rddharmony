@@ -165,7 +165,7 @@ total_match
 ```
 
 If they do, we proceed to reconcile abridged series with records from complete. This step involves first appending the abridged series with the abridged records derived from complete series, but only for the age labels that do not exist in the former, to avoid duplication. Open age groups that do not close the series are dropped and all possible open age groups
-are computed [^4]. We again drop records for open age groups that do not close the series, check to see whether the series is full [^5] and eventually generate a note that alerts the user that the series is missing some data when the series is not full.
+are computed [^3]. We again drop records for open age groups that do not close the series, check to see whether the series is full [^4] and eventually generate a note that alerts the user that the series is missing some data when the series is not full.
 
 ```{r}
 if (total_match) {
@@ -310,8 +310,6 @@ outdata %>% tab_output()
 
 [^2]: [dd_single2abridged](https://shelmith-kariuki.github.io/rddharmony/reference/dd_single2abridged.html)
 
-[^3]: [dd_oag_agestart](https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_agestart.html)
+[^3]: [dd_oag_compute](https://shelmith-kariuki.github.io/rddharmony/articles/dd_oag_compute.html)
 
-[^4]: [dd_oag_compute](https://shelmith-kariuki.github.io/rddharmony/articles/dd_oag_compute.html)
-
-[^5]: [dd_series_isfull](https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html)
+[^4]: [dd_series_isfull](https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html)

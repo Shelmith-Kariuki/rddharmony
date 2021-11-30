@@ -18,12 +18,12 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(icons)
-download_fontawesome()
+library(rddharmony)
+
 
 ```
 
-## `r icons::fontawesome("rocket", style = "solid")` Introduction
+## Introduction
 
 `DDharmonize_validate_DeathCounts()` is a function that implements a work flow for death records extracted from vital registration databases and census. This work flow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location. See the [harmonization workflow](https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html) article for a detailed overview of this process.
 
@@ -33,10 +33,10 @@ The death records are grouped into two types of data:
 
 + Total deaths by sex
 
-## `r icons::fontawesome("cog", style = "solid")` Function definition
+## Function definition
 
-```{r}
-library(rddharmony)
+```{r, eval=FALSE}
+
 clean_df <- DDharmonize_validate_DeathCounts(locid = 404,
                                              times = c(1950, 2000),
                                              process = c("census", "vr"),
@@ -44,7 +44,7 @@ clean_df <- DDharmonize_validate_DeathCounts(locid = 404,
                                              retainKeys = FALSE)
 ```
 
-## `r icons::fontawesome("wrench", style = "solid")` Description of the function arguments
+## Description of the function arguments
 
 The function contains several arguments:
 
@@ -68,7 +68,7 @@ check_locid(202178)
 
 **`retainKeys`:** Specifies whether only a few (`retainKeys == FALSE`) or all (`retainKeys == TRUE`) variables should be retained in the output.
 
-## `r icons::fontawesome("table", style = "solid")` Description of the output variables
+## Description of the output variables
 
 The function returns clean data with 26 variables (when `retainKeys == TRUE`) which are defined below:
 

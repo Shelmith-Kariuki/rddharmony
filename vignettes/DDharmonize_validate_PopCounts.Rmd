@@ -17,19 +17,18 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(icons)
-download_fontawesome()
+library(rddharmony)
 
 ```
 
-## `r icons::fontawesome("rocket", style = "solid")` Introduction
+## Introduction
 
 `DDharmonize_validate_PopCounts()` is a function that implements a work flow for population data extracted from censuses, registers or estimation. This work flow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals and by sex and eventually producing clean and harmonised datasets for each location. See the [harmonization workflow](https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html) article for a detailed overview of this process.
 
-## `r icons::fontawesome("cog", style = "solid")` Function definition
+## Function definition
 
-```{r}
-library(rddharmony)
+```{r, eval=FALSE}
+
 clean_df <- DDharmonize_validate_PopCounts(locid = 533,
                                              times = c(2010, 2011),
                                              process = c("census", "estimate", "register"),
@@ -37,7 +36,7 @@ clean_df <- DDharmonize_validate_PopCounts(locid = 533,
                                              retainKeys = FALSE)
 ```
 
-## `r icons::fontawesome("wrench", style = "solid")` Description of the function arguments
+## Description of the function arguments
 
 The function contains several arguments:
 
@@ -61,7 +60,7 @@ check_locid(12345)
 
 **`retainKeys`:** Specifies whether only a few (`retainKeys == FALSE`) or all (`retainKeys == TRUE`) variables should be retained in the output.
 
-## `r icons::fontawesome("table", style = "solid")` Description of the output variables
+## Description of the output variables
 
 The function returns clean data with 26 variables (when `retainKeys == TRUE`) which are defined below:
 

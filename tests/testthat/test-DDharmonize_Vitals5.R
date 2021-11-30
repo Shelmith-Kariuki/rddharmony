@@ -1,5 +1,7 @@
 
-df <- vitals5_df
+df <- vitals5_df %>%
+  dplyr::filter(AgeSpan %in% c(-2, -1) | AgeSpan >=5)
+
 df <- DDharmonize_Vitals5(df, type = "births")
 
 test_that("the resulting data has an open age group that closes the series", {

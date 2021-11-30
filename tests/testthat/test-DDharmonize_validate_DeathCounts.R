@@ -5,7 +5,7 @@ require(dplyr)
 require(testthat)
 
 locid <- sample(get_locations()$PK_LocID, 1)
-# locid <-  156
+# locid <-  404
 clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
                                              times = c(1950, 2020),
                                              process = c("census", "vr"),
