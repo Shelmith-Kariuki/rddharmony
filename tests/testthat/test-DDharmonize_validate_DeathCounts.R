@@ -7,7 +7,7 @@ require(testthat)
 locid <- sample(get_locations()$PK_LocID, 1)
 # locid <-  404
 clean_df <- DDharmonize_validate_DeathCounts(locid = locid,
-                                             times = c(1950, 2020),
+                                             times = c(1950, 1960),
                                              process = c("census", "vr"),
                                              return_unique_ref_period = TRUE,
                                              DataSourceShortName = NULL,
