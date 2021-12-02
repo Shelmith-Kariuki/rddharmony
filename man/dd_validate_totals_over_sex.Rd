@@ -16,3 +16,6 @@ A dataset where Both sexes == Female + Male
 Check if Population counts by sex is equal to population counts for both sexes and adjust in case of any difference.
 Criteria: If Female Population + Male Population is different from the population for Both sexes, then Both sexes = Female + Male
 }
+\details{
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/dd_validate_totals_over_sex.html}{"Validating totals over sex" vignette} for more details about this function.
+}

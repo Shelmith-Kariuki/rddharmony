@@ -46,6 +46,9 @@ navbar:
         href: articles/DDharmonize_AbridgedAndComplete.html
       - text: Validating totals over age
         href: articles/dd_validate_totals_over_age.html
+      - text: Validating totals over sex
+        href: articles/dd_validate_totals_over_sex.html
+
     - text: "Functions"
       href: reference/index.html
   right:

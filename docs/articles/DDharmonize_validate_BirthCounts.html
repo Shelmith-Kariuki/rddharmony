@@ -82,6 +82,9 @@
     <li>
       <a href="../articles/dd_validate_totals_over_age.html">Validating totals over age</a>
     </li>
+    <li>
+      <a href="../articles/dd_validate_totals_over_sex.html">Validating totals over sex</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -134,11 +137,11 @@
 <a href="#function-definition" class="anchor"></a>Function definition</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">clean_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts</a></span><span class="op">(</span>locid <span class="op">=</span> <span class="fl">752</span>,
-                                             times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2010</span>, <span class="fl">2011</span><span class="op">)</span>,
-                                             process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"census"</span>, <span class="st">"vr"</span><span class="op">)</span>,
-                                             return_unique_ref_period <span class="op">=</span> <span class="cn">TRUE</span>,
-                                             retainKeys <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<span class="co"># clean_df &lt;- DDharmonize_validate_BirthCounts(locid = 752,</span>
+<span class="co">#                                              times = c(2010, 2011),</span>
+<span class="co">#                                              process = c("census", "vr"),</span>
+<span class="co">#                                              return_unique_ref_period = TRUE,</span>
+<span class="co">#                                              retainKeys = FALSE)</span></code></pre></div>
 </div>
 <div id="description-of-the-function-arguments" class="section level2">
 <h2 class="hasAnchor">
@@ -147,16 +150,10 @@
 <p><strong><code>locid</code>:</strong> This is the a numeric variable representing the location id of each of the locations. You can run <code>View(get_locations())</code> to get the list of plausible location ids. The ids are listed in the <code>PK_LocID</code> variable. You can also run the function <code>check_locid(insert locid here)</code> to check whether a location id is valid (part of the locations in the UNPD website). Running <code>check_locid(insert locid here)</code> with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run <code>View(get_locations())</code> in order to get a list of plausible location ids. See example below.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## valid id</span>
-<span class="fu"><a href="../reference/check_locid.html">check_locid</a></span><span class="op">(</span><span class="fl">752</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? </span>
-<span class="co">#&gt; [1] "752 is a valid location id. The location name is Sweden"</span>
+<span class="co">## check_locid(752)</span>
 
 <span class="co">## invalid id</span>
-<span class="fu"><a href="../reference/check_locid.html">check_locid</a></span><span class="op">(</span><span class="fl">2021</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations? </span>
-<span class="co">#&gt; [1] "2021 is not a valid location id. Please run View(get_locations()) to get a list of plausible location ids. They are listed in the `PK_LocID` variable"</span></code></pre></div>
+<span class="co">## check_locid(2021)</span></code></pre></div>
 <p><strong><code>times</code>:</strong> The period of the data to be extracted. You can extract one year data e.g <code>times = 2020</code> or a longer period of time e.g <code>times = c(1950, 2020)</code>.</p>
 <p><strong><code>process</code>:</strong> The process used to collect or to obtain the data i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.</p>
 <p><strong><code>return_unique_ref_period</code>:</strong> Specifies whether the data to be returned should contain one unique id (<code>return_unique_ref_period == TRUE</code>) or several ids (<code>return_unique_ref_period == FALSE</code>) per time label. ids are a unique identifier for each unique set of records based on <code>LocID</code>, <code>LocName</code>, <code>DataProcess</code>, <code>ReferencePeriod</code>, <code>DataSourceName</code>, <code>StatisticalConceptName</code>, <code>DataTypeName</code> and <code>DataReliabilityName</code>. The definitions of these variables are provided later in this article.</p>

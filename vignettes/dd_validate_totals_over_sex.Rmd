@@ -1,0 +1,163 @@
+---
+title: "Validating totals over sex"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Validating totals over sex}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+```
+
+The purpose of this function is to check if counts by sex is equal to counts for both sexes and adjust in case of any difference i.e if Female counts + Male counts is different from the population for Both sexes, then Both sexes = Female + Male
+
+The function is defined as follows:
+
+> dd_validate_totals_over_sex(data) [^1]
+
+To show how this function works, we will be using the `validate_totals_over_sex` dataset that is part of this package. This dataset contains death counts of Kuwait for the year 2009, obtained from the Demographic Yearbook. 
+
+```{r setup}
+## Load the packages required
+library(rddharmony)
+library(kableExtra)
+library(dplyr)
+library(purrr)
+library(tidyr)
+
+## Create a function to be used to generate the table output
+tab_output <- function(tab) {
+  kable(tab, booktabs = TRUE, align = "c", table.envir = "capctable", longtable = TRUE, row.names = FALSE) %>%
+    kable_styling() %>%
+    row_spec(0, bold = T, color = "white", background = "#6ebed8") %>%
+    kable_paper(html_font = "helvetica") %>%
+    scroll_box(width = "100%", height = "300px")
+}
+```
+
+```{r}
+df <- validate_totals_over_sex %>% 
+  select(abridged, complete, SexID, AgeStart, AgeEnd, AgeSpan,AgeSort, AgeLabel,DataValue)
+
+df %>% tab_output()
+```
+
+From the data, it can be seen that that `Male` counts and `Female` counts add up to `Both sexes` counts. For demonstration purposes, we will alter the data so that it can represent an imperfect situation where the totals do not add up. We will edit the abridged `Both sexes` Total value from  6266 to 8978 and the complete `Female` Total value from 2460 to 3810.
+
+```{r}
+df <- df %>% 
+      mutate(DataValue = ifelse(abridged == TRUE & AgeLabel == "Total" & SexID == 3, 8978, DataValue),
+             DataValue = ifelse(complete == TRUE & AgeLabel == "Total" & SexID == 2, 3810, DataValue))
+df %>% tab_output()
+```
+
+This dataset contains both abridged and complete series, so we will begin with the abridged series. 
+
+```{r}
+df_abr <- df %>% 
+  filter(abridged == TRUE)
+df_abr %>% tab_output()
+```
+
+We begin by checking if data for both males and females exists, and whether both series are full [^2]
+
+```{r}
+    full_m <- dd_series_isfull(data = df_abr[df_abr$SexID == 1,], abridged = TRUE)
+    full_f <- dd_series_isfull(data = df_abr[df_abr$SexID == 2,], abridged = TRUE)
+
+```
+
+Next, check whether all the age labels in the males data are present in the females data.
+
+```{r}
+    ages_same <- all(df_abr$AgeLabel[df_abr$SexID == 1] %in% df_abr$AgeLabel[df_abr$SexID == 2])
+
+```
+
+If data for both males and females exists and are full, and all the age labels in the males data are present in the females data,
+re-calculate the values to ensure that `Both sexes` is the sum of `Female` and `Male` data. 
+
+```{r}
+    if (all(full_m, full_f, ages_same)) {
+    df_abr <- df_abr %>%
+      mutate(SexID = paste0("X", SexID)) %>%
+      spread(key = SexID, value = DataValue) %>%
+      mutate(X3 = X1 + X2) %>% # ensure that both sexes is sum of male and female
+      gather(key = "SexID", value = "DataValue", c("X1","X2","X3")) %>%
+      mutate(SexID = as.numeric(substr(SexID,2,2)),
+             note = NA) %>%
+      dplyr::filter(!is.na(DataValue)) %>% # need this bc NAs are introduced if both sexes has more age groups than by sex
+      arrange(SexID, AgeSort)
+    } else {
+      df_abr <- df_abr %>%
+        mutate(note = "Inconsistent age groups for males and females; Both sexes not reconciled")
+    }
+df_abr %>% tab_output()
+```
+
+We now have the correct value for `Both sexes` total. 
+
+```{r}
+df_abr$DataValue[df_abr$abridged == TRUE & df_abr$AgeLabel == "Total" & df_abr$SexID == 3]
+```
+The same process is repeated for the complete series
+
+```{r}
+df_cpl <- df %>% 
+  filter(complete == TRUE)
+df_cpl %>% tab_output()
+
+```
+
+Check that data for both males and females exists, and that both series are full 
+
+```{r}
+    full_m <- dd_series_isfull(data = df_cpl[df_cpl$SexID == 1,], abridged = TRUE)
+    full_f <- dd_series_isfull(data = df_cpl[df_cpl$SexID == 2,], abridged = TRUE)
+
+```
+
+Check that all the age labels in the males data are present in the females data.
+
+```{r}
+    ages_same <- all(df_cpl$AgeLabel[df_cpl$SexID == 1] %in% df_cpl$AgeLabel[df_cpl$SexID == 2])
+
+```
+
+And if the above condition are met, re-calculate the values to ensure that that they add up.
+
+```{r}
+    if (all(full_m, full_f, ages_same)) {
+    df_cpl <- df_cpl %>%
+      mutate(SexID = paste0("X", SexID)) %>%
+      spread(key = SexID, value = DataValue) %>%
+      mutate(X3 = X1 + X2) %>% # ensure that both sexes is sum of male and female
+      gather(key = "SexID", value = "DataValue", c("X1","X2","X3")) %>%
+      mutate(SexID = as.numeric(substr(SexID,2,2)),
+             note = NA) %>%
+      dplyr::filter(!is.na(DataValue)) %>% # need this bc NAs are introduced if both sexes has more age groups than by sex
+      arrange(SexID, AgeSort)
+    }
+df_cpl %>% tab_output()
+
+```
+
+In cases where all age labels in female data are not present in male data or both series are not full, a note is generated alerting the user of the same issue. 
+
+```{r}
+# df_cpl <- df_cpl %>%
+#         mutate(note = "Inconsistent age groups for males and females; Both sexes not reconciled")
+```
+
+
+[^1]: [dd_validate_totals_over_sex](https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_sex.html)
+
+[^2]: [dd_series_isfull](https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html)
