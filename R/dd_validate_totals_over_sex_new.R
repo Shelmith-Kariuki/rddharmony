@@ -1,7 +1,12 @@
+#' @title
 #' dd_validate_totals_over_sex_new
 #'
+#' @description
 #' Compute total over sex as max of reported total or sum over sex, compute any NA values based on differences and
 #' redistribute SexID = 0 across males and females
+#'
+#' @details
+#' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/dd_validate_totals_over_sex.html}{"Validating totals over sex" vignette} for more details about this function.
 #'
 #' @param data Data to be harmonized
 #'
@@ -12,19 +17,29 @@
 #' @return A dataset where Both sexes == Female + Male
 #'
 #' @export
+#' @examples
+#' \dontrun{
+#' df <- validate_totals_over_sex_pop
+#' df <- dd_validate_totals_over_sex_new(df)
+#'}
 
 dd_validate_totals_over_sex_new <- function(data){
 
 # harmonize open age group by truncating to minimum open age group of males and females
+# Filter the data to only have abridged records
   abr <- data %>%
     dplyr::filter(abridged == TRUE)
 
+  ## Determine the minimum open age group in the males and females data
   oa_min <- suppressWarnings(min(abr$AgeStart[abr$AgeSpan == -1 & abr$AgeLabel != "Total" & abr$SexID %in% c(1,2)]))
 
+  ## Extract th record that contains this minimum open age group
   oa_record <- abr %>%
     dplyr::filter(AgeStart == oa_min & AgeSpan == -1) %>%
     select(-SexID, -DataValue) %>%
     distinct()
+
+
   if (1 %in% abr$SexID) {
     oa_record_m <- oa_record %>%
       mutate(SexID =1,
@@ -46,6 +61,7 @@ dd_validate_totals_over_sex_new <- function(data){
   } else {
     oa_record_b <- NULL
   }
+
   if (0 %in% abr$SexID) {
     oa_record_o <- oa_record %>%
       mutate(SexID =0,
@@ -65,7 +81,7 @@ dd_validate_totals_over_sex_new <- function(data){
 
   if (nrow(cpl) > 50){ # only bother with this if complete series is usable
 
-    ## Added SupressWarning ti remove the warning:
+    ## Added SupressWarning to remove the warning:
     ## Warning message:
     # In min(cpl$AgeStart[cpl$AgeSpan == -1 & cpl$AgeLabel != "Total" &  :
     #                       no non-missing arguments to min; returning Inf

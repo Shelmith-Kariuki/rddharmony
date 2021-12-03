@@ -17,7 +17,11 @@
 #' @return A dataset where Both sexes == Female + Male
 #'
 #' @export
-#'
+#' @examples
+#' \dontrun{
+#' df <- validate_totals_over_sex
+#' df <- dd_validate_totals_over_sex(df)
+#'}
 dd_validate_totals_over_sex <- function(data){
 
   # abridged

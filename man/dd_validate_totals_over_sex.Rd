@@ -19,3 +19,9 @@ Criteria: If Female Population + Male Population is different from the populatio
 \details{
 See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/dd_validate_totals_over_sex.html}{"Validating totals over sex" vignette} for more details about this function.
 }
+\examples{
+\dontrun{
+df <- validate_totals_over_sex
+df <- dd_validate_totals_over_sex(df)
+}
+}

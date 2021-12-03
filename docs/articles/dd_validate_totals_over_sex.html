@@ -122,12 +122,19 @@
 
     
     
-<p>The purpose of this function is to check if counts by sex is equal to counts for both sexes and adjust in case of any difference i.e if Female counts + Male counts is different from the population for Both sexes, then Both sexes = Female + Male</p>
-<p>The function is defined as follows:</p>
+<p>The purpose of this process is to check if counts by sex is equal to counts for both sexes and adjust in case of any difference i.e if Female counts + Male counts is different from the population for Both sexes, then Both sexes = Female + Male</p>
+<p>There are two functions involved. <code>dd_validate_totals_over_sex</code> is implemented on births and deaths data while <code>dd_validate_totals_over_sex_new</code> is implemented on population data.</p>
+<p>The functions are defined as follows:</p>
 <blockquote>
 <p>dd_validate_totals_over_sex(data) <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 </blockquote>
-<p>To show how this function works, we will be using the <code>validate_totals_over_sex</code> dataset that is part of this package. This dataset contains death counts of Kuwait for the year 2009, obtained from the Demographic Yearbook.</p>
+<blockquote>
+<p>dd_validate_totals_over_sex_new(data) <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+</blockquote>
+<div id="part-1-validating-totals-over-sex-births-and-deaths" class="section level2">
+<h2 class="hasAnchor">
+<a href="#part-1-validating-totals-over-sex-births-and-deaths" class="anchor"></a>Part 1: Validating totals over sex: births and deaths</h2>
+<p>To show how <code>dd_validate_totals_over_sex</code> works, we will be using the <code>validate_totals_over_sex</code> dataset that is part of this package. This dataset contains death counts of Kuwait for the year 2009, obtained from the Demographic Yearbook.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Load the packages required</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony">rddharmony</a></span><span class="op">)</span>
@@ -23146,7 +23153,7 @@ Total
 </tbody>
 </table>
 </div>
-<p>We begin by checking if data for both males and females exists, and whether both series are full <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
+<p>We begin by checking if data for both males and females exists, and whether both series are full <a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R">    <span class="va">full_m</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dd_series_isfull.html">dd_series_isfull</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df_abr</span><span class="op">[</span><span class="va">df_abr</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>, abridged <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
     <span class="va">full_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dd_series_isfull.html">dd_series_isfull</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df_abr</span><span class="op">[</span><span class="va">df_abr</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span> <span class="fl">2</span>,<span class="op">]</span>, abridged <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
@@ -42398,18 +42405,2041 @@ Total
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># df_cpl &lt;- df_cpl %&gt;%</span>
 <span class="co">#         mutate(note = "Inconsistent age groups for males and females; Both sexes not reconciled")</span></code></pre></div>
+</div>
+<div id="part-2-validating-totals-over-sex-population-counts" class="section level2">
+<h2 class="hasAnchor">
+<a href="#part-2-validating-totals-over-sex-population-counts" class="anchor"></a>Part 2: Validating totals over sex: population counts</h2>
+<p>To demonstrate this process for population counts, we will make use of the <code>validate_totals_over_sex_pop</code> dataset. This data represents Myanmar population counts for the year 2014 extracted from census records.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">validate_totals_over_sex_pop</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">abridged</span>, <span class="va">complete</span>, <span class="va">SexID</span>, <span class="va">AgeStart</span>, <span class="va">AgeEnd</span>, <span class="va">AgeSpan</span>,<span class="va">AgeSort</span>, <span class="va">AgeLabel</span>,<span class="va">DataValue</span><span class="op">)</span>
+
+<span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
+<table class="table table lightable-paper">
+<thead><tr>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+abridged
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+complete
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+SexID
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+AgeStart
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+AgeEnd
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+AgeSpan
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+AgeSort
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+AgeLabel
+</th>
+<th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
+DataValue
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0-4
+</td>
+<td style="text-align:center;">
+2262783
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+5-9
+</td>
+<td style="text-align:center;">
+2438372
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10-14
+</td>
+<td style="text-align:center;">
+2595749
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+15-19
+</td>
+<td style="text-align:center;">
+2290998
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+25
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+20-24
+</td>
+<td style="text-align:center;">
+2091525
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+25
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+8
+</td>
+<td style="text-align:center;">
+25-29
+</td>
+<td style="text-align:center;">
+1995465
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+9
+</td>
+<td style="text-align:center;">
+30-34
+</td>
+<td style="text-align:center;">
+1884549
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+40
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+35-39
+</td>
+<td style="text-align:center;">
+1705630
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+40
+</td>
+<td style="text-align:center;">
+45
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+11
+</td>
+<td style="text-align:center;">
+40-44
+</td>
+<td style="text-align:center;">
+1548942
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+45
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+12
+</td>
+<td style="text-align:center;">
+45-49
+</td>
+<td style="text-align:center;">
+1375041
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+55
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+50-54
+</td>
+<td style="text-align:center;">
+1182341
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+55
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+14
+</td>
+<td style="text-align:center;">
+55-59
+</td>
+<td style="text-align:center;">
+935979
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+65
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+60-64
+</td>
+<td style="text-align:center;">
+712040
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+65
+</td>
+<td style="text-align:center;">
+70
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+16
+</td>
+<td style="text-align:center;">
+65-69
+</td>
+<td style="text-align:center;">
+466618
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+70
+</td>
+<td style="text-align:center;">
+75
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+17
+</td>
+<td style="text-align:center;">
+70-74
+</td>
+<td style="text-align:center;">
+301679
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+75
+</td>
+<td style="text-align:center;">
+80
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+75-79
+</td>
+<td style="text-align:center;">
+228315
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+80
+</td>
+<td style="text-align:center;">
+85
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+19
+</td>
+<td style="text-align:center;">
+80-84
+</td>
+<td style="text-align:center;">
+130875
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+85
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+85-89
+</td>
+<td style="text-align:center;">
+56979
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+175
+</td>
+<td style="text-align:center;">
+90+
+</td>
+<td style="text-align:center;">
+24834
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+184
+</td>
+<td style="text-align:center;">
+Total
+</td>
+<td style="text-align:center;">
+24228714
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+185
+</td>
+<td style="text-align:center;">
+Unknown
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0-4
+</td>
+<td style="text-align:center;">
+2209347
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+5-9
+</td>
+<td style="text-align:center;">
+2380705
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10-14
+</td>
+<td style="text-align:center;">
+2512613
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+15-19
+</td>
+<td style="text-align:center;">
+2334991
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+25
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+20-24
+</td>
+<td style="text-align:center;">
+2239544
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+25
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+8
+</td>
+<td style="text-align:center;">
+25-29
+</td>
+<td style="text-align:center;">
+2150669
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+9
+</td>
+<td style="text-align:center;">
+30-34
+</td>
+<td style="text-align:center;">
+2014312
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+40
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+35-39
+</td>
+<td style="text-align:center;">
+1857850
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+40
+</td>
+<td style="text-align:center;">
+45
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+11
+</td>
+<td style="text-align:center;">
+40-44
+</td>
+<td style="text-align:center;">
+1734131
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+45
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+12
+</td>
+<td style="text-align:center;">
+45-49
+</td>
+<td style="text-align:center;">
+1571107
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+55
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+50-54
+</td>
+<td style="text-align:center;">
+1376891
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+55
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+14
+</td>
+<td style="text-align:center;">
+55-59
+</td>
+<td style="text-align:center;">
+1115958
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+65
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+60-64
+</td>
+<td style="text-align:center;">
+864805
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+65
+</td>
+<td style="text-align:center;">
+70
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+16
+</td>
+<td style="text-align:center;">
+65-69
+</td>
+<td style="text-align:center;">
+597875
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+70
+</td>
+<td style="text-align:center;">
+75
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+17
+</td>
+<td style="text-align:center;">
+70-74
+</td>
+<td style="text-align:center;">
+411491
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+75
+</td>
+<td style="text-align:center;">
+80
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+75-79
+</td>
+<td style="text-align:center;">
+324983
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+80
+</td>
+<td style="text-align:center;">
+85
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+19
+</td>
+<td style="text-align:center;">
+80-84
+</td>
+<td style="text-align:center;">
+204701
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+85
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+85-89
+</td>
+<td style="text-align:center;">
+101090
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+175
+</td>
+<td style="text-align:center;">
+90+
+</td>
+<td style="text-align:center;">
+48123
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+184
+</td>
+<td style="text-align:center;">
+Total
+</td>
+<td style="text-align:center;">
+26051186
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+185
+</td>
+<td style="text-align:center;">
+Unknown
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0-4
+</td>
+<td style="text-align:center;">
+4472130
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+5-9
+</td>
+<td style="text-align:center;">
+4819077
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10-14
+</td>
+<td style="text-align:center;">
+5108362
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+15-19
+</td>
+<td style="text-align:center;">
+4625989
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+25
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+20-24
+</td>
+<td style="text-align:center;">
+4331069
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+25
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+8
+</td>
+<td style="text-align:center;">
+25-29
+</td>
+<td style="text-align:center;">
+4146134
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+9
+</td>
+<td style="text-align:center;">
+30-34
+</td>
+<td style="text-align:center;">
+3898861
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+40
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+35-39
+</td>
+<td style="text-align:center;">
+3563480
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+40
+</td>
+<td style="text-align:center;">
+45
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+11
+</td>
+<td style="text-align:center;">
+40-44
+</td>
+<td style="text-align:center;">
+3283073
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+45
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+12
+</td>
+<td style="text-align:center;">
+45-49
+</td>
+<td style="text-align:center;">
+2946148
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+55
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+50-54
+</td>
+<td style="text-align:center;">
+2559232
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+55
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+14
+</td>
+<td style="text-align:center;">
+55-59
+</td>
+<td style="text-align:center;">
+2051937
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+60
+</td>
+<td style="text-align:center;">
+65
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+15
+</td>
+<td style="text-align:center;">
+60-64
+</td>
+<td style="text-align:center;">
+1576845
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+65
+</td>
+<td style="text-align:center;">
+70
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+16
+</td>
+<td style="text-align:center;">
+65-69
+</td>
+<td style="text-align:center;">
+1064493
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+70
+</td>
+<td style="text-align:center;">
+75
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+17
+</td>
+<td style="text-align:center;">
+70-74
+</td>
+<td style="text-align:center;">
+713170
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+75
+</td>
+<td style="text-align:center;">
+80
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+75-79
+</td>
+<td style="text-align:center;">
+553298
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+80
+</td>
+<td style="text-align:center;">
+85
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+19
+</td>
+<td style="text-align:center;">
+80-84
+</td>
+<td style="text-align:center;">
+335576
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+85
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+85-89
+</td>
+<td style="text-align:center;">
+158069
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+90
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+175
+</td>
+<td style="text-align:center;">
+90+
+</td>
+<td style="text-align:center;">
+72957
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+-1
+</td>
+<td style="text-align:center;">
+184
+</td>
+<td style="text-align:center;">
+Total
+</td>
+<td style="text-align:center;">
+50279900
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+TRUE
+</td>
+<td style="text-align:center;">
+FALSE
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+-2
+</td>
+<td style="text-align:center;">
+185
+</td>
+<td style="text-align:center;">
+Unknown
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The process here is a bit different in that we first harmonize open age groups by truncating to minimum open age group of males and females and later validate the totals by sex.</p>
+<p>We begin by subsetting the data to only have abridged records.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R">  <span class="va">abr</span> <span class="op">&lt;-</span> <span class="va">validate_totals_over_sex_pop</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">abridged</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>We then determine the minimum open age group in the males and females data and extract the record containing this minimum age.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R">  <span class="va">oa_min</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">abr</span><span class="op">$</span><span class="va">AgeStart</span><span class="op">[</span><span class="va">abr</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">abr</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span> <span class="op">&amp;</span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">oa_record</span> <span class="op">&lt;-</span> <span class="va">abr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">AgeStart</span> <span class="op">==</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">SexID</span>, <span class="op">-</span><span class="va">DataValue</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>We go ahead and calculate the summation of data values of age labels that exceed this minimum open age group for each of the sex ids and store the result in different datasets.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="fl">1</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">oa_record_m</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">1</span>,
+             DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">abr</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">abr</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">oa_record_m</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+  <span class="op">}</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fl">2</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">oa_record_f</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">2</span>,
+             DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">abr</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">abr</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">oa_record_f</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+  <span class="op">}</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fl">3</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">oa_record_b</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">3</span>,
+             DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">abr</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">abr</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">oa_record_b</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+  <span class="op">}</span>
+
+  <span class="kw">if</span> <span class="op">(</span><span class="fl">0</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">oa_record_o</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">0</span>,
+             DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">abr</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">abr</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">abr</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">oa_record_o</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+  <span class="op">}</span></code></pre></div>
+<p>Later, we drop all the age labels that exceed this minimum open age group, and append the resulting data with the datasets generated above.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R">  <span class="va">abr</span> <span class="op">&lt;-</span> <span class="va">abr</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">AgeStart</span> <span class="op">&lt;</span> <span class="va">oa_min</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span> <span class="op">&amp;</span> <span class="va">AgeStart</span> <span class="op">&lt;</span> <span class="va">oa_min</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co"># remove any oa that is below oa_min </span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="va">oa_record_m</span>, <span class="va">oa_record_f</span>, <span class="va">oa_record_b</span>, <span class="va">oa_record_o</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">SexID</span>, <span class="va">AgeStart</span><span class="op">)</span></code></pre></div>
+<p>This process is repeated for the complete series …</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">cpl</span> <span class="op">&lt;-</span> <span class="va">validate_totals_over_sex_pop</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">complete</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">cpl</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">50</span><span class="op">)</span><span class="op">{</span> <span class="co"># only bother with this if complete series is usable</span>
+
+      <span class="va">oa_min</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">cpl</span><span class="op">$</span><span class="va">AgeStart</span><span class="op">[</span><span class="va">cpl</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">cpl</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span> <span class="op">&amp;</span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+      
+      <span class="va">oa_record</span> <span class="op">&lt;-</span> <span class="va">cpl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">AgeStart</span> <span class="op">==</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">SexID</span>, <span class="op">-</span><span class="va">DataValue</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span>
+      
+      <span class="kw">if</span> <span class="op">(</span><span class="fl">1</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+      <span class="va">oa_record_m</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">1</span>,
+               DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">cpl</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">cpl</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="va">oa_record_m</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+      <span class="op">}</span>
+      <span class="kw">if</span> <span class="op">(</span><span class="fl">2</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+      <span class="va">oa_record_f</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">2</span>,
+               DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">cpl</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">cpl</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="va">oa_record_f</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+      <span class="op">}</span>
+      <span class="kw">if</span> <span class="op">(</span><span class="fl">3</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+      <span class="va">oa_record_b</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">3</span>,
+               DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">cpl</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">cpl</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="va">oa_record_b</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+      <span class="op">}</span>
+      <span class="kw">if</span> <span class="op">(</span><span class="fl">0</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span><span class="op">)</span> <span class="op">{</span>
+      <span class="va">oa_record_o</span> <span class="op">&lt;-</span> <span class="va">oa_record</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span><span class="fl">0</span>,
+               DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">cpl</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">cpl</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="va">oa_min</span> <span class="op">&amp;</span> <span class="va">cpl</span><span class="op">$</span><span class="va">SexID</span> <span class="op">==</span><span class="fl">0</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+        <span class="va">oa_record_o</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+      <span class="op">}</span>
+
+      <span class="va">cpl</span> <span class="op">&lt;-</span> <span class="va">cpl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">AgeStart</span> <span class="op">&lt;</span> <span class="va">oa_min</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span> <span class="op">&amp;</span> <span class="va">AgeStart</span> <span class="op">&lt;</span> <span class="va">oa_min</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="va">oa_record_m</span>, <span class="va">oa_record_f</span>, <span class="va">oa_record_b</span>, <span class="va">oa_record_o</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">SexID</span>, <span class="va">AgeStart</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">cpl</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+  <span class="op">}</span></code></pre></div>
+<p>… and the two resulting datasets are appended to form one.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R">  <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">abr</span>, <span class="va">cpl</span><span class="op">)</span></code></pre></div>
+<p>It is at this point that the validation of totals by sex takes place.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># now validate totals over sex</span>
+  <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="va">SexID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/spread.html">spread</a></span><span class="op">(</span>key <span class="op">=</span> <span class="va">SexID</span>, value <span class="op">=</span> <span class="va">DataValue</span><span class="op">)</span>
+
+  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"X0"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">df</span><span class="op">$</span><span class="va">X0</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+  <span class="op">}</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"X1"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">df</span><span class="op">$</span><span class="va">X1</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+  <span class="op">}</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"X2"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">df</span><span class="op">$</span><span class="va">X2</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+  <span class="op">}</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"X3"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">df</span><span class="op">$</span><span class="va">X3</span> <span class="op">&lt;-</span> <span class="fl">0</span>
+  <span class="op">}</span>
+
+
+  <span class="va">data.out</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>X0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/replace.html">replace</a></span><span class="op">(</span><span class="va">X0</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">X0</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,
+           X1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/replace.html">replace</a></span><span class="op">(</span><span class="va">X1</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">X1</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,
+           X2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/replace.html">replace</a></span><span class="op">(</span><span class="va">X2</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">X2</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,
+           X3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/replace.html">replace</a></span><span class="op">(</span><span class="va">X3</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">X3</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,
+           total_over_sex <span class="op">=</span> <span class="va">X0</span> <span class="op">+</span> <span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span>,
+           X3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">X3</span> <span class="op">&gt;</span> <span class="va">total_over_sex</span>, <span class="va">X3</span>, <span class="va">total_over_sex</span><span class="op">)</span>, <span class="co"># total as max of reported total or sum over sex</span>
+           X1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">X1</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">total_over_sex</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">X3</span> <span class="op">&gt;</span> <span class="va">total_over_sex</span>, <span class="va">X3</span> <span class="op">-</span> <span class="va">total_over_sex</span>, <span class="va">X1</span><span class="op">)</span>,
+           total_over_sex <span class="op">=</span> <span class="va">X0</span> <span class="op">+</span> <span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span>,
+           X2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">X2</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">total_over_sex</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">X3</span> <span class="op">&gt;</span> <span class="va">total_over_sex</span>, <span class="va">X3</span> <span class="op">-</span> <span class="va">total_over_sex</span>, <span class="va">X2</span><span class="op">)</span>,
+           total_over_sex <span class="op">=</span> <span class="va">X0</span> <span class="op">+</span> <span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span>,
+           X0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">X3</span> <span class="op">&gt;</span> <span class="va">total_over_sex</span> <span class="op">&amp;</span> <span class="va">total_over_sex</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="va">X0</span> <span class="op">+</span> <span class="op">(</span><span class="va">X3</span> <span class="op">-</span> <span class="va">total_over_sex</span><span class="op">)</span>, <span class="va">X0</span> <span class="op">)</span>,
+           pct_m <span class="op">=</span> <span class="va">X1</span> <span class="op">/</span> <span class="op">(</span><span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span><span class="op">)</span>, <span class="co"># percentage of males among males plus females</span>
+           pct_m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/replace.html">replace</a></span><span class="op">(</span><span class="va">pct_m</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">pct_m</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>, <span class="co"># avoids divide by zero problems</span>
+           X1 <span class="op">=</span> <span class="va">X1</span> <span class="op">+</span> <span class="op">(</span><span class="va">X0</span> <span class="op">*</span> <span class="va">pct_m</span><span class="op">)</span>,
+           X2 <span class="op">=</span> <span class="va">X2</span> <span class="op">+</span> <span class="op">(</span><span class="va">X0</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">pct_m</span><span class="op">)</span><span class="op">)</span>,
+           X3 <span class="op">=</span> <span class="va">X1</span> <span class="op">+</span> <span class="va">X2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">X0</span>, <span class="op">-</span><span class="va">total_over_sex</span>, <span class="op">-</span><span class="va">pct_m</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span><span class="op">(</span>key <span class="op">=</span> <span class="st">"SexID"</span>, value <span class="op">=</span> <span class="st">"DataValue"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X1"</span>,<span class="st">"X2"</span>,<span class="st">"X3"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SexID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">SexID</span>,<span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span>,
+           note <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">SexID</span>, <span class="va">AgeSort</span><span class="op">)</span></code></pre></div>
+</div>
 <div class="footnotes">
 <hr>
 <ol>
 <li id="fn1"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_sex.html">dd_validate_totals_over_sex</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html">dd_series_isfull</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_sex_new.html">dd_validate_totals_over_sex_new</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html">dd_series_isfull</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

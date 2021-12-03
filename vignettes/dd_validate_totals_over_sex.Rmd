@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{Validating totals over sex}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  
 ---
 
 
@@ -17,13 +18,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-The purpose of this function is to check if counts by sex is equal to counts for both sexes and adjust in case of any difference i.e if Female counts + Male counts is different from the population for Both sexes, then Both sexes = Female + Male
+The purpose of this process is to check if counts by sex is equal to counts for both sexes and adjust in case of any difference i.e if Female counts + Male counts is different from the population for Both sexes, then Both sexes = Female + Male
 
-The function is defined as follows:
+There are two functions involved. `dd_validate_totals_over_sex` is implemented on births and deaths data while `dd_validate_totals_over_sex_new` is implemented on population data.
+
+The functions are defined as follows:
 
 > dd_validate_totals_over_sex(data) [^1]
 
-To show how this function works, we will be using the `validate_totals_over_sex` dataset that is part of this package. This dataset contains death counts of Kuwait for the year 2009, obtained from the Demographic Yearbook. 
+> dd_validate_totals_over_sex_new(data) [^2]
+
+## Part 1: Validating totals over sex: births and deaths
+
+To show how `dd_validate_totals_over_sex` works, we will be using the `validate_totals_over_sex` dataset that is part of this package. This dataset contains death counts of Kuwait for the year 2009, obtained from the Demographic Yearbook. 
 
 ```{r setup}
 ## Load the packages required
@@ -67,7 +74,7 @@ df_abr <- df %>%
 df_abr %>% tab_output()
 ```
 
-We begin by checking if data for both males and females exists, and whether both series are full [^2]
+We begin by checking if data for both males and females exists, and whether both series are full [^3]
 
 ```{r}
     full_m <- dd_series_isfull(data = df_abr[df_abr$SexID == 1,], abridged = TRUE)
@@ -157,7 +164,194 @@ In cases where all age labels in female data are not present in male data or bot
 #         mutate(note = "Inconsistent age groups for males and females; Both sexes not reconciled")
 ```
 
+## Part 2: Validating totals over sex: population counts
+
+To demonstrate this process for population counts, we will make use of the `validate_totals_over_sex_pop` dataset. This data represents Myanmar population counts for the year 2014 extracted from census records.
+
+```{r}
+df <- validate_totals_over_sex_pop %>% 
+  select(abridged, complete, SexID, AgeStart, AgeEnd, AgeSpan,AgeSort, AgeLabel,DataValue)
+
+df %>% tab_output()
+```
+
+
+The process here is a bit different in that we first harmonize open age groups by truncating to minimum open age group of males and females and later validate the totals by sex.
+
+We begin by subsetting the data to only have abridged records. 
+
+```{r}
+  abr <- validate_totals_over_sex_pop %>%
+    dplyr::filter(abridged == TRUE)
+
+```
+
+We then determine the minimum open age group in the males and females data and extract the record containing this minimum age.
+
+```{r}
+  oa_min <- suppressWarnings(min(abr$AgeStart[abr$AgeSpan == -1 & abr$AgeLabel != "Total" & abr$SexID %in% c(1,2)]))
+  oa_record <- abr %>%
+    dplyr::filter(AgeStart == oa_min & AgeSpan == -1) %>%
+    select(-SexID, -DataValue) %>%
+    distinct()
+```
+
+We go ahead and calculate the summation of data values of age labels that exceed this minimum open age group for each of the sex ids and store the result in different datasets.
+
+```{r}
+if (1 %in% abr$SexID) {
+    oa_record_m <- oa_record %>%
+      mutate(SexID =1,
+             DataValue = sum(abr$DataValue[abr$AgeStart >= oa_min & abr$SexID ==1]))
+  } else {
+    oa_record_m <- NULL
+  }
+  if (2 %in% abr$SexID) {
+    oa_record_f <- oa_record %>%
+      mutate(SexID =2,
+             DataValue = sum(abr$DataValue[abr$AgeStart >= oa_min & abr$SexID ==2]))
+  } else {
+    oa_record_f <- NULL
+  }
+  if (3 %in% abr$SexID) {
+    oa_record_b <- oa_record %>%
+      mutate(SexID =3,
+             DataValue = sum(abr$DataValue[abr$AgeStart >= oa_min & abr$SexID ==3]))
+  } else {
+    oa_record_b <- NULL
+  }
+
+  if (0 %in% abr$SexID) {
+    oa_record_o <- oa_record %>%
+      mutate(SexID =0,
+             DataValue = sum(abr$DataValue[abr$AgeStart >= oa_min & abr$SexID ==0]))
+  } else {
+    oa_record_o <- NULL
+  }
+```
+
+Later, we drop all the age labels that exceed this minimum open age group, and append the resulting data with the datasets generated above.
+
+```{r}
+  abr <- abr %>%
+    dplyr::filter(AgeStart < oa_min) %>%
+    dplyr::filter(!(AgeSpan == -1 & AgeLabel != "Total" & AgeStart < oa_min)) %>% # remove any oa that is below oa_min 
+    bind_rows(oa_record_m, oa_record_f, oa_record_b, oa_record_o) %>%
+    arrange(SexID, AgeStart)
+```
+
+This process is repeated for the complete series ... 
+
+```{r}
+cpl <- validate_totals_over_sex_pop %>%
+    dplyr::filter(complete == TRUE)
+
+  if (nrow(cpl) > 50){ # only bother with this if complete series is usable
+
+      oa_min <- suppressWarnings(min(cpl$AgeStart[cpl$AgeSpan == -1 & cpl$AgeLabel != "Total" & cpl$SexID %in% c(1,2)]))
+      
+      oa_record <- cpl %>%
+        dplyr::filter(AgeStart == oa_min & AgeSpan == -1) %>%
+        select(-SexID, -DataValue) %>%
+        distinct()
+      
+      if (1 %in% cpl$SexID) {
+      oa_record_m <- oa_record %>%
+        mutate(SexID =1,
+               DataValue = sum(cpl$DataValue[cpl$AgeStart >= oa_min & cpl$SexID ==1]))
+      } else {
+        oa_record_m <- NULL
+      }
+      if (2 %in% cpl$SexID) {
+      oa_record_f <- oa_record %>%
+        mutate(SexID =2,
+               DataValue = sum(cpl$DataValue[cpl$AgeStart >= oa_min & cpl$SexID ==2]))
+      } else {
+        oa_record_f <- NULL
+      }
+      if (3 %in% cpl$SexID) {
+      oa_record_b <- oa_record %>%
+        mutate(SexID =3,
+               DataValue = sum(cpl$DataValue[cpl$AgeStart >= oa_min & cpl$SexID ==3]))
+      } else {
+        oa_record_b <- NULL
+      }
+      if (0 %in% cpl$SexID) {
+      oa_record_o <- oa_record %>%
+        mutate(SexID =0,
+               DataValue = sum(cpl$DataValue[cpl$AgeStart >= oa_min & cpl$SexID ==0]))
+      } else {
+        oa_record_o <- NULL
+      }
+
+      cpl <- cpl %>%
+        dplyr::filter(AgeStart < oa_min) %>%
+        dplyr::filter(!(AgeSpan == -1 & AgeLabel != "Total" & AgeStart < oa_min)) %>%
+        bind_rows(oa_record_m, oa_record_f, oa_record_b, oa_record_o) %>%
+        arrange(SexID, AgeStart)
+  } else {
+    cpl <- NULL
+  }
+
+```
+
+...  and the two resulting datasets are appended to form one.
+
+```{r}
+  df <- rbind(abr, cpl)
+
+```
+
+It is at this point that the validation of totals by sex takes place. 
+
+```{r}
+# now validate totals over sex
+  df <- df %>%
+    mutate(SexID = paste0("X", SexID)) %>%
+    spread(key = SexID, value = DataValue)
+
+  if (!("X0" %in% names(df))) {
+    df$X0 <- 0
+  }
+  if (!("X1" %in% names(df))) {
+    df$X1 <- 0
+  }
+  if (!("X2" %in% names(df))) {
+    df$X2 <- 0
+  }
+  if (!("X3" %in% names(df))) {
+    df$X3 <- 0
+  }
+
+
+  data.out <- df %>%
+    mutate(X0 = replace(X0, is.na(X0), 0),
+           X1 = replace(X1, is.na(X1), 0),
+           X2 = replace(X2, is.na(X2), 0),
+           X3 = replace(X3, is.na(X3), 0),
+           total_over_sex = X0 + X1 + X2,
+           X3 = ifelse(X3 > total_over_sex, X3, total_over_sex), # total as max of reported total or sum over sex
+           X1 = ifelse(X1 == 0 & total_over_sex > 0 & X3 > total_over_sex, X3 - total_over_sex, X1),
+           total_over_sex = X0 + X1 + X2,
+           X2 = ifelse(X2 == 0 & total_over_sex > 0 & X3 > total_over_sex, X3 - total_over_sex, X2),
+           total_over_sex = X0 + X1 + X2,
+           X0 = ifelse(X3 > total_over_sex & total_over_sex > 0, X0 + (X3 - total_over_sex), X0 ),
+           pct_m = X1 / (X1 + X2), # percentage of males among males plus females
+           pct_m = replace(pct_m, is.na(pct_m), 0), # avoids divide by zero problems
+           X1 = X1 + (X0 * pct_m),
+           X2 = X2 + (X0 * (1-pct_m)),
+           X3 = X1 + X2) %>%
+    select(-X0, -total_over_sex, -pct_m) %>%
+    gather(key = "SexID", value = "DataValue", c("X1","X2","X3")) %>%
+    mutate(SexID = as.numeric(substr(SexID,2,2)),
+           note = NA) %>%
+    arrange(SexID, AgeSort)
+
+```
+
 
 [^1]: [dd_validate_totals_over_sex](https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_sex.html)
 
-[^2]: [dd_series_isfull](https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html)
+[^2]: [dd_validate_totals_over_sex_new](https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_sex_new.html)
+
+[^3]: [dd_series_isfull](https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html)
