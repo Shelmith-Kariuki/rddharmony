@@ -1,11 +1,11 @@
 ---
-title: "Harmonizing five-year vital counts"
+title: "Harmonizing five-year counts"
 output: rmarkdown::html_vignette
 author: ""
 description: >
- This wrapper takes five-year vital counts from census and registers from the UNDP database and standardizes/harmonizes them.
+ This wrapper takes five-year counts from the UNDP database and standardizes/harmonizes them.
 vignette: >
-  %\VignetteIndexEntry{Harmonizing five-year vital counts}
+  %\VignetteIndexEntry{Harmonizing five-year counts}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,11 +19,18 @@ knitr::opts_chunk$set(
 )
 ```
 
-This function takes five-year vital counts from census and registers from the UNDP database and standardizes/harmonizes them. The function is defined as follows:
+The purpose of this process is to standardizes/harmonize five-year vital and population counts taken from the UNDP database.
+
+There are two functions involved. `DDharmonize_Vitals5` is implemented on births and deaths data while `DDharmonize_Pop5` is implemented on population data.
+
+The functions are defined as follows:
 
 > DDharmonize_Vitals5(indata, type = c("births","deaths")) [^1]
 
-To show how it works, we shall use the `vitals5_df` dataset that is embedded on this package. This dataset represents births by age of mother and sex of child in Norway for the year 2002 and for cases where SexID == "Both sexes".
+> DDharmonize_Pop5(indata)
+
+
+In this vignette, we will use the `vitals5_df` dataset that is embedded on this package, and the `DDharmonize_Vitals5()` function to show how five-year birth counts are harmonized. This dataset represents births by age of mother and sex of child in Norway for the year 2002 and for cases where SexID == "Both sexes".
 
 ```{r setup}
 ## Load the packages required
@@ -42,7 +49,7 @@ tab_output <- function(tab) {
 }
 ```
 
-The table below shows the data, with only a few variables displayed.
+The data, with only a few variables displayed, is shown below.
 
 ```{r}
 new_df <- vitals5_df %>%

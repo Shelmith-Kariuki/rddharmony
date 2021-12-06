@@ -17,6 +17,10 @@
 #' @return A dataset with reconciled abridged and complete series i.e. abridged reconciled with complete and complete reconciled with abridged
 #'
 #' @export
+#' @examples
+#' \dontrun{
+#' df <- DDharmonize_AbridgedAndComplete(data_abr,data_cpl_from_abr = NULL, data_cpl)
+#' }
 
 DDharmonize_AbridgedAndComplete <- function (data_abr,data_cpl_from_abr, data_cpl) {
 

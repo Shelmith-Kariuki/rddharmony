@@ -28,7 +28,10 @@ Suggests:
     testthat,
     covr
 Depends: 
-    R (>= 4.0.0)
+    R (>= 4.0.0),
+    DDSQLtools,
+    DemoTools,
+    dplyr
 VignetteBuilder: knitr
 Remotes: 
     github::timriffe/DemoTools,

@@ -139,7 +139,6 @@ DDharmonize_Pop1 <- function (indata) {
         oag_check <- paste0(oag_start,"+") %in% df$AgeLabel
 
         ##17. drop records for open age groups that do not close the series
-        ##21. drop records for open age groups that do not close the series
         ## Edited the part below because of the error below, in cases where we only have the Total and Unknown:
         ## Error : Problem with `filter()` input `..1`.
         ## ℹ Input `..1` is `!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start)`.

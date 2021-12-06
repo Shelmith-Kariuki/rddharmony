@@ -13,7 +13,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' df <- vitals1_std
+#' df <- abridged2single_1014_df
 #' df <- dd_births_abridged2single_1014(df, 4)
 #' }
 dd_births_abridged2single_1014 <- function(indata, births10_14) {

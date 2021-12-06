@@ -1,4 +1,6 @@
 
+# rddharmony <a href='https://github.com/Shelmith-Kariuki/rddharmony'><img src='man/figures/logo.png' align="right" width="139" /></a>
+
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/Shelmith-Kariuki/rddharmony/workflows/R-CMD-check/badge.svg)](https://github.com/Shelmith-Kariuki/rddharmony/actions)
@@ -62,6 +64,18 @@ of the function is a dataset with 25 variables.
 
 ``` r
 library(rddharmony)
+#> Loading required package: DDSQLtools
+#> Loading required package: DemoTools
+#> Loading required package: Rcpp
+#> Loading required package: dplyr
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 kenya_df <- DDharmonize_validate_BirthCounts(locid = 404,
                                               c(1950,2022),
                                               process = c("census", "vr"),

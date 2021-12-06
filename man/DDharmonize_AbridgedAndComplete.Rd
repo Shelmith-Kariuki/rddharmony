@@ -22,3 +22,8 @@ This wrapper takes the output of harmonization and reconciles abridged and compl
 \details{
 See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_AbridgedAndComplete.html}{DDharmonize_AbridgedAndComplete vignette} for more details about this function.
 }
+\examples{
+\dontrun{
+df <- DDharmonize_AbridgedAndComplete(data_abr,data_cpl_from_abr = NULL, data_cpl)
+}
+}

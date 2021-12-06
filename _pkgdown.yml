@@ -40,8 +40,8 @@ navbar:
         href: articles/DDharmonize_validate_PopCounts.html
       - text: Computing data values for the open age group needed to close a series
         href: articles/dd_oag_compute.html
-      - text: Harmonizing five-year vital counts
-        href: articles/DDharmonize_Vitals5.html
+      - text: Harmonizing five-year counts
+        href: articles/DDharmonize_5YearCounts.html
       - text: Reconciling abridged and complete series
         href: articles/DDharmonize_AbridgedAndComplete.html
       - text: Validating totals over age

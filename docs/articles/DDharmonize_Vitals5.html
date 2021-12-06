@@ -125,11 +125,16 @@
 
     
     
-<p>This function takes five-year vital counts from census and registers from the UNDP database and standardizes/harmonizes them. The function is defined as follows:</p>
+<p>The purpose of this process is to standardizes/harmonize five-year vital and population counts taken from the UNDP database.</p>
+<p>There are two functions involved. <code>DDharmonize_Vitals5</code> is implemented on births and deaths data while <code>DDharmonize_Pop5</code> is implemented on population data.</p>
+<p>The functions are defined as follows:</p>
 <blockquote>
 <p>DDharmonize_Vitals5(indata, type = c(“births”,“deaths”)) <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 </blockquote>
-<p>To show how it works, we shall use the <code>vitals5_df</code> dataset that is embedded on this package. This dataset represents births by age of mother and sex of child in Norway for the year 2002 and for cases where SexID == “Both sexes”.</p>
+<blockquote>
+<p>DDharmonize_Pop5(indata)</p>
+</blockquote>
+<p>In this vignette, we will use the <code>vitals5_df</code> dataset that is embedded on this package, and the <code><a href="../reference/DDharmonize_Vitals5.html">DDharmonize_Vitals5()</a></code> function to show how five-year birth counts are harmonized. This dataset represents births by age of mother and sex of child in Norway for the year 2002 and for cases where SexID == “Both sexes”.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Load the packages required</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony" class="external-link">rddharmony</a></span><span class="op">)</span>

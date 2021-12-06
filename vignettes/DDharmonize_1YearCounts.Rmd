@@ -1,0 +1,62 @@
+---
+title: "Harmonizing one-year counts"
+output: rmarkdown::html_vignette
+description: >
+ This wrapper takes one-year counts from the UNDP database and standardizes/harmonizes them.
+vignette: >
+  %\VignetteIndexEntry{Harmonizing one-year counts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+```
+
+The purpose of this process is to standardizes/harmonize one-year vital and population counts taken from the UNDP database.
+
+There are two functions involved. `DDharmonize_Vitals1` is implemented on births and deaths data while `DDharmonize_Pop1` is implemented on population data.
+
+The functions are defined as follows:
+
+> DDharmonize_Vitals1(indata, type = c("births","deaths")) [^1]
+
+> DDharmonize_Pop1(indata)
+
+
+In this vignette, we will use the `pop1_df` dataset that is embedded on this package, and the `DDharmonize_Pop1()` function to show how one-year population counts are harmonized. This dataset represents population counts in Bangladesh for the year 1950.
+
+```{r setup}
+## Load the packages required
+library(rddharmony)
+library(kableExtra)
+library(dplyr)
+library(purrr)
+
+## Create a function to be used to generate the table output
+tab_output <- function(tab) {
+  kable(tab, booktabs = TRUE, align = "c", table.envir = "capctable", longtable = TRUE) %>%
+    kable_styling() %>%
+    row_spec(0, bold = T, color = "white", background = "#6ebed8") %>%
+    kable_paper(html_font = "helvetica") %>%
+    scroll_box(width = "100%", height = "300px")
+}
+```
+
+
+
+The data, with only a few variables displayed, is shown below.
+
+```{r}
+new_df <- pop1_df %>%
+  select(LocID, LocName, DataSourceYear, DataStatusName, SexName, SexID, DataSourceYear, TimeLabel, TimeMid, starts_with("Age"), DataValue, SeriesID) %>%
+  select(-agesort) %>%
+  arrange(AgeLabel)
+
+new_df %>% tab_output()
+```

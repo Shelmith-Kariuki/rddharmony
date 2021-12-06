@@ -6,7 +6,7 @@
 #'
 #' @details
 #'
-#' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_Vitals5.html}{"Harmonizing five-year vital counts" vignette} for more details about this function.
+#' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_5YearCounts.html}{"Harmonizing five-year vital counts" vignette} for more details about this function.
 #'
 #' @param indata The data to be harmonised
 #' @param type births / deaths
