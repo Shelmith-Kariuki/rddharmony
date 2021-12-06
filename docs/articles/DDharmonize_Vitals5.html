@@ -27,6 +27,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-reverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -39,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rddharmony</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
       </span>
     </div>
 
@@ -93,7 +95,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Shelmith-Kariuki/rddharmony/">
+  <a href="https://github.com/Shelmith-Kariuki/rddharmony/" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
     
@@ -116,7 +118,7 @@
       <h1 data-toc-skip>Harmonizing five-year vital counts</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/master/vignettes/DDharmonize_Vitals5.Rmd"><code>vignettes/DDharmonize_Vitals5.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/HEAD/vignettes/DDharmonize_Vitals5.Rmd" class="external-link"><code>vignettes/DDharmonize_Vitals5.Rmd</code></a></small>
       <div class="hidden name"><code>DDharmonize_Vitals5.Rmd</code></div>
 
     </div>
@@ -130,29 +132,29 @@
 <p>To show how it works, we shall use the <code>vitals5_df</code> dataset that is embedded on this package. This dataset represents births by age of mother and sex of child in Norway for the year 2002 and for cases where SexID == “Both sexes”.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Load the packages required</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony">rddharmony</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/">kableExtra</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony" class="external-link">rddharmony</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org" class="external-link">purrr</a></span><span class="op">)</span>
 
 <span class="co">## Create a function to be used to generate the table output</span>
 <span class="va">tab_output</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tab</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">tab</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, align <span class="op">=</span> <span class="st">"c"</span>, table.envir <span class="op">=</span> <span class="st">"capctable"</span>, longtable <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html">row_spec</a></span><span class="op">(</span><span class="fl">0</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#6ebed8"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_classic.html">kable_paper</a></span><span class="op">(</span>html_font <span class="op">=</span> <span class="st">"helvetica"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/scroll_box.html">scroll_box</a></span><span class="op">(</span>width <span class="op">=</span> <span class="st">"100%"</span>, height <span class="op">=</span> <span class="st">"300px"</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">tab</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, align <span class="op">=</span> <span class="st">"c"</span>, table.envir <span class="op">=</span> <span class="st">"capctable"</span>, longtable <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html" class="external-link">row_spec</a></span><span class="op">(</span><span class="fl">0</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#6ebed8"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_classic.html" class="external-link">kable_paper</a></span><span class="op">(</span>html_font <span class="op">=</span> <span class="st">"helvetica"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/scroll_box.html" class="external-link">scroll_box</a></span><span class="op">(</span>width <span class="op">=</span> <span class="st">"100%"</span>, height <span class="op">=</span> <span class="st">"300px"</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 <p>The table below shows the data, with only a few variables displayed.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">vitals5_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">LocID</span>, <span class="va">LocName</span>, <span class="va">DataSourceYear</span>, <span class="va">DataStatusName</span>, <span class="va">SexName</span>, <span class="va">SexID</span>, <span class="va">DataSourceYear</span>, <span class="va">TimeLabel</span>, <span class="va">TimeMid</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"Age"</span><span class="op">)</span>, <span class="va">DataValue</span>, <span class="va">SeriesID</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">agesort</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">AgeLabel</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">vitals5_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">LocID</span>, <span class="va">LocName</span>, <span class="va">DataSourceYear</span>, <span class="va">DataStatusName</span>, <span class="va">SexName</span>, <span class="va">SexID</span>, <span class="va">DataSourceYear</span>, <span class="va">TimeLabel</span>, <span class="va">TimeMid</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"Age"</span><span class="op">)</span>, <span class="va">DataValue</span>, <span class="va">SeriesID</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">agesort</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">AgeLabel</span><span class="op">)</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 LocID
@@ -832,11 +834,11 @@ Total
 <p>The function should ideally be run over each of the specific SexIDs (Males (1), Females (2) and Both sexes (3)), but when it is applied to births data, only “Both sexes” counts are considered. It is also implemented in cases where we have at least one abridged age group.</p>
 <p>Before running this function, we need to ensure that all the age labels in the data have an <code>AgeSpan</code> &gt;= 5.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">AgeSpan</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">|</span> <span class="va">AgeSpan</span> <span class="op">&gt;=</span> <span class="fl">5</span><span class="op">)</span>
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">AgeSpan</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">|</span> <span class="va">AgeSpan</span> <span class="op">&gt;=</span> <span class="fl">5</span><span class="op">)</span>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 LocID
@@ -1459,14 +1461,14 @@ Total
 </div>
 <p>We begin by subsetting the data to ensure that we only have “Both sexes” data and none of the data values are missing.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SexID</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">DataValue</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">SexID</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SexID</span> <span class="op">==</span> <span class="fl">3</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">DataValue</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">SexID</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 LocID
@@ -2056,14 +2058,14 @@ Total
 </div>
 <p>We then check if “Final” data status is available and if so, we prioritize this over the provisional records.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="st">"Final"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataStatusName</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">DataStatusName</span> <span class="op">==</span> <span class="st">"Final"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="st">"Final"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataStatusName</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">DataStatusName</span> <span class="op">==</span> <span class="st">"Final"</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 LocID
@@ -2653,8 +2655,8 @@ Total
 </div>
 <p>We proceed to check for multiple series ids and for each unique series id, we check whether it is a full series <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> with all age groups represented and an open age greater than 60.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ids_series</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">SeriesID</span><span class="op">)</span>
-<span class="va">n_series</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">ids_series</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">ids_series</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">SeriesID</span><span class="op">)</span>
+<span class="va">n_series</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ids_series</span><span class="op">)</span>
 
 <span class="co"># for each unique series,</span>
 <span class="va">df_out</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
@@ -2662,27 +2664,27 @@ Total
 <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n_series</span><span class="op">)</span> <span class="op">{</span>
 
   <span class="co">## Filter the data for a specific SeriesID</span>
-  <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SeriesID</span> <span class="op">==</span> <span class="va">ids_series</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>
+  <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SeriesID</span> <span class="op">==</span> <span class="va">ids_series</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>
 
   <span class="co">## Check whether it is a full series with all age groups represented and an open age greater than 60</span>
   <span class="co">## AgeSpan == -1 (Total), AgeSpan == -2 (Unknown), AgeSpan == 5(five-year)</span>
 
   <span class="va">df_abr_std</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">df</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|</span>
-    <span class="va">df</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>, <span class="op">]</span>
+    <span class="va">df</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span>, <span class="op">]</span>
 
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">df_abr_std</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">13</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">df_abr_std</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">13</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">df</span><span class="op">$</span><span class="va">check_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dd_series_isfull.html">dd_series_isfull</a></span><span class="op">(</span><span class="va">df_abr_std</span>, abridged <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
   <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
     <span class="va">df</span><span class="op">$</span><span class="va">check_full</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span>
   <span class="op">}</span>
-  <span class="va">df_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">df_out</span>, <span class="va">df</span><span class="op">)</span>
+  <span class="va">df_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">df_out</span>, <span class="va">df</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">df_out</span>
-<span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span><span class="va">df_out</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">df_out</span><span class="op">)</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 LocID
@@ -3305,10 +3307,10 @@ FALSE
 </div>
 <p>As can be seen in this data, we have situations were we have multiple total labels for the same series. This may have occurred when a country updates an age label and reports the total for that update. If there exists more than one total reported and there is a one that is equal to the computed total (summation over the age labels), drop the others to be left with this one <a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_multiple_totals.html">dd_multiple_totals</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_multiple_totals.html">dd_multiple_totals</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 LocID
@@ -3937,25 +3939,25 @@ FALSE
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># if there is more than one series ...</span>
 <span class="kw">if</span> <span class="op">(</span><span class="va">n_series</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">latest_source_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataSourceYear</span><span class="op">)</span>
-  <span class="va">check_latest_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">check_full</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataSourceYear</span> <span class="op">==</span> <span class="va">latest_source_year</span><span class="op">]</span><span class="op">)</span>
+  <span class="va">latest_source_year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataSourceYear</span><span class="op">)</span>
+  <span class="va">check_latest_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">check_full</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataSourceYear</span> <span class="op">==</span> <span class="va">latest_source_year</span><span class="op">]</span><span class="op">)</span>
   <span class="co"># ... and latest series is full then keep only that one</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">check_latest_full</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">check_latest_full</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
     <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataSourceYear</span> <span class="op">==</span> <span class="va">latest_source_year</span>, <span class="op">]</span>
   <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
     <span class="co"># ... and latest series is not full, then keep the latest data source record for each age</span>
-    <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_latest_source_year.html">dd_latest_source_year</a></span><span class="op">(</span><span class="op">)</span>
+    <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_latest_source_year.html">dd_latest_source_year</a></span><span class="op">(</span><span class="op">)</span>
   <span class="op">}</span>
 <span class="op">}</span></code></pre></div>
 <p>We proceed to tidy up the data frame and in cases where we do not have an “Unknown” age label present, we generate one and set the data value to 0.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DataSourceYear</span>, <span class="va">AgeStart</span>, <span class="va">AgeEnd</span>, <span class="va">AgeLabel</span>, <span class="va">AgeSpan</span>, <span class="va">DataValue</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">DataSourceYear</span>, <span class="va">AgeStart</span>, <span class="va">AgeEnd</span>, <span class="va">AgeLabel</span>, <span class="va">AgeSpan</span>, <span class="va">DataValue</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"Unknown"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"Unknown"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
       AgeStart <span class="op">=</span> <span class="op">-</span><span class="fl">2</span>,
       AgeEnd <span class="op">=</span> <span class="op">-</span><span class="fl">2</span>,
       AgeSpan <span class="op">=</span> <span class="op">-</span><span class="fl">2</span>,
@@ -3966,17 +3968,17 @@ FALSE
 <span class="op">}</span></code></pre></div>
 <p>We have situations where the “Unknown” value represents the difference between the reported total and the summation of the data values (computed totals) and in such cases, we also set the “Unknown” data value to 0 <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_drop_unknowns.html">dd_drop_unknowns</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_drop_unknowns.html">dd_drop_unknowns</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>We also reconcile early age groups for births, for example in this case, we have 0-14 and since the minimum age should be 10, we set this to 10-14 <a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>. We also reconcile ages 0-1, 1-4 and 0-4 such that if 0-4 is missing and 0-1 and 1-4 are present, we sum both to get 0-4 <a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/dd_firstages_compute_births.html">dd_firstages_compute_births</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">AgeSort</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="../reference/dd_firstages_compute_births.html">dd_firstages_compute_births</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">AgeSort</span><span class="op">)</span>
 
-<span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_firstages_compute.html">dd_firstages_compute</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_firstages_compute.html">dd_firstages_compute</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -4236,23 +4238,23 @@ NA
 </div>
 <p>We proceed to check whether there are multiple open age groups (TRUE/FALSE), and if so, compute closed age groups from multiple open age groups and add to the data if missing <a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">oag_multi</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_oag_multiple.html">dd_oag_multiple</a></span><span class="op">(</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">oag_multi</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_oag_multiple.html">dd_oag_multiple</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="kw">if</span> <span class="op">(</span><span class="va">oag_multi</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">add</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="../reference/dd_oag2closed.html">dd_oag2closed</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">AgeLabel</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataValue</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">add</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="../reference/dd_oag2closed.html">dd_oag2closed</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">AgeLabel</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataValue</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
 
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">add</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="va">add</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">AgeStart</span><span class="op">)</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">add</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">add</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">AgeStart</span><span class="op">)</span>
   <span class="op">}</span>
 <span class="op">}</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -4513,18 +4515,18 @@ NA
 <p>We then identify the start age of the open age group needed to close the series <a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a>, flag whether this open age group exists in the series and drop records for open age groups that do not close the series.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">oag_start</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_oag_agestart.html">dd_oag_agestart</a></span><span class="op">(</span><span class="op">)</span>
+<span class="va">oag_start</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/dd_oag_agestart.html">dd_oag_agestart</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="va">oag_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">oag_start</span>, <span class="st">"+"</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span>
+<span class="va">oag_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">oag_start</span>, <span class="st">"+"</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span>
 
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html">is_empty</a></span><span class="op">(</span><span class="va">oag_start</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">AgeStart</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">AgeStart</span> <span class="op">!=</span> <span class="va">oag_start</span><span class="op">)</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html" class="external-link">is_empty</a></span><span class="op">(</span><span class="va">oag_start</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">AgeStart</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">AgeStart</span> <span class="op">!=</span> <span class="va">oag_start</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -4785,8 +4787,8 @@ NA
 <p>We also check that there are no missing age groups on the abridged series and if so, we compute all possible open age groups <a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a> given available input and append the open age group that completes the abridged series. We also check again to see whether any open age group exists.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Check that there are no missing age groups on the abridged series</span>
-<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="fl">5</span>, <span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">check_abr</span> <span class="op">&lt;-</span> <span class="fu">DemoTools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DemoTools/man/is_abridged.html">is_abridged</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeStart</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="fl">5</span><span class="op">]</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="fl">5</span>, <span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">check_abr</span> <span class="op">&lt;-</span> <span class="fu">DemoTools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DemoTools/man/is_abridged.html" class="external-link">is_abridged</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeStart</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">&gt;=</span> <span class="fl">5</span><span class="op">]</span><span class="op">)</span>
 <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
   <span class="va">check_abr</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span>
 <span class="op">}</span>
@@ -4797,21 +4799,21 @@ NA
   <span class="va">abr_oag</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dd_oag_compute.html">dd_oag_compute</a></span><span class="op">(</span><span class="va">new_df</span>, age_span <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 
   <span class="co">## Append the oag that completes the abridged series</span>
-  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="va">abr_oag</span><span class="op">[</span><span class="op">!</span><span class="op">(</span><span class="va">abr_oag</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span> <span class="op">&amp;</span>
-      <span class="va">abr_oag</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">==</span> <span class="va">oag_start</span>, <span class="op">]</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">AgeSort</span><span class="op">)</span>
+  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">abr_oag</span><span class="op">[</span><span class="op">!</span><span class="op">(</span><span class="va">abr_oag</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span> <span class="op">&amp;</span>
+      <span class="va">abr_oag</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">==</span> <span class="va">oag_start</span>, <span class="op">]</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">AgeSort</span><span class="op">)</span>
 <span class="op">}</span>
 
 
 <span class="co">## Check again whether any open age group exists</span>
-<span class="va">oag_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">oag_start</span>, <span class="st">"+"</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span>
+<span class="va">oag_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">oag_start</span>, <span class="st">"+"</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span>
 <span class="va">oag_check</span>
 <span class="co">#&gt; [1] TRUE</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -5094,24 +5096,24 @@ NA
 </div>
 <p>If “Total” is missing and the series is otherwise complete, we compute it .</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"Total"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span> <span class="op">&amp;</span> <span class="st">"0-4"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">&amp;</span> <span class="va">oag_check</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"Total"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span> <span class="op">&amp;</span> <span class="st">"0-4"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">&amp;</span> <span class="va">oag_check</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">new_df</span> <span class="op">&lt;-</span> <span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
       AgeStart <span class="op">=</span> <span class="fl">0</span>,
       AgeEnd <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,
       AgeLabel <span class="op">=</span> <span class="st">"Total"</span>,
       AgeSpan <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,
       AgeSort <span class="op">=</span> <span class="fl">184</span>,
       DataSourceYear <span class="op">=</span> <span class="cn">NA</span>,
-      DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
+      DataValue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">new_df</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span>
         <span class="va">new_df</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeStart</span> <span class="op">==</span> <span class="va">oag_start</span><span class="op">]</span> <span class="op">+</span>
         <span class="va">new_df</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">==</span> <span class="st">"Unknown"</span><span class="op">]</span>
     <span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -5398,13 +5400,13 @@ NA
 <span class="kw">if</span> <span class="op">(</span><span class="va">check_abr</span> <span class="op">==</span> <span class="cn">FALSE</span> <span class="op">|</span> <span class="va">oag_check</span> <span class="op">==</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">abr</span><span class="op">$</span><span class="va">note</span> <span class="op">&lt;-</span> <span class="st">"The abridged series is missing data for one or more age groups."</span>
 <span class="op">}</span>
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"0"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">&amp;</span> <span class="st">"1-4"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">&amp;</span> <span class="st">"0-4"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="st">"0"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">&amp;</span> <span class="st">"1-4"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">&amp;</span> <span class="st">"0-4"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_df</span><span class="op">$</span><span class="va">AgeLabel</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">new_df</span><span class="op">$</span><span class="va">note</span> <span class="op">&lt;-</span> <span class="st">"The abridged series is missing data for one or more age groups."</span>
 <span class="op">}</span>
 
-<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">new_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -5724,16 +5726,16 @@ The abridged series is missing data for one or more age groups.
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals5.html">DDharmonize_Vitals5</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html">dd_series_isfull</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_multiple_totals.html">dd_multiple_totals</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_latest_source_year.html">dd_latest_source_year</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
-<li id="fn5"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_drop_unknowns.html">dd_drop_unknowns</a><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
-<li id="fn6"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_firstages_compute_births.html">dd_firstages_compute_births</a><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
-<li id="fn7"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_firstages_compute.html">dd_firstages_compute</a><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
-<li id="fn8"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_multiple.html">dd_oag_multiple</a><a href="#fnref8" class="footnote-back">↩︎</a></p></li>
-<li id="fn9"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_agestart.html">dd_oag_agestart</a><a href="#fnref9" class="footnote-back">↩︎</a></p></li>
-<li id="fn10"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_compute.html">dd_oag_compute</a><a href="#fnref10" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals5.html" class="external-link">DDharmonize_Vitals5</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html" class="external-link">dd_series_isfull</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_multiple_totals.html" class="external-link">dd_multiple_totals</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_latest_source_year.html" class="external-link">dd_latest_source_year</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_drop_unknowns.html" class="external-link">dd_drop_unknowns</a><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_firstages_compute_births.html" class="external-link">dd_firstages_compute_births</a><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_firstages_compute.html" class="external-link">dd_firstages_compute</a><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+<li id="fn8"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_multiple.html" class="external-link">dd_oag_multiple</a><a href="#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_agestart.html" class="external-link">dd_oag_agestart</a><a href="#fnref9" class="footnote-back">↩︎</a></p></li>
+<li id="fn10"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_compute.html" class="external-link">dd_oag_compute</a><a href="#fnref10" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
@@ -5747,11 +5749,13 @@ The abridged series is missing data for one or more age groups.
 
 
       <footer><div class="copyright">
-  <p>Developed by Shelmith Kariuki.</p>
+  <p></p>
+<p>Developed by Shelmith Kariuki.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -5759,6 +5763,8 @@ The abridged series is missing data for one or more age groups.
 
   
 
+
+  
 
   </body>
 </html>

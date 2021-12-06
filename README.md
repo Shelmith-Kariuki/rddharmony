@@ -1,6 +1,4 @@
 
-# rddharmony <a href='https://github.com/Shelmith-Kariuki/rddharmony'><img src='man/figures/logo.png' align="right" height="139" /></a>
-
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/Shelmith-Kariuki/rddharmony/workflows/R-CMD-check/badge.svg)](https://github.com/Shelmith-Kariuki/rddharmony/actions)

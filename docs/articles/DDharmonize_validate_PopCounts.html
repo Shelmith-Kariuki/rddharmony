@@ -27,6 +27,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-reverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -39,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rddharmony</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
       </span>
     </div>
 
@@ -93,7 +95,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Shelmith-Kariuki/rddharmony/">
+  <a href="https://github.com/Shelmith-Kariuki/rddharmony/" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
     
@@ -115,21 +117,21 @@
       <h1 data-toc-skip>DDharmonize_validate_PopCounts</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/master/vignettes/DDharmonize_validate_PopCounts.Rmd"><code>vignettes/DDharmonize_validate_PopCounts.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/HEAD/vignettes/DDharmonize_validate_PopCounts.Rmd" class="external-link"><code>vignettes/DDharmonize_validate_PopCounts.Rmd</code></a></small>
       <div class="hidden name"><code>DDharmonize_validate_PopCounts.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
-<p><code><a href="../reference/DDharmonize_validate_PopCounts.html">DDharmonize_validate_PopCounts()</a></code> is a function that implements a work flow for population data extracted from censuses, registers or estimation. This work flow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals and by sex and eventually producing clean and harmonised datasets for each location. See the <a href="https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html">harmonization workflow</a> article for a detailed overview of this process.</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p><code><a href="../reference/DDharmonize_validate_PopCounts.html">DDharmonize_validate_PopCounts()</a></code> is a function that implements a work flow for population data extracted from censuses, registers or estimation. This work flow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals and by sex and eventually producing clean and harmonised datasets for each location. See the <a href="https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html" class="external-link">harmonization workflow</a> article for a detailed overview of this process.</p>
 </div>
-<div id="function-definition" class="section level2">
-<h2 class="hasAnchor">
-<a href="#function-definition" class="anchor"></a>Function definition</h2>
+<div class="section level2">
+<h2 id="function-definition">Function definition<a class="anchor" aria-label="anchor" href="#function-definition"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># clean_df &lt;- DDharmonize_validate_PopCounts(locid = 533,</span>
@@ -138,9 +140,9 @@
 <span class="co">#                                              return_unique_ref_period = TRUE,</span>
 <span class="co">#                                              retainKeys = FALSE)</span></code></pre></div>
 </div>
-<div id="description-of-the-function-arguments" class="section level2">
-<h2 class="hasAnchor">
-<a href="#description-of-the-function-arguments" class="anchor"></a>Description of the function arguments</h2>
+<div class="section level2">
+<h2 id="description-of-the-function-arguments">Description of the function arguments<a class="anchor" aria-label="anchor" href="#description-of-the-function-arguments"></a>
+</h2>
 <p>The function contains several arguments:</p>
 <p><strong><code>locid</code>:</strong> This is the a numeric variable representing the location id of each of the locations. You can run <code>View(get_locations())</code> to get the list of plausible location ids. The ids are listed in the <code>PK_LocID</code> variable. You can also run the function <code>check_locid(insert locid here)</code> to check whether a location id is valid (part of the locations in the UNPD website). Running <code>check_locid(insert locid here)</code> with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run <code>View(get_locations())</code> in order to get a list of plausible location ids. See example below.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -154,13 +156,13 @@
 <p><strong><code>return_unique_ref_period</code>:</strong> Specifies whether the data to be returned should contain one unique id (<code>return_unique_ref_period == TRUE</code>) or several ids (<code>return_unique_ref_period == FALSE</code>) per time label. ids are a unique identifier for each unique set of records based on <code>LocID</code>, <code>LocName</code>, <code>DataProcess</code>, <code>ReferencePeriod</code>, <code>DataSourceName</code>, <code>StatisticalConceptName</code>, <code>DataTypeName</code> and <code>DataReliabilityName</code>. The definitions of these variables are provided later in this article.</p>
 <p><strong><code>retainKeys</code>:</strong> Specifies whether only a few (<code>retainKeys == FALSE</code>) or all (<code>retainKeys == TRUE</code>) variables should be retained in the output.</p>
 </div>
-<div id="description-of-the-output-variables" class="section level2">
-<h2 class="hasAnchor">
-<a href="#description-of-the-output-variables" class="anchor"></a>Description of the output variables</h2>
+<div class="section level2">
+<h2 id="description-of-the-output-variables">Description of the output variables<a class="anchor" aria-label="anchor" href="#description-of-the-output-variables"></a>
+</h2>
 <p>The function returns clean data with 26 variables (when <code>retainKeys == TRUE</code>) which are defined below:</p>
 <ul>
 <li><p><code>id</code>: A unique id that is generated by combining the <code>LocID</code>, <code>LocName</code>, <code>DataProcess</code>, type of data (population), <code>TimeLabel</code>, <code>DataProcessType</code>, <code>DataSourceName</code>, <code>StatisticalConceptName</code>, <code>DataTypeName</code> and <code>DataReliabilityName</code>.</p></li>
-<li><p><code>LocID</code>: Location Id. This is a numerical Location Code (3-digit codes following ISO 3166-1 numeric standard - UNSD M49 codes) - see <a href="http://en.wikipedia.org/wiki/ISO_3166-1_numeric" class="uri">http://en.wikipedia.org/wiki/ISO_3166-1_numeric</a> .</p></li>
+<li><p><code>LocID</code>: Location Id. This is a numerical Location Code (3-digit codes following ISO 3166-1 numeric standard - UNSD M49 codes) - see <a href="http://en.wikipedia.org/wiki/ISO_3166-1_numeric" class="external-link uri">http://en.wikipedia.org/wiki/ISO_3166-1_numeric</a> .</p></li>
 <li><p><code>LocName</code>: Name of a country or territory identified by each Location Id e.g when <code>LocID</code> == 533 , <code>LocName</code> == Aruba</p></li>
 <li><p><code>IndicatorName</code>: Identifies the type of data i.e. <code>Population by age and sex - abridged</code> or <code>Population by age and sex - complete</code></p></li>
 <li><p><code>IndicatorID</code>: An id representing each indicator. <code>IndicatorID</code> = 58 where<code>IndicatorName</code> == <code>Population by age and sex - abridged</code> and <code>IndicatorID</code> = 60 where <code>IndicatorName</code> == <code>Population by age and sex - complete</code>.</p></li>
@@ -200,11 +202,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Shelmith Kariuki.</p>
+  <p></p>
+<p>Developed by Shelmith Kariuki.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -212,6 +216,8 @@
 
   
 
+
+  
 
   </body>
 </html>

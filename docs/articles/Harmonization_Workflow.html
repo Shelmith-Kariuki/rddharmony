@@ -27,6 +27,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-reverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -39,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rddharmony</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
       </span>
     </div>
 
@@ -93,7 +95,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Shelmith-Kariuki/rddharmony/">
+  <a href="https://github.com/Shelmith-Kariuki/rddharmony/" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
     
@@ -115,7 +117,7 @@
       <h1 data-toc-skip>Harmonization Workflow</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/master/vignettes/Harmonization_Workflow.Rmd"><code>vignettes/Harmonization_Workflow.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/HEAD/vignettes/Harmonization_Workflow.Rmd" class="external-link"><code>vignettes/Harmonization_Workflow.Rmd</code></a></small>
       <div class="hidden name"><code>Harmonization_Workflow.Rmd</code></div>
 
     </div>
@@ -123,9 +125,9 @@
     
     
 <p>This article gives a brief description of the harmonization process <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, from extracting the data from the UNPD database to producing clean output. The process is divided into four parts outlined below.</p>
-<div id="part-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#part-1" class="anchor"></a>Part 1</h3>
+<div class="section level3">
+<h3 id="part-1">Part 1<a class="anchor" aria-label="anchor" href="#part-1"></a>
+</h3>
 <blockquote>
 <p><strong>TL;DR:</strong> <em>In this section, the data is extracted from the UNPD database and harmonized to standard abridged and complete age groups, per series.</em></p>
 </blockquote>
@@ -134,42 +136,42 @@
 <p>A major step that follows is the harmonization of the data into standard age groups <a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. This step is implemented on each id and each series (abridged or complete). We begin by subsetting the data, to only be left with the final series, in a case where “Final” data status is available. For each series, we then check whether the series is a full series with all age groups represented and also check whether an open age (greater than 60 for the births data) exists in the data. A full series requires all closed age groups and either an open age group or a reported total value. If the data is abridged, then a full series also requires either both abridged child ages or both five-year child ages to be present. This condition sufficiently holds for both the births data and the population counts data, but is further enhanced for the deaths data as described in part 2. We also ensure that that we only have one “Total” record reported in the data. If more than one series exists, and the latest series is full, we only keep one, but if the latest series is not full, we then keep the latest data source record for each age label. In cases where an “Unknown” age label does not exist, we generate one and set its’ data value to 0. The same happens in cases where an “Unknown” age label exists, but is equivalent to the difference between the reported total and calculated total. This could be a case where age labels were later updated and these changes captured in the reported total. In cases where the age labels are grouped (abridged), we reconcile wide early age groups to abridged e.g in a case where 0-4 is missing and 0 and 1-4 are present, we sum 0 and 1-4 to obtain 0-4. We also check whether there are multiple open age groups and if so, we compute closed age groups from them and add them to the data if they are missing. The start age of the open age group needed to close the series is identified and a check is done to confirm whether this open age group exists in the series. Open age groups that do not close the series are dropped, a check is done to ensure that there are no missing age groups on the abridged series after which we compute all possible open age groups and append them to the data. If the total is not recorded and the series is otherwise complete, we compute it. In a case where we still have missing age labels or an open age group does not exist, a note is generated alerting the user that the series is missing data for one or more age groups. This marks the end of harmonization of the data into standard age groups.</p>
 <p>Once the major harmonization step is done, we check whether the youngest age on abridged is lower than youngest age on complete (in the case where both abridged and complete series exist), and if so, we distribute (for births data) counts at ages 10-14 across single ages 10-14 using the Kirill’s Matlab regression method <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>. We then reconcile abridged and complete series, as necessary. This involves generating abridged records from complete series , checking if the totals match, in cases where they exist, filling in the total of one series if it is missing but is present in the other series, appending the abridged series with the abridged records derived from complete series, computing all possible open age groups, dropping records for open age groups that do not close the series and finally in cases where totals for both series don’t match, generating a note alerting the user that different totals on abridged and complete preclude reconciliation <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>. We proceed to fill in zeros for counts at young ages <a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>, if missing and in cases where we only have the complete series and not the abridged series, we generate the latter records from the former <a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>. We later populate missing age groups with zeros, as appropriate and finally assemble all of the series into a single dataset.</p>
 </div>
-<div id="part-2" class="section level3">
-<h3 class="hasAnchor">
-<a href="#part-2" class="anchor"></a>Part 2</h3>
+<div class="section level3">
+<h3 id="part-2">Part 2<a class="anchor" aria-label="anchor" href="#part-2"></a>
+</h3>
 <p>In this section, two major things happen. One, we check if the data(series) is full <a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> and if so, we keep it and two, for each id-sex combination of full series, we keep the reconciled series if it is available and discard the original abridged or complete series.</p>
 <p>At this point, we also define a full series based on the availability of the individual sex data. In the deaths data, a full series is further defined as one where either both male and female data is available, or both sexes data and either the male data or female data is available.</p>
 </div>
-<div id="part-3" class="section level3">
-<h3 class="hasAnchor">
-<a href="#part-3" class="anchor"></a>Part 3</h3>
+<div class="section level3">
+<h3 id="part-3">Part 3<a class="anchor" aria-label="anchor" href="#part-3"></a>
+</h3>
 <p>In this section, we validate the remaining series, making corrections on any instances where data for sex-age group combinations are missing and check whether the sum over age matches the reported totals <a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a>. We also go a step further and check if counts by sex is equal to counts for both sexes and adjust in case of any difference <a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a> and distribute unknowns over age <a href="#fn11" class="footnote-ref" id="fnref11"><sup>11</sup></a>. Finally, the most authoritative series is selected, in cases where there is more than one id for a given census year. This process is different for the different kinds of data.</p>
 <p>For births and deaths <a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a>, we first check if there are multiple ids per time label in the dataset. If such records exist, we separate them from those that only have one id for each time label. On the former dataset, and for each time label, we begin by dropping records based on the <code>StatisticalConceptName</code>, preferring “Year of occurrence” over “Year of registration”. In cases where we have multiple types of <code>DataStatus</code>, we prefer the “Final” over “Provisional”. We then rank the data by <code>DataProcess</code>, preferring “Census” over “Vital Registration” data. We also prefer better <code>DataReliability</code> (where the data is ranked as 1: High Quality, 2: Fair Quality, 3: Low Quality and so on). We also have cases where there are multiple <code>DataSourceYear</code> values for the same time label in which case we subset the data to select the latest <code>DataSourceYear</code> for each of the time labels. In cases where we have some ids with both abridged and complete series, and others with only one of the two, we prefer the former to the latter. We also check on the maximum age groups for each of the ids, and keep the series with the highest open age group. We have several <code>DataSourceNames</code> present in the data, and in the case where these exist for the same time label, we prefer “Demographic Yearbook” over the rest. The final process of this part is checking for duplicates and dropping them, if they exist. The resulting data is then merged back with the records that only have one id for each time label and in cases where multiple ids still exist, we randomly drop the rest to be left with only one.</p>
 <p>For population data <a href="#fn13" class="footnote-ref" id="fnref13"><sup>13</sup></a>, we also check if there are multiple ids and separate them from those that only have one id for each time label. Here, we begin by checking cases where both the abridged and complete series exist, and keep this over ids with only one of the series present. As with the births and deaths data, we also prefer better <code>DataReliability</code> but when it comes to ranking the <code>StatisticalConceptName</code>, we prefer “De-facto” over “De-jure”. We also check on the maximum age groups for each of the ids, keeping the series with the highest open age group and prefer “Demographic Yearbook” over the rest in cases where multiple <code>DataSourceNames</code> exist. If there are cases with “IPUMS” as a duplicate source, we drop it since many of these series are samples. We then subset the data to select the latest <code>DataSourceYear</code> for each of the time labels, drop duplicates where they exist, merge the dataset with the records that only have one id for each time label and randomly pick one id, in cases where multiple ids still exist in the data.</p>
 </div>
-<div id="part-4" class="section level3">
-<h3 class="hasAnchor">
-<a href="#part-4" class="anchor"></a>Part 4</h3>
+<div class="section level3">
+<h3 id="part-4">Part 4<a class="anchor" aria-label="anchor" href="#part-4"></a>
+</h3>
 <p>This being the final part of the work flow, we look for years that are in the raw data but not in the output and append them to the output with a note. If there are series with non-standard age groups, we add these to the output as well. We then combine the harmonized data with the <code>Total counts by sex</code> data ensuring that, for each id, one, if <code>Total counts by sex</code> records exist and the harmonized data does not, we drop the former and two, if the <code>Total counts by sex</code> reported total value does not match the total value reported in the harmonized data, we drop it<a href="#fn14" class="footnote-ref" id="fnref14"><sup>14</sup></a>. We also ensure that we have one id per time label and finally drop duplicate records (especially in cases where we may have duplicate <code>Total counts by sex</code> records).</p>
 </div>
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_validate_DeathCounts.html">DDharmonize_validate_DeathCounts</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_validate_PopCounts.html">DDharmonize_validate_PopCounts</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDextract_VitalCounts.html">DDextract_VitalCounts</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals5.html">DDharmonize_Vitals5</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals1.html">DDharmonize_Vitals1</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Pop5.html">DDharmonize_Pop5</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Pop1.html">DDharmonize_Pop1</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_births_abridged2single_1014.html">dd_births_abridged2single_1014</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
-<li id="fn5"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_AbridgedAndComplete.html">DDharmonize_AbridgedAndComplete</a><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
-<li id="fn6"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_fillzeros_births.html">dd_fillzeros_births</a><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
-<li id="fn7"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_single2abridged.html">dd_single2abridged</a><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
-<li id="fn8"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html">dd_series_isfull</a><a href="#fnref8" class="footnote-back">↩︎</a></p></li>
-<li id="fn9"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_age.html">dd_validate_totals_over_age</a><a href="#fnref9" class="footnote-back">↩︎</a></p></li>
-<li id="fn10"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_sex.html">dd_validate_totals_over_sex</a><a href="#fnref10" class="footnote-back">↩︎</a></p></li>
-<li id="fn11"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_distribute_unknowns.html">dd_distribute_unknowns</a><a href="#fnref11" class="footnote-back">↩︎</a></p></li>
-<li id="fn12"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_rank_id_vitals.html">dd_rank_id_vitals</a><a href="#fnref12" class="footnote-back">↩︎</a></p></li>
-<li id="fn13"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_rank_id.html">dd_rank_id</a><a href="#fnref13" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_validate_BirthCounts.html" class="external-link">DDharmonize_validate_BirthCounts</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_validate_DeathCounts.html" class="external-link">DDharmonize_validate_DeathCounts</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_validate_PopCounts.html" class="external-link">DDharmonize_validate_PopCounts</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDextract_VitalCounts.html" class="external-link">DDextract_VitalCounts</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals5.html" class="external-link">DDharmonize_Vitals5</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals1.html" class="external-link">DDharmonize_Vitals1</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Pop5.html" class="external-link">DDharmonize_Pop5</a>, <a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Pop1.html" class="external-link">DDharmonize_Pop1</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_births_abridged2single_1014.html" class="external-link">dd_births_abridged2single_1014</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_AbridgedAndComplete.html" class="external-link">DDharmonize_AbridgedAndComplete</a><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_fillzeros_births.html" class="external-link">dd_fillzeros_births</a><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_single2abridged.html" class="external-link">dd_single2abridged</a><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+<li id="fn8"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html" class="external-link">dd_series_isfull</a><a href="#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_age.html" class="external-link">dd_validate_totals_over_age</a><a href="#fnref9" class="footnote-back">↩︎</a></p></li>
+<li id="fn10"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_sex.html" class="external-link">dd_validate_totals_over_sex</a><a href="#fnref10" class="footnote-back">↩︎</a></p></li>
+<li id="fn11"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_distribute_unknowns.html" class="external-link">dd_distribute_unknowns</a><a href="#fnref11" class="footnote-back">↩︎</a></p></li>
+<li id="fn12"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_rank_id_vitals.html" class="external-link">dd_rank_id_vitals</a><a href="#fnref12" class="footnote-back">↩︎</a></p></li>
+<li id="fn13"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_rank_id.html" class="external-link">dd_rank_id</a><a href="#fnref13" class="footnote-back">↩︎</a></p></li>
 <li id="fn14">
-<a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_append_tcs_cas.html">dd_append_tcs_cas</a>
+<a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_append_tcs_cas.html" class="external-link">dd_append_tcs_cas</a>
 <style>
 body {text-align: justify}
 </style>
@@ -188,11 +190,13 @@ body {text-align: justify}
 
 
       <footer><div class="copyright">
-  <p>Developed by Shelmith Kariuki.</p>
+  <p></p>
+<p>Developed by Shelmith Kariuki.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -200,6 +204,8 @@ body {text-align: justify}
 
   
 
+
+  
 
   </body>
 </html>

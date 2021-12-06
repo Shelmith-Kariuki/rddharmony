@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-reverse navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rddharmony</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1</span>
       </span>
     </div>
 
@@ -92,7 +94,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Shelmith-Kariuki/rddharmony/">
+  <a href="https://github.com/Shelmith-Kariuki/rddharmony/" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
     
@@ -115,7 +117,7 @@
       <h1 data-toc-skip>Validating totals over age</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/master/vignettes/dd_validate_totals_over_age.Rmd"><code>vignettes/dd_validate_totals_over_age.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Shelmith-Kariuki/rddharmony/blob/HEAD/vignettes/dd_validate_totals_over_age.Rmd" class="external-link"><code>vignettes/dd_validate_totals_over_age.Rmd</code></a></small>
       <div class="hidden name"><code>dd_validate_totals_over_age.Rmd</code></div>
 
     </div>
@@ -130,25 +132,25 @@
 <p>To show how it works, we shall use the <code>vitals_std_full_sample</code> dataset that is embedded on this package. This dataset represents a scenario where we have both abridged and complete series for the same unique id.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Load the packages required</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony">rddharmony</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/">kableExtra</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony" class="external-link">rddharmony</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org" class="external-link">purrr</a></span><span class="op">)</span>
 
 <span class="co">## Create a function to be used to generate the table output</span>
 <span class="va">tab_output</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tab</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">tab</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, align <span class="op">=</span> <span class="st">"c"</span>, table.envir <span class="op">=</span> <span class="st">"capctable"</span>, longtable <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html">row_spec</a></span><span class="op">(</span><span class="fl">0</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#6ebed8"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_classic.html">kable_paper</a></span><span class="op">(</span>html_font <span class="op">=</span> <span class="st">"helvetica"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/scroll_box.html">scroll_box</a></span><span class="op">(</span>width <span class="op">=</span> <span class="st">"100%"</span>, height <span class="op">=</span> <span class="st">"300px"</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">tab</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, align <span class="op">=</span> <span class="st">"c"</span>, table.envir <span class="op">=</span> <span class="st">"capctable"</span>, longtable <span class="op">=</span> <span class="cn">TRUE</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html" class="external-link">row_spec</a></span><span class="op">(</span><span class="fl">0</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#6ebed8"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_classic.html" class="external-link">kable_paper</a></span><span class="op">(</span>html_font <span class="op">=</span> <span class="st">"helvetica"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+    <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/scroll_box.html" class="external-link">scroll_box</a></span><span class="op">(</span>width <span class="op">=</span> <span class="st">"100%"</span>, height <span class="op">=</span> <span class="st">"300px"</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">vitals_std_full_sample</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> 
-       <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"Age"</span><span class="op">)</span>, <span class="va">SexID</span>, <span class="va">DataValue</span>, <span class="va">abridged</span>, <span class="va">complete</span><span class="op">)</span>
-<span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">vitals_std_full_sample</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> 
+       <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"Age"</span><span class="op">)</span>, <span class="va">SexID</span>, <span class="va">DataValue</span>, <span class="va">abridged</span>, <span class="va">complete</span><span class="op">)</span>
+<span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -2159,15 +2161,15 @@ TRUE
 <code class="sourceCode R"><span class="va">sex</span> <span class="op">&lt;-</span> <span class="fl">3</span> 
 
     <span class="co">## subset the data to have abridged records for each particular sex id</span>
-    <span class="va">df_abr</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SexID</span> <span class="op">==</span> <span class="va">sex</span> <span class="op">&amp;</span> <span class="va">abridged</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span>
+    <span class="va">df_abr</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SexID</span> <span class="op">==</span> <span class="va">sex</span> <span class="op">&amp;</span> <span class="va">abridged</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span>
 
     <span class="co">## extract the reported totals and the actual totals</span>
     <span class="va">total_reported_abr</span> <span class="op">&lt;-</span> <span class="va">df_abr</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">df_abr</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">==</span> <span class="st">"Total"</span><span class="op">]</span>
-    <span class="va">total_computed_abr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">df_abr</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">df_abr</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="op">-</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">df_abr</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">total_computed_abr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">df_abr</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">df_abr</span><span class="op">$</span><span class="va">AgeSpan</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>,<span class="op">-</span><span class="fl">2</span>, <span class="fl">5</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">df_abr</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">]</span><span class="op">)</span>
 
     <span class="co">## if the reported and actual totals exist...</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html">is_empty</a></span><span class="op">(</span><span class="va">total_reported_abr</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html">is_empty</a></span><span class="op">(</span><span class="va">total_computed_abr</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html" class="external-link">is_empty</a></span><span class="op">(</span><span class="va">total_reported_abr</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html" class="external-link">is_empty</a></span><span class="op">(</span><span class="va">total_computed_abr</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
 
       <span class="co"># if computed is greater than reported, then replace reported with computed</span>
       <span class="va">diff</span> <span class="op">&lt;-</span> <span class="va">total_computed_abr</span> <span class="op">-</span> <span class="va">total_reported_abr</span>
@@ -2184,13 +2186,13 @@ TRUE
 <p>The same process is repeated for complete records</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">    <span class="co">## subset the data to have complete records for each particular sex id</span>
-    <span class="va">df_cpl</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SexID</span> <span class="op">==</span> <span class="va">sex</span> <span class="op">&amp;</span> <span class="va">complete</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span>
+    <span class="va">df_cpl</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+      <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SexID</span> <span class="op">==</span> <span class="va">sex</span> <span class="op">&amp;</span> <span class="va">complete</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span>
 
     <span class="va">total_reported_cpl</span> <span class="op">&lt;-</span> <span class="va">df_cpl</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">df_cpl</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">==</span> <span class="st">"Total"</span><span class="op">]</span>
-    <span class="va">total_computed_cpl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">df_cpl</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">df_cpl</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">]</span><span class="op">)</span>
+    <span class="va">total_computed_cpl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">df_cpl</span><span class="op">$</span><span class="va">DataValue</span><span class="op">[</span><span class="va">df_cpl</span><span class="op">$</span><span class="va">AgeLabel</span> <span class="op">!=</span> <span class="st">"Total"</span><span class="op">]</span><span class="op">)</span>
 
-    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html">is_empty</a></span><span class="op">(</span><span class="va">total_reported_cpl</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html">is_empty</a></span><span class="op">(</span><span class="va">total_computed_cpl</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html" class="external-link">is_empty</a></span><span class="op">(</span><span class="va">total_reported_cpl</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_empty.html" class="external-link">is_empty</a></span><span class="op">(</span><span class="va">total_computed_cpl</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
 
       <span class="co"># if computed is greater than reported, then replace reported with computed</span>
       <span class="va">diff</span> <span class="op">&lt;-</span> <span class="va">total_computed_cpl</span> <span class="op">-</span> <span class="va">total_reported_cpl</span>
@@ -2207,10 +2209,10 @@ TRUE
 <p>Eventually, both datasets are appended to form the final output</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out.data</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
-<span class="va">out.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">out.data</span>, <span class="va">df_abr</span>, <span class="va">df_cpl</span><span class="op">)</span>
-<span class="va">out.data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<span class="va">out.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">out.data</span>, <span class="va">df_abr</span>, <span class="va">df_cpl</span><span class="op">)</span>
+<span class="va">out.data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">tab_output</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; ">
-<table class="table table lightable-paper">
+<table class="table table lightable-paper" style="margin-left: auto; margin-right: auto; font-family: helvetica; margin-left: auto; margin-right: auto;">
 <thead><tr>
 <th style="text-align:center;font-weight: bold;color: white !important;background-color: #6ebed8 !important;position: sticky; top:0; background-color: #FFFFFF;">
 AgeStart
@@ -4219,7 +4221,7 @@ TRUE
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_age.html">dd_validate_totals_over_age</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p><a href="https://shelmith-kariuki.github.io/rddharmony/reference/dd_validate_totals_over_age.html" class="external-link">dd_validate_totals_over_age</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
@@ -4233,11 +4235,13 @@ TRUE
 
 
       <footer><div class="copyright">
-  <p>Developed by Shelmith Kariuki.</p>
+  <p></p>
+<p>Developed by Shelmith Kariuki.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -4245,6 +4249,8 @@ TRUE
 
   
 
+
+  
 
   </body>
 </html>
