@@ -30,7 +30,7 @@ The functions are defined as follows:
 
 ## Part 1: Validating totals over sex: births and deaths
 
-To show how `dd_validate_totals_over_sex` works, we will be using the `validate_totals_over_sex` dataset that is part of this package. This dataset contains death counts of Kuwait for the year 2009, obtained from the Demographic Yearbook. 
+To show how `dd_validate_totals_over_sex_bd` works, we will be using the `validate_totals_over_sex` dataset that is part of this package. This dataset contains death counts of Kuwait for the year 2009, obtained from the Demographic Yearbook. 
 
 ```{r setup}
 ## Load the packages required
@@ -51,7 +51,7 @@ tab_output <- function(tab) {
 ```
 
 ```{r}
-df <- validate_totals_over_sex %>% 
+df <- validate_totals_over_sex_bd %>% 
   select(abridged, complete, SexID, AgeStart, AgeEnd, AgeSpan,AgeSort, AgeLabel,DataValue)
 
 df %>% tab_output()
