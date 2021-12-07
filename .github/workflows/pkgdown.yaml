@@ -1,9 +1,13 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# Add Config/Needs/website: tidyverse/tidytemplate to DESCRIPTION
 on:
+  workflow_dispatch:
   push:
     branches: [main, master]
     tags: ['*']
+  pull_request:
+    branches: [main, master]
 
 name: pkgdown
 
@@ -21,82 +25,15 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v1
+      - uses: r-lib/actions/setup-r-dependencies@pak1
         with:
-          extra-packages: pkgdown
           needs: website
 
-      - name: Query dependencies
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Build site
+        if: github.event_name == 'pull_request'
         run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
+          Rscript -e 'pkgdown::build_site()'
 
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          # For the later part of v1, this serves to invalidate the cache whenever is needed.
-          # See https://stackoverflow.com/questions/63521430/clear-cache-in-github-actions
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}-v1
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-v1
-
-      # To install rgl in macOS it needs xquartz
-      - name: macOS dependencies
-        if: runner.os == 'macOS'
-        run: |
-          brew install xquartz
-
-      # Adds manual deps to rgl in first line
-      - name: Linux dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get install libglu1-mesa-dev libv8-dev
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
-      # To install rgl successfully in non-windows OS we need to export DISPLAY
-      - name: Install packages not windows
-        if: runner.os != 'Windows'
-        run: |
-          export DISPLAY=:99
-          Rscript -e 'remotes::install_deps(dependencies = TRUE); remotes::install_cran("pkgdown")'
-
-      - name: Install packages windows
-        if: runner.os == 'Windows'
-        run: |
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("pkgdown")
-          install.packages("rgl")
-        shell: Rscript {0}
-
-        # To make things simple we only run code coverage on linux
-        # because rstan generates problems installing
-
-      - name: Test coverage
-        if: runner.os == 'Linux'
-        run: covr::codecov()
-        shell: Rscript {0}
-
-        # To make things simpler, limit pkgdown deploy only to one OS
-        # Why export DISPLAY? Search for this term throughout this file
-        # for thorough explanation.
-
-      - name: Deploy package website to pkgdown
-        if: runner.os == 'Linux'
-        run: |
-          export DISPLAY=:99
-          R CMD INSTALL .
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          Rscript -e 'install.packages("pkgdown"); pkgdown::deploy_to_branch(new_process = FALSE)'
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@main
-        with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
