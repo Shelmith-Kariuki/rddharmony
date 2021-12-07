@@ -1,5 +1,5 @@
 
-# rddharmony <a href='https://github.com/Shelmith-Kariuki/rddharmony'><img src='docs/reference/figures/logo.png' align="right" width="139" /></a>
+# rddharmony
 
 <!-- badges: start -->
 
