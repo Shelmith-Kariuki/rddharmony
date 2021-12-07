@@ -7,5 +7,5 @@
 #' \describe{
 #'   ...
 #' }
-#' @noRd
+#' @keywords internal
 "validate_totals_over_sex_bd"

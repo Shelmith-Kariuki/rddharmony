@@ -6,5 +6,5 @@
 #' \describe{
 #'   ...
 #' }
-#' @noRd
+#' @keywords internal
 "data_abr"

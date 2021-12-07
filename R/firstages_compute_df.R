@@ -6,5 +6,5 @@
 #' \describe{
 #'   ...
 #' }
-#' @noRd
+#' @keywords internal
 "firstages_compute_df"

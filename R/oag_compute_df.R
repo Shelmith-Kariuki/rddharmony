@@ -6,5 +6,5 @@
 #' \describe{
 #'   ...
 #' }
-#' @noRd
+#' @keywords internal
 "oag_compute_df"
