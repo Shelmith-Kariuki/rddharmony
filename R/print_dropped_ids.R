@@ -7,6 +7,7 @@
 #'
 #' @return ids that have been dropped because they result in data that is not full
 #' @export
+#' @noRd
 print_dropped_ids<- function(indata_before, indata_after){
 
   dropped_id_series <- unique(indata_before$id_series[!indata_before$id_series  %in%  indata_after$id_series])

@@ -6,4 +6,5 @@
 #' \describe{
 #'   ...
 #' }
+#' @noRd
 "dups"

@@ -6,4 +6,5 @@
 #' \describe{
 #'   ...
 #' }
+#' @noRd
 "abridged2single_1014_df"

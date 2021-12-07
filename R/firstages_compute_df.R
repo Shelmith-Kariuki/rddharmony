@@ -6,4 +6,5 @@
 #' \describe{
 #'   ...
 #' }
+#' @noRd
 "firstages_compute_df"

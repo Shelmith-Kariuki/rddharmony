@@ -6,5 +6,6 @@
 #' \describe{
 #'   ...
 #' }
+#' @noRd
 "series_isfull_df"
 

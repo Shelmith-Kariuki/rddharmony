@@ -7,4 +7,5 @@
 #' \describe{
 #'   ...
 #' }
+#' @noRd
 "validate_totals_over_sex_bd"

@@ -24,13 +24,13 @@ location and each data type (births, deaths or population).
 
 rddharmony contains three major functions:
 
-  - `DDharmonize_validate_BirthCounts()`: Extracts, processes and
+-   `DDharmonize_validate_BirthCounts()`: Extracts, processes and
     produces clean birth counts data
 
-  - `DDharmonize_validate_DeathCounts()`: Extracts, processes and
+-   `DDharmonize_validate_DeathCounts()`: Extracts, processes and
     produces clean death counts data
 
-  - `DDextract_PopCounts()`: Extracts, processes and produces clean
+-   `DDextract_PopCounts()`: Extracts, processes and produces clean
     population counts data
 
 ## Installation

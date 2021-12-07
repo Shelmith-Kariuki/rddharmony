@@ -4,4 +4,5 @@
 #' \describe{
 #'   ...
 #' }
+#' @noRd
 "vitals5_std"
