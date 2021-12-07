@@ -1,10 +1,16 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
+pkgdown: 2.0.1
 pkgdown_sha: ~
 articles:
+  DDharmonize_1YearCounts: DDharmonize_1YearCounts.html
+  DDharmonize_5YearCounts: DDharmonize_5YearCounts.html
+  DDharmonize_AbridgedAndComplete: DDharmonize_AbridgedAndComplete.html
   DDharmonize_validate_BirthCounts: DDharmonize_validate_BirthCounts.html
   DDharmonize_validate_DeathCounts: DDharmonize_validate_DeathCounts.html
   DDharmonize_validate_PopCounts: DDharmonize_validate_PopCounts.html
   Harmonization_Workflow: Harmonization_Workflow.html
-last_built: 2021-11-22T15:06Z
+  dd_oag_compute: dd_oag_compute.html
+  dd_validate_totals_over_age: dd_validate_totals_over_age.html
+  dd_validate_totals_over_sex: dd_validate_totals_over_sex.html
+last_built: 2021-12-07T19:30Z
 
