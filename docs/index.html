@@ -78,6 +78,9 @@
       <a href="articles/DDharmonize_5YearCounts.html">Harmonizing five-year counts</a>
     </li>
     <li>
+      <a href="articles/DDharmonize_1YearCounts.html">Harmonizing one-year counts</a>
+    </li>
+    <li>
       <a href="articles/DDharmonize_AbridgedAndComplete.html">Reconciling abridged and complete series</a>
     </li>
     <li>
@@ -112,7 +115,11 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
+<div class="section level1">
+<div class="page-header"><h1 id="rddharmony-">rddharmony <a href="https://github.com/Shelmith-Kariuki/rddharmony" class="external-link"><img src="docs/reference/figures/logo.png" align="right" width="139"></a>
+<a class="anchor" aria-label="anchor" href="#rddharmony-"></a>
+</h1></div>
+<!-- badges: start -->
 
 <!-- badges: end -->
 <div class="section level2">
@@ -145,6 +152,18 @@
 <p>The example below extracts Kenyan data, whose <code>locid == 404</code>. The output of the function is a dataset with 25 variables.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Shelmith-Kariuki/rddharmony" class="external-link">rddharmony</a></span><span class="op">)</span>
+<span class="co">#&gt; Loading required package: DDSQLtools</span>
+<span class="co">#&gt; Loading required package: DemoTools</span>
+<span class="co">#&gt; Loading required package: Rcpp</span>
+<span class="co">#&gt; Loading required package: dplyr</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Attaching package: 'dplyr'</span>
+<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     filter, lag</span>
+<span class="co">#&gt; The following objects are masked from 'package:base':</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
 <span class="va">kenya_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/DDharmonize_validate_BirthCounts.html">DDharmonize_validate_BirthCounts</a></span><span class="op">(</span>locid <span class="op">=</span> <span class="fl">404</span>,
                                               <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1950</span>,<span class="fl">2022</span><span class="op">)</span>,
                                               process <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"census"</span>, <span class="st">"vr"</span><span class="op">)</span>,
@@ -227,7 +246,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt;  https://popdiv.dfs.un.org/DemoData/api/locations?</span></code></pre></div>
 </div>
-
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

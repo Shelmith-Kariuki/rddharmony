@@ -42,6 +42,8 @@ navbar:
         href: articles/dd_oag_compute.html
       - text: Harmonizing five-year counts
         href: articles/DDharmonize_5YearCounts.html
+      - text: Harmonizing one-year counts
+        href: articles/DDharmonize_1YearCounts.html
       - text: Reconciling abridged and complete series
         href: articles/DDharmonize_AbridgedAndComplete.html
       - text: Validating totals over age

@@ -20,16 +20,16 @@ knitr::opts_chunk$set(
 
 The purpose of this process is to standardizes/harmonize one-year vital and population counts taken from the UNDP database.
 
-There are two functions involved. `DDharmonize_Vitals1` is implemented on births and deaths data while `DDharmonize_Pop1` is implemented on population data.
+There are two functions involved in this processP: `DDharmonize_Vitals1` [^1] is implemented on births and deaths data while `DDharmonize_Pop1` [^2] is implemented on population data.
 
 The functions are defined as follows:
 
-> DDharmonize_Vitals1(indata, type = c("births","deaths")) [^1]
+> DDharmonize_Vitals1(indata, type = c("births","deaths")) 
 
-> DDharmonize_Pop1(indata)
+> DDharmonize_Pop1(indata) 
 
 
-In this vignette, we will use the `pop1_df` dataset that is embedded on this package, and the `DDharmonize_Pop1()` function to show how one-year population counts are harmonized. This dataset represents population counts in Bangladesh for the year 1950.
+In this vignette, we will use the `pop1_df` dataset that is embedded on this package, and the `DDharmonize_Pop1()` function to show how one-year population counts are harmonized. This dataset represents population counts in Bangladesh for the year 1950 for cases where SexID = "Both sexes".
 
 ```{r setup}
 ## Load the packages required
@@ -48,15 +48,259 @@ tab_output <- function(tab) {
 }
 ```
 
-
-
 The data, with only a few variables displayed, is shown below.
 
 ```{r}
-new_df <- pop1_df %>%
+pop_complete <- pop1_df %>%
   select(LocID, LocName, DataSourceYear, DataStatusName, SexName, SexID, DataSourceYear, TimeLabel, TimeMid, starts_with("Age"), DataValue, SeriesID) %>%
   select(-agesort) %>%
   arrange(AgeLabel)
 
-new_df %>% tab_output()
+pop_complete %>% tab_output()
 ```
+
+We begin by initializing sex specific outputs. 
+
+```{r}
+
+cpl_sex <- NULL
+abr_from_cpl_sex <- NULL
+
+sexes <- unique(pop_complete$SexID)
+sexes
+```
+
+This process should be looped over each of the sex ids but our data only has `Both sexes` records.
+
+```{r}
+sex <- 3
+df <- pop_complete %>%
+  dplyr::filter(SexID == sex & !is.na(DataValue)) %>%
+  mutate(AgeLabel = as.character(AgeLabel)) %>%
+  distinct()
+```
+
+If "Final" data status is available, we keep only the final series.
+
+```{r}
+if ("Final" %in% unique(df$DataStatusName)) {
+  df <- df %>%
+    dplyr::filter(DataStatusName == "Final")
+}
+```
+
+We check for multiple series ids, and for each series id, we check whether it is a full series with all age groups represented and an open age greater than 60 [^3].
+
+```{r}
+ids_series <- unique(df$SeriesID)
+n_series <- length(ids_series)
+
+
+df_out <- NULL
+for (i in 1:n_series) {
+  df_one <- df %>% dplyr::filter(SeriesID == ids_series[i])
+
+  df_one_std <- df_one[df_one$AgeSpan %in% c(-1, -2, 1), ]
+  if (nrow(df_one_std) > 60) {
+    df_one$check_full <- dd_series_isfull(df_one_std, abridged = FALSE)
+  } else {
+    df_one$check_full <- FALSE
+  }
+  df_out <- rbind(df_out, df_one)
+}
+df <- df_out
+rm(df_out)
+```
+
+In cases where we have multiple total age labels for the same series, and there is a one that is equal to the computed total,
+we drop the rest to be left with this one [^4].
+
+```{r}
+df <- df %>% dd_multiple_totals()
+```
+
+If there is more than one series and the latest series is full, we keep only this one. If it is not full, we keep the latest data source record for each age [^5]. We also tidy up the dataframe at this point.
+
+```{r}
+if (n_series > 1) {
+  latest_source_year <- max(df$DataSourceYear)
+  check_latest_full <- unique(df$check_full[df$DataSourceYear == latest_source_year])
+  if (any(check_latest_full)) {
+    df <- df[df$DataSourceYear == latest_source_year, ]
+  } else {
+    df <- df %>% dd_latest_source_year()
+  }
+}
+
+df <- df %>%
+  select(DataSourceYear, AgeStart, AgeEnd, AgeLabel, AgeSpan, DataValue) %>%
+  distinct()
+```
+
+If there are still duplicate age groups, we keep the last one in current sort order. 
+
+```{r}
+df <- df %>%
+  mutate(sorting = 1:nrow(df)) %>%
+  group_by(AgeLabel) %>%
+  mutate(keeping = max(sorting)) %>%
+  ungroup() %>%
+  dplyr::filter(sorting == keeping) %>%
+  select(-sorting, -keeping)
+```
+
+If there is no record for unknown age or if the difference between the reported total and the sum over age (referred to as computed total) is equivalent to the unknown age, we set the data value of this unknown age to zero [^6].
+
+```{r}
+if (!("Unknown" %in% df$AgeLabel)) {
+  df <- df %>%
+    bind_rows(data.frame(
+      AgeStart = -2,
+      AgeEnd = -2,
+      AgeSpan = -2,
+      AgeLabel = "Unknown",
+      DataSourceYear = NA,
+      DataValue = 0
+    ))
+}
+
+df <- df %>% dd_drop_unknowns()
+```
+
+If the "Total" value is less than the sum over age, we discard it.
+
+```{r}
+total_reported <- df$DataValue[df$AgeLabel == "Total"]
+total_computed <- sum(df$DataValue[df$AgeLabel != "Total"])
+
+if (!is_empty(total_reported) & !is_empty(total_computed)) {
+  if (total_reported < total_computed) {
+    df <- df %>%
+      dplyr::filter(AgeLabel != "Total")
+  }
+}
+```
+
+We then identify the start age of the open age group needed to close the series [^7] and flag whether this open age group exists in the series. We then drop records for open age groups that do not close the series.
+
+```{r}
+
+oag_start <- dd_oag_agestart(df, multiple5 = FALSE)
+oag_check <- paste0(oag_start, "+") %in% df$AgeLabel
+
+if (!all(df$AgeLabel %in% c("Total", "Unknown"))) {
+  df <- df %>%
+    dplyr::filter(!(AgeStart > 0 & AgeSpan == -1 & AgeStart != oag_start)) %>%
+    arrange(AgeStart, AgeSpan)
+}
+```
+
+An `AgeSort` field that identifies the standard age groups is added to the data [^8].
+
+```{r}
+df <- dd_age_standard(df, abridged = FALSE) %>%
+  dplyr::filter(!is.na(DataValue))
+```
+
+We also check that the data is in fact a complete series starting at age zero and without gaps ... 
+
+```{r}
+check_cpl <- df %>%
+  dplyr::filter(AgeSpan == 1) %>%
+  summarise(
+    minAge = min(AgeStart),
+    maxAge = max(AgeStart),
+    nAge = length(unique(AgeStart))
+  )
+check_cpl <- check_cpl$minAge == 0 & check_cpl$nAge == check_cpl$maxAge + 1
+```
+
+... and compute all possible open age groups given the available input [^9].
+
+```{r}
+if (check_cpl == TRUE) {
+  df_oag <- dd_oag_compute(df, age_span = 1)
+
+  df <- df %>%
+    bind_rows(df_oag[!(df_oag$AgeLabel %in% df$AgeLabel) &
+      df_oag$AgeStart == oag_start, ]) %>%
+    arrange(AgeSort)
+}
+
+if (!("AgeSort" %in% names(df))) {
+  df <- dd_age_standard(df, abridged = FALSE) %>%
+    dplyr::filter(!is.na(DataValue))
+  check_cpl <- FALSE
+}
+```
+
+We check again whether any open age group exists and ...
+
+```{r}
+oag_start <- df %>% dd_oag_agestart()
+oag_check <- paste0(oag_start, "+") %in% df$AgeLabel
+```
+
+... if total is missing and series is otherwise complete, we compute the total.
+
+```{r}
+if (!("Total" %in% df$AgeLabel) & oag_check == TRUE) {
+  df <- df %>%
+    bind_rows(data.frame(
+      AgeStart = 0,
+      AgeEnd = -1,
+      AgeLabel = "Total",
+      AgeSpan = -1,
+      AgeSort = 184,
+      DataSourceYear = NA,
+      DataValue = sum(df$DataValue[df$AgeSpan == 1]) +
+        df$DataValue[df$AgeSpan == -1 & df$AgeStart == oag_start] +
+        df$DataValue[df$AgeLabel == "Unknown"]
+    ))
+}
+```
+
+A note is then created to alert about missing data.
+
+```{r}
+df$note <- NA
+if (check_cpl == FALSE | oag_check == FALSE) {
+  df$note <- "The complete series is missing data for one or more age groups."
+}
+
+df$SexID <- sex
+```
+
+The process is repeated for all the sex ids and finally, a series field is added to the data indicting that this is a complete series.  
+
+```{r}
+cpl_sex <- rbind(cpl_sex, df)
+
+if (!is.null(cpl_sex)) {
+  cpl_sex <- cpl_sex %>%
+    mutate(
+      abridged = FALSE,
+      complete = TRUE,
+      series = "complete"
+    )
+}
+```
+
+[^1]: [DDharmonize_Vitals1](https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Vitals1.html)
+
+[^2]: [DDharmonize_Pop1](https://shelmith-kariuki.github.io/rddharmony/reference/DDharmonize_Pop1.html)
+
+[^3]: [dd_series_isfull](https://shelmith-kariuki.github.io/rddharmony/reference/dd_series_isfull.html)
+
+[^4]: [dd_multiple_totals](https://shelmith-kariuki.github.io/rddharmony/reference/dd_multiple_totals.html)
+
+[^5]: [dd_latest_source_year](https://shelmith-kariuki.github.io/rddharmony/reference/dd_latest_source_year.html)
+
+[^6]: [dd_drop_unknowns](https://shelmith-kariuki.github.io/rddharmony/reference/dd_drop_unknowns.html)
+
+[^7]: [dd_oag_agestart](https://shelmith-kariuki.github.io/rddharmony/reference/dd_oag_agestart.html)
+
+[^8]: [dd_age_standard](https://shelmith-kariuki.github.io/rddharmony/reference/dd_age_standard.html)
+
+[^9]: [dd_oag_compute](https://shelmith-kariuki.github.io/rddharmony/articles/dd_oag_compute.html)
+

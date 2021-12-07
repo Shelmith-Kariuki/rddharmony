@@ -15,3 +15,6 @@ A data frame that includes one series (complete) that contains data by single ye
 \description{
 This wrapper takes vital counts from census and registers from DemoData and Standardizes/harmonizes them.
 }
+\details{
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_1YearCounts.html}{"Harmonizing one-year counts" vignette} for more details about this function.
+}

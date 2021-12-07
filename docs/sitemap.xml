@@ -13,6 +13,9 @@
     <loc>/articles/DDextract_PopCounts.html</loc>
   </url>
   <url>
+    <loc>/articles/DDharmonize_1YearCounts.html</loc>
+  </url>
+  <url>
     <loc>/articles/DDharmonize_5YearCounts.html</loc>
   </url>
   <url>
@@ -185,6 +188,9 @@
   </url>
   <url>
     <loc>/reference/oag_multiple_df.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pop1_df.html</loc>
   </url>
   <url>
     <loc>/reference/print_dropped_ids.html</loc>

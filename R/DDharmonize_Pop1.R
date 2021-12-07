@@ -1,6 +1,10 @@
+#' @title
 #' DDharmonize_Pop1
 #'
+#' @description
 #' This wrapper takes population1 indicators from DemoData and Standardizes/harmonizes by age group
+#'
+#' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_1YearCounts.html}{"Harmonizing one-year counts" vignette} for more details about this function.
 #'
 #' @param indata The data to be harmonised
 #'
@@ -12,8 +16,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' df <- data.frame()
-#' }
+#' df <- pop1_df
+#' df <- DDharmonize_Pop1(df)
+#'}
 DDharmonize_Pop1 <- function (indata) {
 
     ##1. Create an object containing population counts by single year of age

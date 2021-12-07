@@ -14,9 +14,12 @@ A data frame that contains data by single year of age up to the open age group
 }
 \description{
 This wrapper takes population1 indicators from DemoData and Standardizes/harmonizes by age group
+
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_1YearCounts.html}{"Harmonizing one-year counts" vignette} for more details about this function.
 }
 \examples{
 \dontrun{
-df <- data.frame()
+df <- pop1_df
+df <- DDharmonize_Pop1(df)
 }
 }

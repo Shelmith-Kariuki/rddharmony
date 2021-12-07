@@ -21,11 +21,11 @@ knitr::opts_chunk$set(
 
 The purpose of this process is to standardizes/harmonize five-year vital and population counts taken from the UNDP database.
 
-There are two functions involved. `DDharmonize_Vitals5` is implemented on births and deaths data while `DDharmonize_Pop5` is implemented on population data.
+There are two functions involved. `DDharmonize_Vitals5` [^1] is implemented on births and deaths data while `DDharmonize_Pop5` is implemented on population data.
 
 The functions are defined as follows:
 
-> DDharmonize_Vitals5(indata, type = c("births","deaths")) [^1]
+> DDharmonize_Vitals5(indata, type = c("births","deaths"))
 
 > DDharmonize_Pop5(indata)
 
