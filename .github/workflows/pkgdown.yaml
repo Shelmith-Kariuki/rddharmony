@@ -1,13 +1,9 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
-# Add Config/Needs/website: tidyverse/tidytemplate to DESCRIPTION
 on:
-  workflow_dispatch:
   push:
     branches: [main, master]
     tags: ['*']
-  pull_request:
-    branches: [main, master]
 
 name: pkgdown
 
@@ -21,19 +17,19 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
-      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@pak2
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@pak1
+      - uses: r-lib/actions/setup-r-dependencies@pak2
         with:
+          extra-packages: r-lib/pkgdown@v1.6.1, local::., local::./tests/testthat/progresstest
           needs: website
 
-      - name: Install package
-        run: R CMD INSTALL .
-
-      - name: Build site
-        if: github.event_name == 'pull_request'
+      - name: Deploy package
         run: |
-          Rscript -e 'pkgdown::build_site()'
-
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
+        env:
+          R_CLI_NUM_COLORS: 256
