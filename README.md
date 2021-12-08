@@ -7,6 +7,10 @@
 [![pkgdown](https://github.com/Shelmith-Kariuki/rddharmony/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/Shelmith-Kariuki/rddharmony/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/Shelmith-Kariuki/rddharmony/branch/master/graph/badge.svg)](https://codecov.io/gh/Shelmith-Kariuki/rddharmony?branch=master)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/rddharmony)](https://CRAN.R-project.org/package=rddharmony)
 
 <!-- badges: end -->
 

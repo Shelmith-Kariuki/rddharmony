@@ -16,15 +16,15 @@ Depends:
     R (>= 4.0.0),
     DDSQLtools,
     DemoTools,
-    dplyr,
-    icons
+    dplyr
 Imports: 
     tidyr,
     magrittr,
     purrr,
     assertthat,
     zoo,
-    kableExtra
+    kableExtra,
+    icons
 Suggests: 
     rmarkdown,
     knitr,

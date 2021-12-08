@@ -21,10 +21,9 @@ knitr::opts_chunk$set(
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(rddharmony)
-icons::download_fontawesome()
 
 ```
-##  `r icons::fontawesome("rocket", style = "solid")` Introduction
+## Introduction
 
 `DDharmonize_validate_BirthCounts()` is a function that implements a workflow for birth records extracted from vital registration databases and census. This workflow includes extracting data from the UNPD (United Nations Population Division) database, harmonizing age groups, identifying full series, validating totals by age, and eventually producing clean and harmonised datasets for each location. See the [harmonization workflow](https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html) article for a detailed overview of this process. 
 
@@ -34,7 +33,7 @@ The birth records are grouped into two types of data:
 
 + Total births by sex of child
 
-##  `r icons::fontawesome("globe", style = "solid")` Function definition
+## Function definition
 
 ```{r }
 
@@ -55,7 +54,7 @@ The birth records are grouped into two types of data:
 ```
 
 
-##  `r icons::fontawesome("list", style = "solid")` Function arguments
+##  Function arguments
 
 The function contains several arguments:
 
@@ -79,7 +78,7 @@ You can also run the function `check_locid(insert locid here)` to check whether 
 
 **`retainKeys`:** Specifies whether only a few (`retainKeys == FALSE`) or all (`retainKeys == TRUE`) variables should be retained in the output.
 
-##  `r icons::fontawesome("database", style = "solid")` Output structure
+## Output structure
 
 The function returns clean data with 26 variables (when `retainKeys == TRUE`) which are defined below:
 
@@ -136,6 +135,6 @@ excluding the label `0-4`.
 
 + `note`:  Gives the user more information about a particular record in cases where the data is not fully clean e.g the record may not have been harmonised because of non-standard age groups or that the series is missing data for one or more age groups.                
 
-##  `r icons::fontawesome("cog", style = "solid")` Harmonization Workflow
+## Harmonization Workflow
 
 For a detailed explanation of the harmonization work flow, [see this article](https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html) .
