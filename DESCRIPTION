@@ -34,4 +34,6 @@ Remotes:
     github::timriffe/DemoTools,
     github::timriffe/DDSQLtools,
     github::mitchelloharawild/icons
+Config/Needs/website:
+    pkgdown
 Language: en-US
