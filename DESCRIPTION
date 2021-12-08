@@ -16,7 +16,8 @@ Depends:
     R (>= 4.0.0),
     DDSQLtools,
     DemoTools,
-    dplyr
+    dplyr,
+    icons
 Imports: 
     tidyr,
     magrittr,

@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(rddharmony)
 
-
 ```
 
 ## Introduction
@@ -124,3 +123,6 @@ excluding the label `0-4` (`IndicatorID` = 194).
 + `DataValue`: The numerical value of interest for a specific set of unique characteristics as defined by `id`.    
 
 + `note`:  Gives the user more information about a particular record in cases where the data is not fully clean e.g the record may not have been harmonized because of non-standard age groups or that the series is missing data for one or more age groups.                
+## Harmonization Workflow
+
+For a detailed explanation of the harmonization work flow, [see this article](https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html) .
