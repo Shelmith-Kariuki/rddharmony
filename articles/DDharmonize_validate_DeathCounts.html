@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="DDharmonize_validate_DeathCounts">
-<meta property="og:description" content="This function implements a workflow for death records extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location. 
+<meta property="og:description" content="This function implements a workflow for death records extracted from vital registration databases and census. This workflow includes extracting data from DemoData, harmonizing age groups, identifying full series, validating totals and by sex, eventually producing clean and harmonised datasets for each location.
 ">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -149,7 +149,7 @@
 <span class="co">#                                              retainKeys = FALSE)</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="description-of-the-function-arguments">Description of the function arguments<a class="anchor" aria-label="anchor" href="#description-of-the-function-arguments"></a>
+<h2 id="function-arguments">Function arguments<a class="anchor" aria-label="anchor" href="#function-arguments"></a>
 </h2>
 <p>The function contains several arguments:</p>
 <p><strong><code>locid</code>:</strong> This is the a numeric variable representing the location id of each of the locations. You can run <code>View(get_locations())</code> to get the list of plausible location ids. The ids are listed in the <code>PK_LocID</code> variable. You can also run the function <code>check_locid(insert locid here)</code> to check whether a location id is valid (part of the locations in the UNPD website). Running <code>check_locid(insert locid here)</code> with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run <code>View(get_locations())</code> in order to get a list of plausible location ids. See example below.</p>
@@ -165,7 +165,7 @@
 <p><strong><code>retainKeys</code>:</strong> Specifies whether only a few (<code>retainKeys == FALSE</code>) or all (<code>retainKeys == TRUE</code>) variables should be retained in the output.</p>
 </div>
 <div class="section level2">
-<h2 id="description-of-the-output-variables">Description of the output variables<a class="anchor" aria-label="anchor" href="#description-of-the-output-variables"></a>
+<h2 id="output-structure">Output structure<a class="anchor" aria-label="anchor" href="#output-structure"></a>
 </h2>
 <p>The function returns clean data with 26 variables (when <code>retainKeys == TRUE</code>) which are defined below:</p>
 <ul>
@@ -194,9 +194,12 @@
 <li><p><code>non_standard</code>: These are age labels that are not standard e.g those with an age span of anything other than 1, 5 and they are neither total nor unknown.</p></li>
 <li><p><code>SexID</code>: ID for each of the sex groups (1: Males, 2: Females, 3: Both sexes).</p></li>
 <li><p><code>DataValue</code>: The numerical value of interest for a specific set of unique characteristics as defined by <code>id</code>.</p></li>
-<li><p><code>note</code>: Gives the user more information about a particular record in cases where the data is not fully clean e.g the record may not have been harmonized because of non-standard age groups or that the series is missing data for one or more age groups.<br>
-## Harmonization Workflow</p></li>
+<li><p><code>note</code>: Gives the user more information about a particular record in cases where the data is not fully clean e.g the record may not have been harmonized because of non-standard age groups or that the series is missing data for one or more age groups.</p></li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="harmonization-workflow">Harmonization Workflow<a class="anchor" aria-label="anchor" href="#harmonization-workflow"></a>
+</h2>
 <p>For a detailed explanation of the harmonization work flow, <a href="https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html" class="external-link">see this article</a> .</p>
 </div>
   </div>
