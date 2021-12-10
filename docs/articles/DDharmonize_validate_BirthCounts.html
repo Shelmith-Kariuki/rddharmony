@@ -142,6 +142,14 @@
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
+<span class="co"># clean_df &lt;- DDharmonize_validate_BirthCounts(locid, </span>
+<span class="co">#                                              times, </span>
+<span class="co">#                                              process = c("census", "vr"),</span>
+<span class="co">#                                              return_unique_ref_period = TRUE,</span>
+<span class="co">#                                              retainKeys = FALSE)</span>
+
+                                             
+<span class="co"># example: extracting sweden's data                                            </span>
 <span class="co"># clean_df &lt;- DDharmonize_validate_BirthCounts(locid = 752,</span>
 <span class="co">#                                              times = c(2010, 2011),</span>
 <span class="co">#                                              process = c("census", "vr"),</span>
@@ -149,7 +157,7 @@
 <span class="co">#                                              retainKeys = FALSE)</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="description-of-the-function-arguments">Description of the function arguments<a class="anchor" aria-label="anchor" href="#description-of-the-function-arguments"></a>
+<h2 id="function-arguments">Function arguments<a class="anchor" aria-label="anchor" href="#function-arguments"></a>
 </h2>
 <p>The function contains several arguments:</p>
 <p><strong><code>locid</code>:</strong> This is the a numeric variable representing the location id of each of the locations. You can run <code>View(get_locations())</code> to get the list of plausible location ids. The ids are listed in the <code>PK_LocID</code> variable. You can also run the function <code>check_locid(insert locid here)</code> to check whether a location id is valid (part of the locations in the UNPD website). Running <code>check_locid(insert locid here)</code> with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run <code>View(get_locations())</code> in order to get a list of plausible location ids. See example below.</p>
@@ -165,7 +173,7 @@
 <p><strong><code>retainKeys</code>:</strong> Specifies whether only a few (<code>retainKeys == FALSE</code>) or all (<code>retainKeys == TRUE</code>) variables should be retained in the output.</p>
 </div>
 <div class="section level2">
-<h2 id="description-of-the-output-variables">Description of the output variables<a class="anchor" aria-label="anchor" href="#description-of-the-output-variables"></a>
+<h2 id="output-structure">Output structure<a class="anchor" aria-label="anchor" href="#output-structure"></a>
 </h2>
 <p>The function returns clean data with 26 variables (when <code>retainKeys == TRUE</code>) which are defined below:</p>
 <ul>
@@ -196,6 +204,11 @@
 <li><p><code>DataValue</code>: The numerical value of interest for a specific set of unique characteristics as defined by <code>id</code>.</p></li>
 <li><p><code>note</code>: Gives the user more information about a particular record in cases where the data is not fully clean e.g the record may not have been harmonised because of non-standard age groups or that the series is missing data for one or more age groups.</p></li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="harmonization-workflow">Harmonization Workflow<a class="anchor" aria-label="anchor" href="#harmonization-workflow"></a>
+</h2>
+<p>For a detailed explanation of the harmonization work flow, <a href="https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html" class="external-link">see this article</a> .</p>
 </div>
   </div>
 

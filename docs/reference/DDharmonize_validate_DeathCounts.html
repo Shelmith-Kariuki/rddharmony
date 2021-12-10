@@ -113,25 +113,31 @@ including key fields in the function output.</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>locid</dt>
-<dd><p>location id</p></dd>
+<dd><p>Location id</p></dd>
 <dt>times</dt>
 <dd><p>The period of the data to be extracted. You can extract one year data e.g times = 2020 or a longer period of time e.g times = c(1950, 2020).</p></dd>
 <dt>process</dt>
 <dd><p>The process through which the data was obtained from various sources i.e either via census or vital registrations (vr). By default, the function pulls data obtained through both of these processes.</p></dd>
 <dt>return_unique_ref_period</dt>
-<dd><p>TRUE</p></dd>
+<dd><p>TRUE/FALSE. Specifies whether the data to be returned should contain one unique id (return_unique_ref_period == TRUE) or several ids (return_unique_ref_period == FALSE) per time label.
+ids are a unique identifier for each unique set of records based on <code>LocID</code>, <code>LocName</code>, <code>DataProcess</code>, <code>ReferencePeriod</code>, <code>DataSourceName</code>, <code>StatisticalConceptName</code>, <code>DataTypeName</code> and <code>DataReliabilityName</code>.
+The definitions of these variables are provided later in this article.</p></dd>
 <dt>DataSourceShortName</dt>
 <dd><p>NULL</p></dd>
 <dt>DataSourceYear</dt>
 <dd><p>NULL</p></dd>
 <dt>retainKeys</dt>
-<dd><p>FALSE</p></dd>
+<dd><p>TRUE/FALSE. Specifies whether only a few (retainKeys == FALSE) or all (retainKeys == TRUE) variables should be retained in the output.</p></dd>
 <dt>server</dt>
 <dd><p>"https://popdiv.dfs.un.org/DemoData/api/"</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>A harmonized dataset containing death counts</p>
+    </div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>See the <a href="https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_validate_DeathCounts.html" class="external-link">DDharmonize_validate_DeathCounts</a> vignette for more details about this function.</p>
     </div>
 
     <div id="ref-examples">

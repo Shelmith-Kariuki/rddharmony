@@ -60,7 +60,7 @@ You can also run the function `check_locid(insert locid here)` to check whether 
 
 **`retainKeys`:** Specifies whether only a few (`retainKeys == FALSE`) or all (`retainKeys == TRUE`) variables should be retained in the output.
 
-## Description of the output variables
+## Output structure
 
 The function returns clean data with 26 variables (when `retainKeys == TRUE`) which are defined below:
 
@@ -116,6 +116,7 @@ excluding the label `0-4` (`IndicatorID` = 58).
 + `DataValue`: The numerical value of interest for a specific set of unique characteristics as defined by `id`.    
 
 + `note`:  Gives the user more information about a particular record in cases where the data is not fully clean e.g the record may not have been harmonized because of non-standard age groups or that the series is missing data for one or more age groups.                
+
 ## Harmonization Workflow
 
 For a detailed explanation of the harmonization work flow, [see this article](https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html) .

@@ -16,19 +16,21 @@ DDharmonize_validate_PopCounts(
 )
 }
 \arguments{
-\item{locid}{location id}
+\item{locid}{Location id}
 
 \item{times}{The period of the data to be extracted. You can extract one year data e.g times = 2020 or a longer period of time e.g times = c(1950, 2020).}
 
 \item{process}{The process through which the data was obtained from various sources i.e either via census , register or estimates. By default, the function pulls data obtained through both of these processes.}
 
-\item{return_unique_ref_period}{TRUE}
+\item{return_unique_ref_period}{TRUE / FALSE. Specifies whether the data to be returned should contain one unique id (return_unique_ref_period == TRUE) or several ids (return_unique_ref_period == FALSE) per time label.
+ids are a unique identifier for each unique set of records based on \code{LocID}, \code{LocName}, \code{DataProcess}, \code{ReferencePeriod}, \code{DataSourceName}, \code{StatisticalConceptName}, \code{DataTypeName} and \code{DataReliabilityName}.
+The definitions of these variables are provided later in this article.}
 
 \item{DataSourceShortName}{NULL}
 
 \item{DataSourceYear}{NULL}
 
-\item{retainKeys}{FALSE}
+\item{retainKeys}{TRUE / FALSE. Specifies whether only a few (retainKeys == FALSE) or all (retainKeys == TRUE) variables should be retained in the output.}
 
 \item{server}{"https://popdiv.dfs.un.org/DemoData/api/"}
 }
@@ -39,6 +41,9 @@ A harmonized dataset containing birth counts
 This script implements a work flow for census population counts extracting from DemoData, harmonizing age groups,
 identifying full series, selecting preferred series, validating totals and by sex and eventually
 including key fields in the function output.
+}
+\details{
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_validate_PopCounts.html}{DDharmonize_validate_PopCounts} vignette for more details about this function.
 }
 \examples{
 \dontrun{
