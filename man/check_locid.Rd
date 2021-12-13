@@ -7,7 +7,7 @@
 check_locid(locid)
 }
 \arguments{
-\item{locid}{location id}
+\item{locid}{Location id}
 }
 \value{
 The message: "\code{locid} is not a valid location id. Please run \code{View(get_locations())} to get a list of plausible location ids. They are listed in the \code{PK_LocID} variable" in the case

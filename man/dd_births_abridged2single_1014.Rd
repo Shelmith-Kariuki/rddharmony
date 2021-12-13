@@ -9,10 +9,10 @@ dd_births_abridged2single_1014(indata, births10_14)
 \arguments{
 \item{indata}{The data to be harmonized}
 
-\item{births10_14}{The value of age label "10-14"}
+\item{births10_14}{The data value of age label "10-14"}
 }
 \value{
-A dataset with ages 10-14 distributed across single ages
+A dataset with ages 10-14 distributed across single ages.
 }
 \description{
 Distribute births to ages 10-14 across single ages. Arbitrary distribution of births across ages 10-14 for now. Need to update with Kirill's regression

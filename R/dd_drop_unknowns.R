@@ -1,13 +1,15 @@
+#' @title
 #' dd_drop_unknowns
 #'
-#' If reported total - calculated total == "unknown" , then unknown == 0
+#' @description
+#' If reported total - calculated total == "Unknown" , then set Unknown to 0.
 #'
 #' @param data The data to be harmonised
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return  A data frame without unknowns if reported total - calculated total
+#' @return  A data frame without `Unknowns` in cases where the value of `Unknown` is equal to `reported total - calculated total`.
 #' @export
 dd_drop_unknowns <- function(data){
 

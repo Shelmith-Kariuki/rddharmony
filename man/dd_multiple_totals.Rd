@@ -10,8 +10,8 @@ dd_multiple_totals(data)
 \item{data}{The data to be harmonised}
 }
 \value{
-A data frame with only one total per id, sex id and indicator id
+A data frame with only one \code{Total} age label per id, SexId and indicator id.
 }
 \description{
-If there exists more than one total and there is a one that is equal to the computed total, drop the others to be left with this one.
+If there exists more than one \code{Total} age label and there is one that is equal to the computed total, drop the others and keep this one.
 }

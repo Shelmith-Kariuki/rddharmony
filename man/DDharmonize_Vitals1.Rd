@@ -10,7 +10,7 @@ DDharmonize_Vitals1(indata)
 \item{indata}{The data to be harmonised}
 }
 \value{
-A data frame that includes one series (complete) that contains data by single year of age up to the open age group
+A data frame that contains harmonized single year of age counts and closed by an open age group.
 }
 \description{
 This wrapper takes vital counts from census and registers from DemoData and Standardizes/harmonizes them.

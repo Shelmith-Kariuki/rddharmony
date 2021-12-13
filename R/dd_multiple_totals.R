@@ -1,13 +1,15 @@
+#' @title
 #' dd_multiple_totals
 #'
-#' If there exists more than one total and there is a one that is equal to the computed total, drop the others to be left with this one.
+#' @description
+#' If there exists more than one `Total` age label and there is one that is equal to the computed total, drop the others and keep this one.
 #'
 #' @param data The data to be harmonised
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return  A data frame with only one total per id, sex id and indicator id
+#' @return  A data frame with only one `Total` age label per id, SexId and indicator id.
 #' @export
 
 dd_multiple_totals <- function(data){

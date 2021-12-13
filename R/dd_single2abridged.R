@@ -1,13 +1,15 @@
+#' @title
 #' dd_single2abridged
 #'
+#' @description
 #' Creates 5-year age groups based on single years of age data.
 #'
-#' @param data dataset with age series by single years of age
+#' @param data A dataset with age series by single years of age
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return A dataset containing 5-year age groups generated from single years of age
+#' @return A dataset containing 5-year age groups generated from single years of age.
 
 #' @export
 #'

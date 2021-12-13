@@ -18,7 +18,7 @@ A dataset with plausible closing age groups and their data values
 Compute data values for the open age group needed to close the series
 }
 \details{
-You can read more about this function on \href{https://shelmith-kariuki.github.io/rddharmony/dd_oag_compute.html}{this vignette} .
+You can read more about this function on \href{https://shelmith-kariuki.github.io/rddharmony/articles/dd_oag_compute.html}{this vignette}.
 }
 \examples{
 \dontrun{

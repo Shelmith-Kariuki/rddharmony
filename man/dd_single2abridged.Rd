@@ -7,10 +7,10 @@
 dd_single2abridged(data)
 }
 \arguments{
-\item{data}{dataset with age series by single years of age}
+\item{data}{A dataset with age series by single years of age}
 }
 \value{
-A dataset containing 5-year age groups generated from single years of age
+A dataset containing 5-year age groups generated from single years of age.
 }
 \description{
 Creates 5-year age groups based on single years of age data.

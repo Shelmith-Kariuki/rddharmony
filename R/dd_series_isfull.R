@@ -19,9 +19,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' df <- series_isfull_df %>%
-#' select(IndicatorID, IndicatorName, LocID, LocName, TimeLabel, AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) %>%
-#' arrange(AgeLabel)
+#' df <- series_isfull_df
 #' dd_series_isfull(df, abridged = TRUE)
 #' }
 dd_series_isfull <- function(data, abridged = TRUE){

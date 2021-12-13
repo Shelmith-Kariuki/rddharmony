@@ -10,11 +10,11 @@ dd_validate_totals_over_sex_new(data)
 \item{data}{Data to be harmonized}
 }
 \value{
-A dataset where Both sexes == Female + Male
+A dataset where Both sexes == Female + Male for each id and SexId.
 }
 \description{
-Compute total over sex as max of reported total or sum over sex, compute any NA values based on differences and
-redistribute SexID = 0 across males and females
+Compute total over sex as max of reported total or sum over sex, compute any NA values based on differences,
+redistribute SexID = 0 across males and females then validate totals over sex.
 }
 \details{
 See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/dd_validate_totals_over_sex.html}{"Validating totals over sex" vignette} for more details about this function.

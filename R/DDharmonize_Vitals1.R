@@ -13,7 +13,7 @@
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return A data frame that includes one series (complete) that contains data by single year of age up to the open age group
+#' @return A data frame that contains harmonized single year of age counts and closed by an open age group.
 #'
 #' @export
 #'

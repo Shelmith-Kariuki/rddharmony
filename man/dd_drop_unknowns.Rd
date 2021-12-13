@@ -10,8 +10,8 @@ dd_drop_unknowns(data)
 \item{data}{The data to be harmonised}
 }
 \value{
-A data frame without unknowns if reported total - calculated total
+A data frame without \code{Unknowns} in cases where the value of \code{Unknown} is equal to \verb{reported total - calculated total}.
 }
 \description{
-If reported total - calculated total == "unknown" , then unknown == 0
+If reported total - calculated total == "Unknown" , then set Unknown to 0.
 }

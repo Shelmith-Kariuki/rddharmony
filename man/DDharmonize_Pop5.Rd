@@ -13,10 +13,8 @@ DDharmonize_Pop5(indata)
 A data frame that contains standard abridged age groups 0, 1-4, 0-4, 5-9, 10-14 ..... up to the open age group
 }
 \description{
-This wrapper takes Population5 indicators from DemoData and Standardizes/harmonizes by age group.
+This wrapper takes Population5 indicators from DemoData and Standardizes/harmonizes them.
 }
-\examples{
-\dontrun{
-df <- data.frame()
-}
+\details{
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_5YearCounts.html}{"Harmonizing five-year counts" vignette} for more details about this function.
 }

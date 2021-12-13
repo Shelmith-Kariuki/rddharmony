@@ -14,16 +14,18 @@ DDharmonize_AbridgedAndComplete(data_abr, data_cpl_from_abr, data_cpl)
 \item{data_cpl}{data containing complete series age labels}
 }
 \value{
-A dataset with reconciled abridged and complete series i.e. abridged reconciled with complete and complete reconciled with abridged
+A dataset with reconciled abridged and complete series i.e. abridged reconciled with complete and complete reconciled with abridged.
 }
 \description{
-This wrapper takes the output of harmonization and reconciles abridged and complete series
+This wrapper takes the output of harmonization and reconciles abridged and complete series.
 }
 \details{
-See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_AbridgedAndComplete.html}{DDharmonize_AbridgedAndComplete vignette} for more details about this function.
+See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_AbridgedAndComplete.html}{Reconciling abridged and complete series vignette} for more details about this function.
 }
 \examples{
 \dontrun{
-df <- DDharmonize_AbridgedAndComplete(data_abr,data_cpl_from_abr = NULL, data_cpl)
+df <- DDharmonize_AbridgedAndComplete(data_abr,
+                                     data_cpl_from_abr = NULL,
+                                     data_cpl)
 }
 }

@@ -8,7 +8,7 @@
 #' Run `check_locid(insert locid here)` to check whether a location id is valid (part of the locations in the UNPD website). Running `check_locid(insert locid here)` with a valid id returns a message confirming that the location id is valid and also gives the location name of that particular id. Running the same code with an invalid id returns a message directing the user to run `View(get_locations())` in order to get a list of plausible location ids.
 #' You can run `getAnywhere(check_locid)` to see how the function is defined.
 #'
-#' @param locid location id
+#' @param locid Location id
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%

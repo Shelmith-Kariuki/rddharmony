@@ -1,6 +1,11 @@
+#' @title
 #' dd_rank_id
 #'
-#' Ranking id; For each country- year, we rank the available ids s
+#' @description
+#' Ranking id; For each country- year, we rank the available ids for population counts.
+#'
+#' @details
+#' See Part 3 of the \href{https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html}{Harmonization Workflow article} for details about this function.
 #'
 #' @param indata The data to be harmonized
 #'

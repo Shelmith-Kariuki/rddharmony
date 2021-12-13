@@ -5,7 +5,7 @@
 #' Reconcile ages 0-1, 1-4 and 0-4
 #'
 #' @details
-#' If 0-4 is missing and 0-1 and 1-4 are present, then sum both to get 0-4.
+#' If `0-4` is missing and `0-1` and `1-4` are present, then sum both to get `0-4`.
 #' You can run `getAnywhere(dd_firstages_compute)` to view the definition of this function.
 #'
 #' @param data The data to be harmonized
@@ -13,7 +13,7 @@
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return A dataset with ages 0-1, 1-4 and 0-4 reconciled
+#' @return A dataset with ages `0-1`, `1-4` and `0-4` reconciled.
 #'
 #' @export
 #'

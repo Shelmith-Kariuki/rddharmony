@@ -2,16 +2,17 @@
 #' DDharmonize_Pop1
 #'
 #' @description
-#' This wrapper takes population1 indicators from DemoData and Standardizes/harmonizes by age group
+#' This wrapper takes population1 indicators from DemoData and Standardizes/harmonizes them.
 #'
+#' @details
 #' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_1YearCounts.html}{"Harmonizing one-year counts" vignette} for more details about this function.
 #'
-#' @param indata The data to be harmonised
+#' @param indata The data to be harmonised.
 #'
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return  A data frame that contains data by single year of age up to the open age group
+#' @return A data frame that contains harmonized single year of age counts and closed by an open age group.
 #' @export
 #'
 #' @examples

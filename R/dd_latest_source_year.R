@@ -2,7 +2,7 @@
 #' dd_latest_source_year
 #'
 #' @description
-#' Select the latest data source year. For some periods of reference, there are multiple values in the **DataSourceYear** variable. For these cases, the criteria is to choose the latest **DataSourceYear**.
+#'For some periods of reference, there are multiple values in the **DataSourceYear** variable. For these cases, the criteria is to choose the latest **DataSourceYear**.
 #'
 #' @details
 #' You can run `getAnywhere(dd_latest_source_year)` to view the definition of this function.
@@ -12,16 +12,12 @@
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return A dataset with a unique **DataSourceYear**
+#' @return A dataset with a unique **DataSourceYear** per id and age label.
 #'
 #' @export
 #' @examples
 #' \dontrun{
-#' df <- latest_source_year_df %>%
-#' select(IndicatorID, IndicatorName, LocID, LocName,DataSourceYear, TimeLabel,
-#' AgeSpan,AgeStart, AgeEnd, AgeLabel, DataValue ) %>%
-#' arrange(TimeLabel)
-#'
+#' df <- latest_source_year_df
 #' df <- dd_latest_source_year(df)
 #' }
 

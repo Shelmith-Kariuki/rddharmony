@@ -5,7 +5,7 @@
 #' Compute data values for the open age group needed to close the series
 #'
 #' @details
-#' You can read more about this function on \href{https://shelmith-kariuki.github.io/rddharmony/dd_oag_compute.html}{this vignette} .
+#' You can read more about this function on \href{https://shelmith-kariuki.github.io/rddharmony/articles/dd_oag_compute.html}{this vignette}.
 #'
 #' @param data The data to be harmonized
 #' @param age_span The range of the age label e.g the age span of the age label 10-14 is 5

@@ -1,4 +1,8 @@
+#' @title
 #' discard_these_dups
+#'
+#' @description
+#' Duplicates that need to be dropped
 #'
 #' @return xxx
 #' @export

@@ -10,10 +10,13 @@ dd_rank_id_vitals(indata)
 \item{indata}{The data to be harmonised}
 }
 \value{
-A dataset with only one id per country and year
+A dataset with only one id per country and year.
 }
 \description{
-Ranking id; For each country- year, we rank the available ids for counts of vital events
+Ranking id; For each country- year, we rank the available ids for counts of vital events.
+}
+\details{
+See Part 3 of the \href{https://shelmith-kariuki.github.io/rddharmony/articles/Harmonization_Workflow.html}{Harmonization Workflow article} for details about this function.
 }
 \examples{
 \dontrun{

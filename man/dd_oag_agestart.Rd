@@ -12,10 +12,10 @@ dd_oag_agestart(data, multiple5 = TRUE)
 \item{multiple5}{Whether the series contains 5 year age labels or not}
 }
 \value{
-An age label that would close the series. It has to be a multiple of 5
+The starting age of the open age group needed to close the series.
 }
 \description{
-Identifies the starting age needed for the open age group that closes the series. It must be a multiple of 5
+Identifies the starting age of the open age group needed to close the series.
 }
 \details{
 The function returns the starting age needed for the open age group that closes the series. This corresponds to the
@@ -24,9 +24,7 @@ You can run \code{getAnywhere(dd_oag_agestart)} to see the function definition.
 }
 \examples{
 \dontrun{
-df <- series_isfull_df \%>\%
-select(IndicatorID, IndicatorName, id, SexName, TimeLabel,AgeSpan, AgeStart, AgeEnd, AgeLabel, DataValue) \%>\%
-arrange(AgeLabel)
+df <- series_isfull_df
 oag_start <- dd_oag_agestart(df, multiple5 = TRUE)
 }
 }

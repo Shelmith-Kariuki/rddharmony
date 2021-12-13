@@ -10,13 +10,13 @@ dd_firstages_compute(data)
 \item{data}{The data to be harmonized}
 }
 \value{
-A dataset with ages 0-1, 1-4 and 0-4 reconciled
+A dataset with ages \code{0-1}, \code{1-4} and \code{0-4} reconciled.
 }
 \description{
 Reconcile ages 0-1, 1-4 and 0-4
 }
 \details{
-If 0-4 is missing and 0-1 and 1-4 are present, then sum both to get 0-4.
+If \code{0-4} is missing and \code{0-1} and \code{1-4} are present, then sum both to get \code{0-4}.
 You can run \code{getAnywhere(dd_firstages_compute)} to view the definition of this function.
 }
 \examples{

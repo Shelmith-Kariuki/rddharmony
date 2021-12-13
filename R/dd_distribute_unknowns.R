@@ -1,6 +1,11 @@
+#' @title
 #' dd_distribute_unknowns
 #'
+#' @description
 #' Distribute Unknowns over age
+#'
+#' @details
+#' You can run `getAnywhere(dd_distribute_unknowns)` to see how the function is defined.
 #'
 #' @param data The data to be harmonised
 #'
@@ -22,6 +27,7 @@ dd_distribute_unknowns <- function(data){
 
   for (sex in unique(data$SexID)) {
 
+    ## abridged
     df_abr <- data %>%
       dplyr::filter(SexID == sex & abridged == TRUE)
 
@@ -40,6 +46,7 @@ dd_distribute_unknowns <- function(data){
     }
     rm(total_value, unknown_value)
 
+    ## complete
     df_cpl <- data %>%
       dplyr::filter(SexID == sex & complete == TRUE)
 

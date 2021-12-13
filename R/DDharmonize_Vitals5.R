@@ -5,8 +5,7 @@
 #' This wrapper takes five-year vital counts from census and registers from the UNDP database and standardizes/harmonizes them.
 #'
 #' @details
-#'
-#' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_5YearCounts.html}{"Harmonizing five-year vital counts" vignette} for more details about this function.
+#' See the \href{https://shelmith-kariuki.github.io/rddharmony/articles/DDharmonize_5YearCounts.html}{"Harmonizing five-year counts" vignette} for more details about this function.
 #'
 #' @param indata The data to be harmonised
 #' @param type births / deaths
@@ -14,7 +13,7 @@
 #' @import dplyr
 #' @importFrom magrittr %>%
 #'
-#' @return  A data frame that contains counts for five-year age groups and closed by an open age group
+#' @return  A data frame that contains harmonized counts for five-year age groups and closed by an open age group.
 
 #' @export
 #'
